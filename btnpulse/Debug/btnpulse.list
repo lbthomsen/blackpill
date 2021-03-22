@@ -39,11 +39,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   000097e9  00000000  00000000  00040aa6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00087107  00000000  00000000  0004a28f  2**0
+ 18 .debug_str    00087114  00000000  00000000  0004a28f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000d1396  2**0
+ 19 .comment      00000053  00000000  00000000  000d13a3  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000026f0  00000000  00000000  000d13ec  2**2
+ 20 .debug_frame  000026f0  00000000  00000000  000d13f8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -368,12 +368,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
  80004dc:	4a07      	ldr	r2, [pc, #28]	; (80004fc <HAL_TIM_PeriodElapsedCallback+0x2c>)
  80004de:	4293      	cmp	r3, r2
  80004e0:	d108      	bne.n	80004f4 <HAL_TIM_PeriodElapsedCallback+0x24>
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET); // Off LED
  80004e2:	2201      	movs	r2, #1
  80004e4:	f44f 5100 	mov.w	r1, #8192	; 0x2000
  80004e8:	4805      	ldr	r0, [pc, #20]	; (8000500 <HAL_TIM_PeriodElapsedCallback+0x30>)
  80004ea:	f000 fd35 	bl	8000f58 <HAL_GPIO_WritePin>
-		HAL_TIM_Base_Stop(&htim5);
+		HAL_TIM_Base_Stop(&htim5); // Kill the Timer
  80004ee:	4805      	ldr	r0, [pc, #20]	; (8000504 <HAL_TIM_PeriodElapsedCallback+0x34>)
  80004f0:	f001 f9c7 	bl	8001882 <HAL_TIM_Base_Stop>
 	}
@@ -406,26 +406,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
  800051e:	480b      	ldr	r0, [pc, #44]	; (800054c <HAL_GPIO_EXTI_Callback+0x44>)
  8000520:	f000 fd1a 	bl	8000f58 <HAL_GPIO_WritePin>
 
-		if (__HAL_TIM_GET_COUNTER(&htim5) == LED_CNT) {
+		if (__HAL_TIM_GET_COUNTER(&htim5) == LED_CNT) { // Check if Timer is running - sort of
  8000524:	4b0a      	ldr	r3, [pc, #40]	; (8000550 <HAL_GPIO_EXTI_Callback+0x48>)
  8000526:	681b      	ldr	r3, [r3, #0]
  8000528:	6a5b      	ldr	r3, [r3, #36]	; 0x24
- 800052a:	f242 720f 	movw	r2, #9999	; 0x270f
+ 800052a:	f240 72cf 	movw	r2, #1999	; 0x7cf
  800052e:	4293      	cmp	r3, r2
  8000530:	d103      	bne.n	800053a <HAL_GPIO_EXTI_Callback+0x32>
-			HAL_TIM_Base_Start_IT(&htim5); // Start the timer
+			HAL_TIM_Base_Start_IT(&htim5); // Start the timer if not running
  8000532:	4807      	ldr	r0, [pc, #28]	; (8000550 <HAL_GPIO_EXTI_Callback+0x48>)
  8000534:	f001 f9cc 	bl	80018d0 <HAL_TIM_Base_Start_IT>
 		} else {
-			__HAL_TIM_SET_COUNTER(&htim5, LED_CNT);
+			__HAL_TIM_SET_COUNTER(&htim5, LED_CNT); // Reset the timer IF running
 		}
 	}
 }
  8000538:	e004      	b.n	8000544 <HAL_GPIO_EXTI_Callback+0x3c>
-			__HAL_TIM_SET_COUNTER(&htim5, LED_CNT);
+			__HAL_TIM_SET_COUNTER(&htim5, LED_CNT); // Reset the timer IF running
  800053a:	4b05      	ldr	r3, [pc, #20]	; (8000550 <HAL_GPIO_EXTI_Callback+0x48>)
  800053c:	681b      	ldr	r3, [r3, #0]
- 800053e:	f242 720f 	movw	r2, #9999	; 0x270f
+ 800053e:	f240 72cf 	movw	r2, #1999	; 0x7cf
  8000542:	625a      	str	r2, [r3, #36]	; 0x24
 }
  8000544:	bf00      	nop
@@ -649,7 +649,7 @@ static void MX_TIM5_Init(void) {
  800066a:	609a      	str	r2, [r3, #8]
 	htim5.Init.Period = LED_CNT;
  800066c:	4b18      	ldr	r3, [pc, #96]	; (80006d0 <MX_TIM5_Init+0x94>)
- 800066e:	f242 720f 	movw	r2, #9999	; 0x270f
+ 800066e:	f240 72cf 	movw	r2, #1999	; 0x7cf
  8000672:	60da      	str	r2, [r3, #12]
 	htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
  8000674:	4b16      	ldr	r3, [pc, #88]	; (80006d0 <MX_TIM5_Init+0x94>)

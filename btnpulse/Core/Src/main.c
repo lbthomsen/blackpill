@@ -6,13 +6,13 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * <h2><center>&copy; Copyright (c) 2021 lbthomsen@gmail.com.
  * All rights reserved.</center></h2>
  *
- * This software component is licensed by ST under BSD 3-Clause license,
+ * This software component is licensed by ST under MITe license,
  * the "License"; You may not use this file except in compliance with the
  * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
+ *                        opensource.org/licenses/MIT
  *
  ******************************************************************************
  */
@@ -34,7 +34,7 @@
 /* USER CODE BEGIN PD */
 
 #define LED_PRE 9599 // Timer clock at 96 MHz - so 1 count = 0.1ms
-#define LED_CNT 9999 // 1 sec
+#define LED_CNT 1999 // 0.2 sec
 
 /* USER CODE END PD */
 
