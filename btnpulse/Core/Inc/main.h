@@ -58,7 +58,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LED_PRE 9599
+#define LED_PRE 9999
 #define LED_CNT 9999
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
