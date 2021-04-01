@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usbd_core.h"
+#include "usbd_dfu.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,6 +103,8 @@ int main(void)
 	  const JumpStruct* vector_p = (JumpStruct*)APP_ADDRESS;
 
 	  USBD_Stop(&hUsbDeviceFS);
+	  DFU_Leave(&hUsbDeviceFS);
+	  USBD_DeInit(&hUsbDeviceFS);
       HAL_GPIO_DeInit(BTN_GPIO_Port, BTN_Pin);
       HAL_GPIO_DeInit(LED_GPIO_Port, LED_Pin);
       HAL_RCC_DeInit();
