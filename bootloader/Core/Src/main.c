@@ -23,16 +23,24 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_core.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef void (application_t)(void);
+typedef struct
+{
+     uint32_t        stack_addr;     // Stack Pointer
+    application_t*  func_p;        // Program Counter
+} JumpStruct;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define APP_ADDRESS 0x08008000
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,6 +96,20 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+
+  if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
+
+	  const JumpStruct* vector_p = (JumpStruct*)APP_ADDRESS;
+
+	  USBD_Stop(&hUsbDeviceFS);
+      HAL_GPIO_DeInit(BTN_GPIO_Port, BTN_Pin);
+      HAL_GPIO_DeInit(LED_GPIO_Port, LED_Pin);
+      HAL_RCC_DeInit();
+      HAL_DeInit();
+
+      asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
+
+  }
 
   /* USER CODE END 2 */
 
