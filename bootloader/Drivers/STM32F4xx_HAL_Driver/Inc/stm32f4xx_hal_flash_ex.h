@@ -460,6 +460,14 @@ typedef struct
 #define FLASH_SECTOR_5     5U /*!< Sector Number 5   */
 #define FLASH_SECTOR_6     6U /*!< Sector Number 6   */
 #define FLASH_SECTOR_7     7U /*!< Sector Number 7   */
+#define FLASH_SECTOR_8     8U /*!< Sector Number 8   */
+#define FLASH_SECTOR_9     9U /*!< Sector Number 9   */
+#define FLASH_SECTOR_10     10U /*!< Sector Number 10   */
+#define FLASH_SECTOR_11     11U /*!< Sector Number 11   */
+#define FLASH_SECTOR_12     12U /*!< Sector Number 12   */
+#define FLASH_SECTOR_13     13U /*!< Sector Number 13   */
+#define FLASH_SECTOR_14     14U /*!< Sector Number 14   */
+#define FLASH_SECTOR_15     15U /*!< Sector Number 15   */
 #endif /* STM32F401xE || STM32F411xE || STM32F446xx */
 /*-----------------------------------------------------------------------------------------------------*/
 

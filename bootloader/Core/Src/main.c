@@ -56,6 +56,7 @@ typedef struct {
 /* USER CODE BEGIN PV */
 
 uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
+//uint32_t *dfu_boot_flag = (uint32_t *)0x2001fffc;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PV */
@@ -100,29 +101,6 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
-//	MX_GPIO_Init();
-//
-//	if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
-//
-//		const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
-//
-//		HAL_GPIO_DeInit(BTN_GPIO_Port, BTN_Pin);
-//		HAL_GPIO_DeInit(LED_GPIO_Port, LED_Pin);
-//		__HAL_RCC_GPIOH_CLK_DISABLE();
-//		__HAL_RCC_GPIOC_CLK_DISABLE();
-//		__HAL_RCC_GPIOD_CLK_DISABLE();
-//		__HAL_RCC_GPIOB_CLK_DISABLE();
-//		__HAL_RCC_GPIOA_CLK_DISABLE();
-//		HAL_RCC_DeInit();
-//		HAL_DeInit();
-//		SysTick->CTRL = 0;
-//		SysTick->LOAD = 0;
-//		SysTick->VAL = 0;
-//
-//		asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
-//
-//	}
 
   /* USER CODE END SysInit */
 

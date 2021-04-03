@@ -53,6 +53,7 @@ typedef struct {
 
 /* USER CODE BEGIN PV */
 uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
+//uint32_t *dfu_boot_flag = (uint32_t *)0x2001fffc;
 uint32_t push_count = 0;
 /* USER CODE END PV */
 
@@ -75,7 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		} else {
 			if (HAL_GetTick() - push_count > 1000)
 			{
-			  dfu_boot_flag = DFU_BOOT_FLAG;
+			  dfu_boot_flag = (uint32_t)DFU_BOOT_FLAG;
 			  HAL_NVIC_SystemReset();
 			}
 			push_count = 0;
@@ -133,7 +134,7 @@ int main(void)
   {
 
 	  now = HAL_GetTick();
-	  if (now % 500 == 0 && now != then)
+	  if (now % 2000 == 0 && now != then)
 	  {
 
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
