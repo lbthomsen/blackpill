@@ -55,7 +55,7 @@ typedef struct {
 
 /* USER CODE BEGIN PV */
 
-uint8_t reset_count __attribute__ ((section (".noinit")));
+uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PV */
@@ -69,7 +69,12 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BTN_Pin) // If the button
+	{
+			HAL_NVIC_SystemReset();
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -79,7 +84,7 @@ static void MX_GPIO_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  reset_count++;
+  dfu_boot_flag = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -96,28 +101,28 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
-	MX_GPIO_Init();
-
-	if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
-
-		const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
-
-		HAL_GPIO_DeInit(BTN_GPIO_Port, BTN_Pin);
-		HAL_GPIO_DeInit(LED_GPIO_Port, LED_Pin);
-		__HAL_RCC_GPIOH_CLK_DISABLE();
-		__HAL_RCC_GPIOC_CLK_DISABLE();
-		__HAL_RCC_GPIOD_CLK_DISABLE();
-		__HAL_RCC_GPIOB_CLK_DISABLE();
-		__HAL_RCC_GPIOA_CLK_DISABLE();
-		HAL_RCC_DeInit();
-		HAL_DeInit();
-		SysTick->CTRL = 0;
-		SysTick->LOAD = 0;
-		SysTick->VAL = 0;
-
-		asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
-
-	}
+//	MX_GPIO_Init();
+//
+//	if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
+//
+//		const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
+//
+//		HAL_GPIO_DeInit(BTN_GPIO_Port, BTN_Pin);
+//		HAL_GPIO_DeInit(LED_GPIO_Port, LED_Pin);
+//		__HAL_RCC_GPIOH_CLK_DISABLE();
+//		__HAL_RCC_GPIOC_CLK_DISABLE();
+//		__HAL_RCC_GPIOD_CLK_DISABLE();
+//		__HAL_RCC_GPIOB_CLK_DISABLE();
+//		__HAL_RCC_GPIOA_CLK_DISABLE();
+//		HAL_RCC_DeInit();
+//		HAL_DeInit();
+//		SysTick->CTRL = 0;
+//		SysTick->LOAD = 0;
+//		SysTick->VAL = 0;
+//
+//		asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
+//
+//	}
 
   /* USER CODE END SysInit */
 
@@ -218,9 +223,13 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
