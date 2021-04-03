@@ -164,6 +164,16 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+  
+  /* Global data not cleared after reset.  */
+  .noinit  ADDR(.bss) + SIZEOF (.bss)  :  AT (ADDR (.noinit))
+  {
+     PROVIDE (__noinit_start = .) ;
+    *(.noinit*)
+     PROVIDE (__noinit_end = .) ;
+     _end = . ;
+     PROVIDE (__heap_start = .) ;
+  }  > data
 
   /* Remove information from the compiler libraries */
   /DISCARD/ :
