@@ -2,14 +2,20 @@
 Mcu.Family=STM32F4
 VP_USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS.Signal=USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS
 ProjectManager.MainLocation=Core/Src
+<<<<<<< HEAD
 USB_DEVICE.CLASS_NAME_FS=CUSTOM_HID
+=======
+>>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 ProjectManager.ProjectFileName=usbcomp.ioc
 RCC.CortexFreq_Value=96000000
 ProjectManager.KeepUserCode=true
 Mcu.UserName=STM32F411CEUx
-Mcu.PinsNb=10
+Mcu.PinsNb=9
 ProjectManager.NoMain=false
+<<<<<<< HEAD
 USB_DEVICE.VirtualModeFS=Custom_Hid_FS
+=======
+>>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 PC13-ANTI_TAMP.GPIO_Label=LED
 RCC.PLLCLKFreq_Value=96000000
 RCC.PLLQCLKFreq_Value=48000000
@@ -22,7 +28,6 @@ RCC.RTCFreq_Value=32000
 ProjectManager.DefaultFWLocation=true
 ProjectManager.DeletePrevious=true
 RCC.APB1CLKDivider=RCC_HCLK_DIV2
-USB_DEVICE.IPParameters=VirtualMode,VirtualModeFS,CLASS_NAME_FS
 PinOutPanel.RotationAngle=0
 PA0-WKUP.GPIO_ModeDefaultEXTI=GPIO_MODE_IT_RISING_FALLING
 RCC.FamilyName=M
@@ -33,11 +38,10 @@ PA0-WKUP.GPIO_Label=BTN
 PA0-WKUP.Signal=GPXTI0
 PA0-WKUP.Locked=true
 PA13.Signal=SYS_JTMS-SWDIO
-Mcu.IP4=USB_OTG_FS
 RCC.FCLKCortexFreq_Value=96000000
 NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 Mcu.IP2=SYS
-Mcu.IP3=USB_DEVICE
+Mcu.IP3=USB_OTG_FS
 Mcu.IP0=NVIC
 Mcu.IP1=RCC
 PA12.Signal=USB_OTG_FS_DP
@@ -47,7 +51,11 @@ PH0\ -\ OSC_IN.Signal=RCC_OSC_IN
 ProjectManager.TargetToolchain=STM32CubeIDE
 Mcu.ThirdPartyNb=0
 RCC.HCLKFreq_Value=96000000
+<<<<<<< HEAD
 Mcu.IPNb=5
+=======
+Mcu.IPNb=4
+>>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 RCC.I2SClocksFreq_Value=150000000
 ProjectManager.PreviousToolchain=
 RCC.APB2TimFreq_Value=96000000
@@ -57,7 +65,10 @@ Mcu.Pin6=PA13
 Mcu.Pin7=PA14
 ProjectManager.RegisterCallBack=
 Mcu.Pin8=VP_SYS_VS_Systick
+<<<<<<< HEAD
 Mcu.Pin9=VP_USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS
+=======
+>>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 RCC.LSE_VALUE=32768
 RCC.AHBFreq_Value=96000000
 Mcu.Pin0=PC13-ANTI_TAMP
@@ -111,7 +122,6 @@ PA12.Mode=Device_Only
 NVIC.ForceEnableDMAVector=true
 KeepUserPlacement=false
 NVIC.MemoryManagement_IRQn=true\:0\:0\:false\:false\:true\:false\:false
-NVIC.OTG_FS_IRQn=true\:0\:0\:false\:false\:true\:false\:true
 ProjectManager.CompilerOptimize=6
 ProjectManager.ToolChainLocation=
 RCC.LSI_VALUE=32000
@@ -131,7 +141,10 @@ PA0-WKUP.GPIO_PuPd=GPIO_PULLUP
 NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 USB_OTG_FS.IPParameters=VirtualMode,Sof_enable
 RCC.APB1Freq_Value=48000000
+<<<<<<< HEAD
 USB_DEVICE.VirtualMode=CustomHid
+=======
+>>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 ProjectManager.CustomerFirmwarePackage=
 ProjectManager.DeviceId=STM32F411CEUx
 ProjectManager.LibraryCopy=1
