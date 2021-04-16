@@ -134,7 +134,7 @@ int main(void)
   {
 
 	  now = HAL_GetTick();
-	  if (now % 2000 == 0 && now != then)
+	  if (now % 500 == 0 && now != then)
 	  {
 
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
