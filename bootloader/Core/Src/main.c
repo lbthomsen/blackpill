@@ -42,6 +42,7 @@ typedef struct {
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define DFU_BOOT_FLAG 0xDEADBEEF
 #define APP_ADDRESS 0x08008000
 
 /* USER CODE END PD */
@@ -85,7 +86,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+  if (dfu_boot_flag != DFU_BOOT_FLAG)
+  {
+	const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
+	asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
+  }
+
   dfu_boot_flag = 0;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

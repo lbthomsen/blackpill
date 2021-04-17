@@ -49,13 +49,13 @@
   */
 
 /* USER CODE BEGIN EXPORTED_DEFINES */
- // 02*016Ka,02*016Kg,01*064Kg,07*128Kg,04*016Kg,01*064Kg,07*128Kg
- #define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) /* Base @ of Sector 0, 128 Kbytes */
- #define ADDR_FLASH_SECTOR_1     ((uint32_t)0x08020000) /* Base @ of Sector 1, 128 Kbytes */
- #define ADDR_FLASH_SECTOR_2     ((uint32_t)0x08040000) /* Base @ of Sector 2, 128 Kbytes */
- #define ADDR_FLASH_SECTOR_3     ((uint32_t)0x08060000) /* Base @ of Sector 3, 64 Kbytes */
- #define ADDR_FLASH_SECTOR_4     ((uint32_t)0x08070000) /* Base @ of Sector 4, 32 Kbytes */
- #define ADDR_FLASH_SECTOR_5     ((uint32_t)0x08078000) /* Base @ of Sector 5, 32 Kbytes */
+ // /0x08000000/01*32Ka,01*32Kg,01*64Kg,03*128Kg
+ #define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) /* Base @ of Sector 0, 32 Kbytes */
+ #define ADDR_FLASH_SECTOR_1     ((uint32_t)0x08008000) /* Base @ of Sector 1, 32 Kbytes */
+ #define ADDR_FLASH_SECTOR_2     ((uint32_t)0x08010000) /* Base @ of Sector 2, 64 Kbytes */
+ #define ADDR_FLASH_SECTOR_3     ((uint32_t)0x08020000) /* Base @ of Sector 3, 128 Kbytes */
+ #define ADDR_FLASH_SECTOR_4     ((uint32_t)0x08040000) /* Base @ of Sector 4, 128 Kbytes */
+ #define ADDR_FLASH_SECTOR_5     ((uint32_t)0x08060000) /* Base @ of Sector 5, 128 Kbytes */
 /* USER CODE END EXPORTED_DEFINES */
 
 /**

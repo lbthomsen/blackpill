@@ -62,7 +62,7 @@
   * @{
   */
 
-#define FLASH_DESC_STR      "@Internal Flash   /0x08000000/03*128Kg,01*64Kg,01*32Kg,01*32Ka"
+#define FLASH_DESC_STR      "@Internal Flash   /0x08000000/01*32Ka,01*32Kg,01*64Kg,03*128Kg"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 #define FLASH_PROGRAM_TIME  (uint16_t)50

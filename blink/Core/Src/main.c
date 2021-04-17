@@ -29,19 +29,11 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-typedef void (application_t)(void);
-
-typedef struct {
-	uint32_t stack_addr;     // Stack Pointer
-	application_t *func_p;        // Program Counter
-} JumpStruct;
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define DFU_BOOT_FLAG 0xDEADBEEF
-#define BOOTLOADER_ADDRESS 0x08078000 // Top of memory minus 32kB
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,7 +46,6 @@ RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
 uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
-//uint32_t *dfu_boot_flag = (uint32_t *)0x2001fffc;
 uint32_t push_count = 0;
 /* USER CODE END PV */
 
@@ -95,13 +86,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  if (dfu_boot_flag == DFU_BOOT_FLAG)
-  {
-    const JumpStruct *vector_p = (JumpStruct*) BOOTLOADER_ADDRESS;
-    asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
-  }
 
-  dfu_boot_flag = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
