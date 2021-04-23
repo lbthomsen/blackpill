@@ -263,10 +263,10 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
 
-  for (uint32_t i = 0; i < Len; i++) {
-	  receive_char(Buf[0]);
+  // Process received characters one by one
+  for (uint32_t i = 0; i < *Len; i++) {
+	  receive_char(Buf[i]);
   }
-
 
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
