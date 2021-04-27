@@ -45,7 +45,8 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+uint8_t buf[2048] = {0}; // Input string buffer
+static char temp_ch;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,8 +65,12 @@ int _write(int file, char *ptr, int len) {
     return len;
 }
 
+
+
 void receive_char(char ch) {
-	printf("Got: %c", ch);
+	temp_ch = ch;
+	CDC_Transmit_FS((uint8_t *)&temp_ch, 1);
+	//printf("%c", ch);
 }
 
 /* USER CODE END 0 */
@@ -102,6 +107,8 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+  printf("ledctl start!\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -114,7 +121,7 @@ int main(void)
 
 	  now = HAL_GetTick();
 	  if (now % 500 == 0 && now != then) {
-		  printf("Tick!\n");
+		  //printf("Tick!\n");
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		  then = now;
 	  }
