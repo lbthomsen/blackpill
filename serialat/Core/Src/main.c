@@ -65,8 +65,6 @@ int _write(int file, char *ptr, int len) {
     return len;
 }
 
-
-
 void receive_char(char ch) {
 	temp_ch = ch;
 	CDC_Transmit_FS((uint8_t *)&temp_ch, 1);

@@ -1,26 +1,19 @@
 #MicroXplorer Configuration settings - do not modify
 Mcu.Family=STM32F4
-VP_USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS.Signal=USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS
 ProjectManager.MainLocation=Core/Src
-<<<<<<< HEAD
-USB_DEVICE.CLASS_NAME_FS=CUSTOM_HID
-=======
->>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 ProjectManager.ProjectFileName=usbcomp.ioc
 RCC.CortexFreq_Value=96000000
+VP_ARM.CMSIS_VS_CMSISJjCORE_5.3.0_5.6.0.Mode=CMSISJjCORE
 ProjectManager.KeepUserCode=true
 Mcu.UserName=STM32F411CEUx
-Mcu.PinsNb=9
+Mcu.PinsNb=11
 ProjectManager.NoMain=false
-<<<<<<< HEAD
-USB_DEVICE.VirtualModeFS=Custom_Hid_FS
-=======
->>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
+ARM.CMSIS.5.6.0_SwParameter=CMSISOoDriverJjUSBOoDeviceJjCustom\:true;CMSISJjCORE\:true;
 PC13-ANTI_TAMP.GPIO_Label=LED
 RCC.PLLCLKFreq_Value=96000000
 RCC.PLLQCLKFreq_Value=48000000
-VP_USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS.Mode=CUSTOM_HID_FS
-ProjectManager.functionlistsort=1-MX_GPIO_Init-GPIO-false-HAL-true,2-SystemClock_Config-RCC-false-HAL-false,3-MX_USB_DEVICE_Init-USB_DEVICE-false-HAL-false
+ARM.CMSIS.5.6.0.IPParameters=CMSISJjCORE,CMSISOoDriverJjUSBOoDeviceJjCustom
+ProjectManager.functionlistsort=1-MX_GPIO_Init-GPIO-false-HAL-true,2-SystemClock_Config-RCC-false-HAL-false,3-MX_USB_OTG_FS_PCD_Init-USB_OTG_FS-false-HAL-true
 PH1\ -\ OSC_OUT.Mode=HSE-External-Oscillator
 PA11.Mode=Device_Only
 SH.GPXTI0.ConfNb=1
@@ -42,6 +35,7 @@ RCC.FCLKCortexFreq_Value=96000000
 NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 Mcu.IP2=SYS
 Mcu.IP3=USB_OTG_FS
+ARM.CMSIS.5.6.0.CMSISOoDriverJjUSBOoDevice_Checked=true
 Mcu.IP0=NVIC
 Mcu.IP1=RCC
 PA12.Signal=USB_OTG_FS_DP
@@ -49,13 +43,9 @@ PH0\ -\ OSC_IN.Mode=HSE-External-Oscillator
 Mcu.UserConstants=
 PH0\ -\ OSC_IN.Signal=RCC_OSC_IN
 ProjectManager.TargetToolchain=STM32CubeIDE
-Mcu.ThirdPartyNb=0
+Mcu.ThirdPartyNb=1
 RCC.HCLKFreq_Value=96000000
-<<<<<<< HEAD
-Mcu.IPNb=5
-=======
 Mcu.IPNb=4
->>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 RCC.I2SClocksFreq_Value=150000000
 ProjectManager.PreviousToolchain=
 RCC.APB2TimFreq_Value=96000000
@@ -65,10 +55,7 @@ Mcu.Pin6=PA13
 Mcu.Pin7=PA14
 ProjectManager.RegisterCallBack=
 Mcu.Pin8=VP_SYS_VS_Systick
-<<<<<<< HEAD
-Mcu.Pin9=VP_USB_DEVICE_VS_USB_DEVICE_CUSTOM_HID_FS
-=======
->>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
+Mcu.Pin9=VP_ARM.CMSIS_VS_CMSISJjCORE_5.3.0_5.6.0
 RCC.LSE_VALUE=32768
 RCC.AHBFreq_Value=96000000
 Mcu.Pin0=PC13-ANTI_TAMP
@@ -78,10 +65,12 @@ Mcu.Pin2=PH1 - OSC_OUT
 Mcu.Pin3=PA0-WKUP
 PA0-WKUP.GPIOParameters=GPIO_PuPd,GPIO_Label,GPIO_ModeDefaultEXTI
 Mcu.Pin4=PA11
+ARM.CMSIS.5.6.0.CMSISJjCORE=true
 RCC.VCOI2SOutputFreq_Value=300000000
 Mcu.Pin5=PA12
 ProjectManager.ProjectBuild=false
 RCC.HSE_VALUE=25000000
+VP_ARM.CMSIS_VS_CMSISJjCORE_5.3.0_5.6.0.Signal=ARM.CMSIS_VS_CMSISJjCORE_5.3.0_5.6.0
 NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 PH1\ -\ OSC_OUT.Signal=RCC_OSC_OUT
@@ -92,8 +81,10 @@ PC13-ANTI_TAMP.Locked=true
 NVIC.SysTick_IRQn=true\:0\:0\:false\:false\:true\:false\:true
 ProjectManager.LastFirmware=true
 PC13-ANTI_TAMP.GPIO_ModeDefaultOutputPP=GPIO_MODE_OUTPUT_OD
+ARM.CMSIS.5.6.0.CMSISOoDriverJjUSBOoDeviceJjCustom=true
 ProjectManager.FirmwarePackage=STM32Cube FW_F4 V1.26.1
 MxDb.Version=DB.6.0.21
+Mcu.ThirdParty0=ARM.CMSIS.5.6.0
 RCC.APB2Freq_Value=96000000
 ProjectManager.BackupPrevious=false
 MxCube.Version=6.2.1
@@ -104,9 +95,11 @@ VP_SYS_VS_Systick.Mode=SysTick
 RCC.EthernetFreq_Value=96000000
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 USB_OTG_FS.Sof_enable=ENABLE
+VP_ARM.CMSIS_VS_CMSISOoDriverJjUSBOoDevice_2.2.0_5.6.0.Mode=CMSISOoDriverJjUSBOoDevice
 NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 PA13.Mode=Serial_Wire
 ProjectManager.FreePins=false
+ARM.CMSIS.5.6.0.CMSISJjCORE_Checked=true
 RCC.IPParameters=48MHZClocksFreq_Value,AHBFreq_Value,APB1CLKDivider,APB1Freq_Value,APB1TimFreq_Value,APB2Freq_Value,APB2TimFreq_Value,CortexFreq_Value,EthernetFreq_Value,FCLKCortexFreq_Value,FamilyName,HCLKFreq_Value,HSE_VALUE,HSI_VALUE,I2SClocksFreq_Value,LSE_VALUE,LSI_VALUE,PLLCLKFreq_Value,PLLM,PLLQCLKFreq_Value,RTCFreq_Value,RTCHSEDivFreq_Value,SYSCLKFreq_VALUE,SYSCLKSource,VCOI2SOutputFreq_Value,VCOInputFreq_Value,VCOInputMFreq_Value,VCOOutputFreq_Value,VcooutputI2S
 ProjectManager.AskForMigrate=true
 Mcu.Name=STM32F411C(C-E)Ux
@@ -132,19 +125,17 @@ PA14.Signal=SYS_JTCK-SWCLK
 USB_OTG_FS.VirtualMode=Device_Only
 ProjectManager.HeapSize=0x200
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
+VP_ARM.CMSIS_VS_CMSISOoDriverJjUSBOoDevice_2.2.0_5.6.0.Signal=ARM.CMSIS_VS_CMSISOoDriverJjUSBOoDevice_2.2.0_5.6.0
 ProjectManager.ComputerToolchain=false
 RCC.HSI_VALUE=16000000
 NVIC.PriorityGroup=NVIC_PRIORITYGROUP_4
 RCC.PLLM=25
+Mcu.Pin10=VP_ARM.CMSIS_VS_CMSISOoDriverJjUSBOoDevice_2.2.0_5.6.0
 RCC.APB1TimFreq_Value=96000000
 PA0-WKUP.GPIO_PuPd=GPIO_PULLUP
 NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 USB_OTG_FS.IPParameters=VirtualMode,Sof_enable
 RCC.APB1Freq_Value=48000000
-<<<<<<< HEAD
-USB_DEVICE.VirtualMode=CustomHid
-=======
->>>>>>> c93884c806420c9d927a16bbb567d294be7a59e4
 ProjectManager.CustomerFirmwarePackage=
 ProjectManager.DeviceId=STM32F411CEUx
 ProjectManager.LibraryCopy=1
