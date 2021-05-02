@@ -34,6 +34,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define AT_RST 0
+#define AT_DAT 1
+#define AT_CMD 2
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,8 +49,10 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint8_t buf[2048] = {0}; // Input string buffer
 static char temp_ch;
+uint8_t buf[32] = {0}; // Input string buffer
+uint8_t at_state = AT_RST;
+uint8_t at_plus_cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,7 +74,14 @@ int _write(int file, char *ptr, int len) {
 void receive_char(char ch) {
 	temp_ch = ch;
 	CDC_Transmit_FS((uint8_t *)&temp_ch, 1);
-	//printf("%c", ch);
+
+	if (ch = '+') {
+		at_plus_cnt++;
+
+	} else {
+
+	}
+
 }
 
 /* USER CODE END 0 */

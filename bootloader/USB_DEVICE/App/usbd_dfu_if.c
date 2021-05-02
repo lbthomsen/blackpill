@@ -62,7 +62,7 @@
   * @{
   */
 
-#define FLASH_DESC_STR      "@Internal Flash   /0x08000000/01*32Ka,01*32Kg,01*64Kg,03*128Kg"
+#define FLASH_DESC_STR      "@Internal Flash   /0x08000000/02*16Ka,02*16Kg,01*64Kg,03*128Kg"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 #define FLASH_PROGRAM_TIME  (uint16_t)50
@@ -300,8 +300,14 @@ static uint32_t GetSector(uint32_t Address) {
 	} else if ((Address < ADDR_FLASH_SECTOR_5)
 			&& (Address >= ADDR_FLASH_SECTOR_4)) {
 		sector = FLASH_SECTOR_4;
+	} else if ((Address < ADDR_FLASH_SECTOR_6)
+				&& (Address >= ADDR_FLASH_SECTOR_5)) {
+			sector = FLASH_SECTOR_5;
+	} else if ((Address < ADDR_FLASH_SECTOR_7)
+				&& (Address >= ADDR_FLASH_SECTOR_6)) {
+			sector = FLASH_SECTOR_6;
 	} else  {
-		sector = FLASH_SECTOR_5;
+		sector = FLASH_SECTOR_7;
 	}
 	return sector;
 }
