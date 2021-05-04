@@ -55,8 +55,9 @@ typedef struct {
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
+extern int _estack;
+uint32_t *dfu_boot_flag;
+//uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
 //uint32_t *dfu_boot_flag = (uint32_t *)0x2001fffc;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
@@ -87,13 +88,15 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-  if (dfu_boot_flag != DFU_BOOT_FLAG)
+  dfu_boot_flag = (uint32_t *)(&_estack - 100); // set in linker script
+
+  if (*dfu_boot_flag != DFU_BOOT_FLAG)
   {
 	const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
 	asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
   }
 
-  dfu_boot_flag = 0;
+  *dfu_boot_flag = 0;
 
   /* USER CODE END 1 */
 

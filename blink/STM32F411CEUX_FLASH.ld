@@ -124,6 +124,7 @@ SECTIONS
   _sidata = LOADADDR(.data);
   
     /* Global data not cleared after reset.  */
+    /*
   .noinit :
   {
     . = ALIGN(4);
@@ -133,6 +134,7 @@ SECTIONS
      _end = . ;
      
   } >RAM AT> FLASH
+  */
 
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
@@ -147,7 +149,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
 
-  } >RAM
+  } >RAM AT> FLASH
 
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);

@@ -123,17 +123,6 @@ SECTIONS
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
   
-  /* Global data not cleared after reset.  */
-  .noinit :
-  {
-    . = ALIGN(4);
-     PROVIDE (__noinit_start = .) ;
-    *(.noinit*)
-     PROVIDE (__noinit_end = .) ;
-     _end = . ;
-     
-  } >RAM AT> FLASH
-
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {
@@ -147,7 +136,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
 
-  } >RAM
+  } >RAM AT> FLASH
 
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);
@@ -176,18 +165,6 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
   
-  /* Global data not cleared after reset.  */
-  /*
-  .noinit  ADDR(.bss) + SIZEOF (.bss)  :  AT (ADDR (.noinit))
-  {
-     PROVIDE (__noinit_start = .) ;
-    *(.noinit*)
-     PROVIDE (__noinit_end = .) ;
-     _end = . ;
-     PROVIDE (__heap_start = .) ;
-  }  > .data
-  */
-
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {
