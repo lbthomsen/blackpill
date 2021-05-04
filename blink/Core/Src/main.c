@@ -96,7 +96,6 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
-  //*dfu_boot_flag = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

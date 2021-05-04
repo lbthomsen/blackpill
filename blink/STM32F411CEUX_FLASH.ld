@@ -123,19 +123,6 @@ SECTIONS
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
   
-    /* Global data not cleared after reset.  */
-    /*
-  .noinit :
-  {
-    . = ALIGN(4);
-     PROVIDE (__noinit_start = .) ;
-    *(.noinit*)
-     PROVIDE (__noinit_end = .) ;
-     _end = . ;
-     
-  } >RAM AT> FLASH
-  */
-
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {

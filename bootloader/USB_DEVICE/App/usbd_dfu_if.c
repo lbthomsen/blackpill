@@ -157,8 +157,16 @@ __ALIGN_BEGIN USBD_DFU_MediaTypeDef USBD_DFU_fops_FS __ALIGN_END =
 uint16_t MEM_If_Init_FS(void)
 {
   /* USER CODE BEGIN 0 */
-	HAL_FLASH_Unlock();
-	return (USBD_OK);
+
+    HAL_StatusTypeDef flash_ok = HAL_ERROR;
+
+    // Wait until flash is unlocked
+    while(flash_ok != HAL_OK){
+        flash_ok = HAL_FLASH_Unlock();
+    }
+
+    return (USBD_OK);
+
   /* USER CODE END 0 */
 }
 
@@ -169,8 +177,17 @@ uint16_t MEM_If_Init_FS(void)
 uint16_t MEM_If_DeInit_FS(void)
 {
   /* USER CODE BEGIN 1 */
-	HAL_FLASH_Lock();
-	return (USBD_OK);
+
+    HAL_StatusTypeDef flash_ok = HAL_ERROR;
+
+    // Wait until flash is locked
+    flash_ok = HAL_ERROR;
+    while(flash_ok != HAL_OK){
+        flash_ok = HAL_FLASH_Lock();
+    }
+
+    return (USBD_OK);
+
   /* USER CODE END 1 */
 }
 

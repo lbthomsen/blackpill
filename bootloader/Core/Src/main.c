@@ -30,12 +30,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-typedef void (application_t)(void);
-
-typedef struct {
-	uint32_t stack_addr;     // Stack Pointer
-	application_t *func_p;        // Program Counter
-} JumpStruct;
+typedef  void (*pFunction)(void);
 
 /* USER CODE END PTD */
 
@@ -43,7 +38,6 @@ typedef struct {
 /* USER CODE BEGIN PD */
 
 #define DFU_BOOT_FLAG 0xDEADBEEF
-#define APP_ADDRESS 0x08008000
 
 /* USER CODE END PD */
 
@@ -57,8 +51,8 @@ typedef struct {
 /* USER CODE BEGIN PV */
 extern int _estack;
 uint32_t *dfu_boot_flag;
-//uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
-//uint32_t *dfu_boot_flag = (uint32_t *)0x2001fffc;
+pFunction JumpToApplication;
+uint32_t JumpAddress;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PV */
@@ -92,8 +86,20 @@ int main(void)
 
   if (*dfu_boot_flag != DFU_BOOT_FLAG)
   {
-	const JumpStruct *vector_p = (JumpStruct*) APP_ADDRESS;
-	asm("msr msp, %0; bx %1;" : : "r"(vector_p->stack_addr), "r"(vector_p->func_p));
+
+      /* Test if user code is programmed starting from address 0x08008000 */
+      if (((*(__IO uint32_t *) USBD_DFU_APP_DEFAULT_ADD) & 0x2FFC0000) == 0x20000000)
+      {
+
+          /* Jump to user application */
+          JumpAddress = *(__IO uint32_t *) (USBD_DFU_APP_DEFAULT_ADD + 4);
+          JumpToApplication = (pFunction) JumpAddress;
+
+          /* Initialize user application's Stack Pointer */
+          __set_MSP(*(__IO uint32_t *) USBD_DFU_APP_DEFAULT_ADD);
+          JumpToApplication();
+      }
+
   }
 
   *dfu_boot_flag = 0;
