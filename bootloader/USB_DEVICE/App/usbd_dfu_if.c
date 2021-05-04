@@ -227,24 +227,32 @@ uint16_t MEM_If_Erase_FS(uint32_t Add)
 uint16_t MEM_If_Write_FS(uint8_t *src, uint8_t *dest, uint32_t Len)
 {
   /* USER CODE BEGIN 3 */
-	uint32_t i = 0;
 
-	for (i = 0; i < Len; i += 4) {
-		/* Device voltage range supposed to be [2.7V to 3.6V], the operation will
-		 * be done by byte */
-		if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, (uint32_t) (dest + i),
-				*(uint32_t*) (src + i)) == HAL_OK) {
-			/* Check the written value */
-			if (*(uint32_t*) (src + i) != *(uint32_t*) (dest + i)) {
-				/* Flash content doesn't match SRAM content */
-				return 2;
-			}
-		} else {
-			/* Error occurred while writing data in Flash memory */
-			return 1;
-		}
-	}
-	return (USBD_OK);
+    uint32_t i = 0;
+
+    for(i = 0; i < Len; i+=4)
+    {
+        /* Device voltage range supposed to be [2.7V to 3.6V], the operation will
+           be done by byte */
+        if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, (uint32_t)(dest+i), *(uint32_t*)(src+i)) == HAL_OK)
+        {
+            /* Check the written value */
+            if(*(uint32_t *)(src + i) != *(uint32_t*)(dest+i))
+            {
+                /* Flash content doesn't match SRAM content */
+                return 2;
+            }
+        }
+        else
+        {
+
+            /* Error occurred while writing data in Flash memory */
+            return 1;
+        }
+    }
+
+    return (USBD_OK);
+
   /* USER CODE END 3 */
 }
 
@@ -259,14 +267,16 @@ uint8_t *MEM_If_Read_FS(uint8_t *src, uint8_t *dest, uint32_t Len)
 {
   /* Return a valid address to avoid HardFault */
   /* USER CODE BEGIN 4 */
-	uint32_t i = 0;
-	uint8_t *psrc = src;
 
-	for (i = 0; i < Len; i++) {
-		dest[i] = *psrc++;
-	}
-	/* Return a valid address to avoid HardFault */
-	return (uint8_t*) (dest);
+    uint32_t i = 0;
+    uint8_t *psrc = src;
+
+    for (i = 0; i < Len; i++)
+    {
+        dest[i] = *psrc++;
+    }
+    return (uint8_t*)(dest);
+
   /* USER CODE END 4 */
 }
 
@@ -280,21 +290,24 @@ uint8_t *MEM_If_Read_FS(uint8_t *src, uint8_t *dest, uint32_t Len)
 uint16_t MEM_If_GetStatus_FS(uint32_t Add, uint8_t Cmd, uint8_t *buffer)
 {
   /* USER CODE BEGIN 5 */
-	switch (Cmd) {
-	case DFU_MEDIA_PROGRAM:
-		buffer[1] = (uint8_t) FLASH_PROGRAM_TIME;
-		buffer[2] = (uint8_t) (FLASH_PROGRAM_TIME << 8);
-		buffer[3] = 0;
-		break;
 
-	case DFU_MEDIA_ERASE:
-	default:
-		buffer[1] = (uint8_t) FLASH_ERASE_TIME;
-		buffer[2] = (uint8_t) (FLASH_ERASE_TIME << 8);
-		buffer[3] = 0;
-		break;
-	}
-	return (USBD_OK);
+    switch (Cmd)
+    {
+        case DFU_MEDIA_PROGRAM:
+            buffer[1] = (uint8_t)FLASH_PROGRAM_TIME;
+            buffer[2] = (uint8_t)(FLASH_PROGRAM_TIME << 8);
+            buffer[3] = 0;
+            break;
+
+        case DFU_MEDIA_ERASE:
+        default:
+            buffer[1] = (uint8_t)FLASH_ERASE_TIME;
+            buffer[2] = (uint8_t)(FLASH_ERASE_TIME << 8);
+            buffer[3] = 0;
+            break;
+    }
+    return  (USBD_OK);
+
   /* USER CODE END 5 */
 }
 
