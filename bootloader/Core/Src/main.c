@@ -102,7 +102,7 @@ int main(void)
 
   }
 
-  *dfu_boot_flag = 0;
+  *dfu_boot_flag = 0; // So next boot won't be affected
 
   /* USER CODE END 1 */
 

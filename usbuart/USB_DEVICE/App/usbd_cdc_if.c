@@ -222,6 +222,13 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
 
+    	//uint32_t data_rate = (uint32_t)(*pbuf[0] << 24 || *pbuf[1] << 16 || *pbuf[2] << 8 || *pbuf[3]);
+    	//uint8_t stop_bits = pbuf[4];
+    	//uint8_t parity = pbuf[5];
+    	//uint8_t data_bits = pbuf[6];
+
+    	asm("NOP");
+
     break;
 
     case CDC_GET_LINE_CODING:
