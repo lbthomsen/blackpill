@@ -23,7 +23,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "stm32f4xx_hal_uart.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,7 +110,7 @@ uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-
+extern UART_HandleTypeDef huart2;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -220,12 +220,12 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*                                        4 - Space                            */
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
-    case CDC_SET_LINE_CODING:
+    case CDC_SET_LINE_CODING: ;
 
-    	//uint32_t data_rate = (uint32_t)(*pbuf[0] << 24 || *pbuf[1] << 16 || *pbuf[2] << 8 || *pbuf[3]);
-    	//uint8_t stop_bits = pbuf[4];
-    	//uint8_t parity = pbuf[5];
-    	//uint8_t data_bits = pbuf[6];
+    	uint32_t data_rate = (uint32_t)((pbuf[3] << 24) || (pbuf[2] << 16) || (pbuf[1] << 8) || (pbuf[0]));
+    	uint8_t stop_bits = pbuf[4];
+    	uint8_t parity = pbuf[5];
+    	uint8_t data_bits = pbuf[6];
 
     	asm("NOP");
 
