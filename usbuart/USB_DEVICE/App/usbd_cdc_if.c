@@ -222,12 +222,25 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*******************************************************************************/
     case CDC_SET_LINE_CODING: ;
 
-    	uint32_t data_rate = (uint32_t)((pbuf[3] << 24) || (pbuf[2] << 16) || (pbuf[1] << 8) || (pbuf[0]));
+    	uint32_t data_rate = (uint32_t)((pbuf[3] << 24) + (pbuf[2] << 16) + (pbuf[1] << 8) + (pbuf[0]));
     	uint8_t stop_bits = pbuf[4];
     	uint8_t parity = pbuf[5];
     	uint8_t data_bits = pbuf[6];
 
-    	asm("NOP");
+    	if (huart2.Instance == USART2) HAL_UART_DeInit(&huart2);
+
+    	  huart2.Instance = USART2;
+    	  huart2.Init.BaudRate = data_rate;
+    	  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+    	  huart2.Init.StopBits = UART_STOPBITS_1;
+    	  huart2.Init.Parity = UART_PARITY_NONE;
+    	  huart2.Init.Mode = UART_MODE_TX_RX;
+    	  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    	  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+    	  if (HAL_UART_Init(&huart2) != HAL_OK)
+    	  {
+    	    Error_Handler();
+    	  }
 
     break;
 
@@ -269,6 +282,9 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
+
+	HAL_UART_Transmit(&huart2, Buf, Len, 1000);
+
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);
