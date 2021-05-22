@@ -142,6 +142,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
