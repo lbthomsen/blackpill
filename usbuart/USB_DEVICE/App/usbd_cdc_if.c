@@ -242,6 +242,8 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 		if (HAL_UART_Init(&huart2) != HAL_OK) {
 			Error_Handler();
 		}
+		//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+		HAL_UART_Receive_IT(&huart2, UserRxBufferFS, Size)
 
 		break;
 

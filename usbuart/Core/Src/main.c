@@ -110,6 +110,10 @@ void pulse_led() {
 	}
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	asm("NOP");
+}
+
 /* USER CODE END 0 */
 
 /**
