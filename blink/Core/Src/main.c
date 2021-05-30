@@ -119,11 +119,6 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
-  // Wait for 3 secs
-  HAL_Delay(3000);
-
-  printf("Initializing!\n");
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

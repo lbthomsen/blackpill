@@ -94,6 +94,8 @@
      remap of boot address selected */
 /* #define USER_VECT_TAB_ADDRESS */
 
+//#define FLASH_BASE 0x8008000
+
 #if defined(USER_VECT_TAB_ADDRESS)
 /*!< Uncomment the following line if you need to relocate your vector Table
      in Sram else user remap will be done in Flash. */
