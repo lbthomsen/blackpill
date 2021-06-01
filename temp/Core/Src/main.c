@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_BUFFER_SIZE 10
+#define ADC_SAMPLES 10
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,7 +50,7 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 
-uint16_t adc_buffer[ADC_BUFFER_SIZE * 2] = {0};
+uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = {0}; // ADC_SAMPLES samples, 2 channels, 2 buffers
 
 float temp = 0;
 float vref = 0;
@@ -70,25 +70,35 @@ static void MX_TIM3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Redirect printf to USB serial
 int _write(int file, char *ptr, int len) {
 	CDC_Transmit_FS((uint8_t *)ptr, len);
     return len;
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+// Process half a buffer full of data
+void process_adc_buffer(uint16_t *buffer) {
 
-	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin);
 
     uint32_t sum1 = 0, sum2 = 0;
-    for (int i = 0; i < ADC_BUFFER_SIZE; ++i) {
-    	sum1 += adc_buffer[i * 2];
-    	sum2 += adc_buffer[1 + i * 2];
+    for (int i = 0; i < ADC_SAMPLES; ++i) {
+    	sum1 += buffer[i * 2];
+    	sum2 += buffer[1 + i * 2];
     }
-    temp = (float)(sum1 * 0.322265625 / ADC_BUFFER_SIZE - 279);
-    vref = (float)sum2 / 1000 / ADC_BUFFER_SIZE;
 
-    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+    temp = (float)(sum1 * 0.322265625 / ADC_SAMPLES - 279);
+    vref = (float)sum2 / 1000 / ADC_SAMPLES;
 
+}
+
+
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc) {
+	process_adc_buffer(&adc_buffer[0]);
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+	process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]);
 }
 
 /* USER CODE END 0 */
@@ -129,7 +139,7 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim3);
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buffer, ADC_BUFFER_SIZE * 2);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buffer, ADC_SAMPLES * 2 * 2);
 
   /* USER CODE END 2 */
 
@@ -138,7 +148,7 @@ int main(void)
 
   uint32_t now = 0, then = 0;
 
-  while (1)
+  for (;;)
   {
 
 	  now = HAL_GetTick();
@@ -276,9 +286,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 9599;
+  htim3.Init.Prescaler = 959;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 499;
+  htim3.Init.Period = 999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -331,9 +341,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -347,6 +361,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DBG_Pin */
+  GPIO_InitStruct.Pin = DBG_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DBG_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
