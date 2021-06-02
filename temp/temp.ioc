@@ -136,6 +136,7 @@ RCC.VCOOutputFreq_Value=192000000
 PC13-ANTI_TAMP.Locked=true
 ProjectManager.LastFirmware=true
 PC13-ANTI_TAMP.GPIO_ModeDefaultOutputPP=GPIO_MODE_OUTPUT_OD
+NVIC.TIM3_IRQn=true\:2\:0\:true\:false\:true\:true\:true
 Dma.ADC1.0.RequestParameters=Instance,Direction,PeriphInc,MemInc,PeriphDataAlignment,MemDataAlignment,Mode,Priority,FIFOMode
 RCC.APB2Freq_Value=96000000
 MxCube.Version=6.2.1

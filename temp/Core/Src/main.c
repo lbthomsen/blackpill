@@ -52,6 +52,8 @@ TIM_HandleTypeDef htim3;
 
 uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = {0}; // ADC_SAMPLES samples, 2 channels, 2 buffers
 
+uint32_t tim_cnt = 0;
+
 float temp = 0;
 float vref = 0;
 
@@ -74,6 +76,15 @@ static void MX_TIM3_Init(void);
 int _write(int file, char *ptr, int len) {
 	CDC_Transmit_FS((uint8_t *)ptr, len);
     return len;
+}
+
+// Used for the adc dma but we use it here to toggle led too
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM3) {
+		if (tim_cnt % 50 == 0)
+			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		tim_cnt++;
+	}
 }
 
 // Process half a buffer full of data
