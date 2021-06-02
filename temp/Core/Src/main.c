@@ -54,8 +54,8 @@ uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = {0}; // ADC_SAMPLES samples, 2 channe
 
 uint32_t tim_cnt = 0;
 
-float temp = 0;
-float vref = 0;
+float temp = 0; // Result of temp calculation
+float vref = 0; // Result of vref calculation
 
 /* USER CODE END PV */
 
@@ -78,7 +78,7 @@ int _write(int file, char *ptr, int len) {
     return len;
 }
 
-// Used for the adc dma but we use it here to toggle led too
+// TIM3 is used for ADC/DMA but we use the same to toggle the LED
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM3) {
 		if (tim_cnt % 50 == 0)
@@ -88,9 +88,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 }
 
 // Process half a buffer full of data
-void process_adc_buffer(uint16_t *buffer) {
-
-	HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin);
+static inline void process_adc_buffer(uint16_t *buffer) {
 
     uint32_t sum1 = 0, sum2 = 0;
     for (int i = 0; i < ADC_SAMPLES; ++i) {
@@ -105,11 +103,11 @@ void process_adc_buffer(uint16_t *buffer) {
 
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc) {
-	process_adc_buffer(&adc_buffer[0]);
+	process_adc_buffer(&adc_buffer[0]); // We're half way through the buffer, so can safely deal with first half
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]);
+	process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]); // We're all the way through the buffer, so deal with second half
 }
 
 /* USER CODE END 0 */
@@ -148,9 +146,9 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim3); // First get the timer running
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buffer, ADC_SAMPLES * 2 * 2);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buffer, ADC_SAMPLES * 2 * 2); // Now fire up the ADC DMA
 
   /* USER CODE END 2 */
 
@@ -159,7 +157,7 @@ int main(void)
 
   uint32_t now = 0, then = 0;
 
-  for (;;)
+  for (;;) // Just to fuel the debate if this is better than while(1)
   {
 
 	  now = HAL_GetTick();
@@ -352,13 +350,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -372,13 +366,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : DBG_Pin */
-  GPIO_InitStruct.Pin = DBG_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DBG_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
