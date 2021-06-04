@@ -137,7 +137,7 @@ int main(void)
 
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-		if (now % 1000 == 0) printf("Tick %ul\n", now / 1000);
+		if (now % 1000 == 0) printf("Tick %lu\n", now / 1000);
 
 		then = now;
 	}
