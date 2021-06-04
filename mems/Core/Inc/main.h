@@ -58,6 +58,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define I2C_MASTER_ADDR 0x10
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
 #define BTN_Pin GPIO_PIN_0

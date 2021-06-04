@@ -23,7 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
+#include "stdio.h"
+#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DFU_BOOT_FLAG 0xDEADBEEF
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +47,10 @@
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
-
+extern int _estack;
+uint32_t *dfu_boot_flag;
+uint32_t push_count = 0;
+bool scan_trigger = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +63,33 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// Redirect printf to USB serial
+int _write(int file, char *ptr, int len) {
+	CDC_Transmit_FS((uint8_t *)ptr, len);
+    return len;
+}
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BTN_Pin) // If the button
+	{
+		GPIO_PinState pinState = HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin);
+		if (pinState == GPIO_PIN_RESET) {
+			push_count = HAL_GetTick();
+		} else {
+			if (HAL_GetTick() - push_count > 1000) {
+				// Set the boot flag and reset the mcu.  The bootloader
+				// will detect the flag and stay in dfu mode.
+				*dfu_boot_flag = DFU_BOOT_FLAG;
+				HAL_NVIC_SystemReset();
+			}
+
+			scan_trigger = true;
+
+			push_count = 0;
+		}
+
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -67,7 +99,7 @@ static void MX_I2C1_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -92,12 +124,58 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+  // Let's wait a sec before we get started
+  HAL_Delay(3000);
+
+  printf("Starting application\n");
+
+  // Go through all possible i2c addresses
+  for (uint8_t i = 0; i < 128; i++) {
+
+	  HAL_Delay(1);
+
+	  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
+		  // We got an ack
+		  printf("%2x ", i<<1);
+	  } else {
+		  printf("-- ");
+	  }
+
+	  HAL_Delay(1);
+
+	  if (i > 0 && (i + 1) % 16 == 0) printf("\n");
+
+  }
+
+  printf("\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t now = 0, then = 0;
+
   while (1)
   {
+
+	  now = HAL_GetTick();
+	  if (now % 500 == 0 && now != then) {
+
+		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
+		  if (now % 1000 == 0) {
+			  printf("Tick %lu\n", now / 1000);
+		  }
+
+		  then = now;
+	  }
+
+
+	  if (scan_trigger) {
+		  scan_trigger = false;
+
+		  printf("I2C Scan!\n");
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -164,9 +242,9 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 32;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
