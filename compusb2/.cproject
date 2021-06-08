@@ -106,6 +106,8 @@
                                     <listOptionValue builtIn="false" value="../usb/Target"/>
                                     									
                                     <listOptionValue builtIn="false" value="../usb/Core/Inc"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="../usb/Class/CustomHID/Inc"/>
                                     								
                                 </option>
                                 								
@@ -159,11 +161,11 @@
                     					
                     <sourceEntries>
                         						
+                        <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="usb"/>
+                        						
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
                         						
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-                        						
-                        <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="usb"/>
                         					
                     </sourceEntries>
                     				
