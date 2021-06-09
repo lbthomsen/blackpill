@@ -23,9 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usbd_cdc_if.h"
-#include "stdio.h"
-#include "stdbool.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,29 +42,26 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 extern int _estack;
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
-bool scan_trigger = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Redirect printf to USB serial
+
 int _write(int file, char *ptr, int len) {
-	CDC_Transmit_FS((uint8_t *)ptr, len);
-    return len;
+        CDC_Transmit_FS((uint8_t*) ptr, len);
+        return len;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
@@ -79,17 +74,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			if (HAL_GetTick() - push_count > 1000) {
 				// Set the boot flag and reset the mcu.  The bootloader
 				// will detect the flag and stay in dfu mode.
+				//dfu_boot_flag = (uint32_t) DFU_BOOT_FLAG;
 				*dfu_boot_flag = DFU_BOOT_FLAG;
 				HAL_NVIC_SystemReset();
 			}
-
-			scan_trigger = true;
-
 			push_count = 0;
 		}
 
 	}
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -99,7 +93,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
+  dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -120,89 +114,27 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
-  // Let's wait a sec before we get started
-  HAL_Delay(3000);
-
-  printf("Starting application\n");
-
-  // Go through all possible i2c addresses
-  for (uint8_t i = 0; i < 128; i++) {
-
-	  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
-		  // We got an ack
-		  printf("%2x ", i);
-	  } else {
-		  printf("-- ");
-	  }
-
-	  if (i > 0 && (i + 1) % 16 == 0) printf("\n");
-
-  }
-
-  printf("\n");
-
-  // Let's deal with the pressure/temp sensor
-  uint8_t ptbuf[24] = {0};
-  ptbuf[0] = 0xAA;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 22, 100);
-
-  ptbuf[0] = 0xF4;
-  ptbuf[1] = 0x2E;
-
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 2, 100);
-
-  HAL_Delay(5);
-
-  ptbuf[0] = 0xF6;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 2, 100);
-
-  ptbuf[0] = 0xF4;
-  ptbuf[1] = 0x34;
-
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 2, 100);
-
-  HAL_Delay(5);
-
-  ptbuf[0] = 0xF6;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 3, 100);
-
-
-  asm("NOP");
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint32_t now = 0, then = 0;
+
+  uint32_t then = 0, now = 0;
 
   while (1)
   {
 
 	  now = HAL_GetTick();
-	  if (now % 500 == 0 && now != then) {
+	  if (now - then >= 500) {
 
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-
-		  if (now % 1000 == 0) {
-			  printf("Tick %lu\n", now / 1000);
-		  }
 
 		  then = now;
 	  }
 
-
-	  if (scan_trigger) {
-		  scan_trigger = false;
-
-		  printf("I2C Scan!\n");
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -254,40 +186,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 400000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 32;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -300,7 +198,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);

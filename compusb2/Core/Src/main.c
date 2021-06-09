@@ -22,7 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usb_device.h"
+#include "usbd_cdc_if.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DFU_BOOT_FLAG 0xDEADBEEF
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,7 +46,9 @@
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-
+extern int _estack;
+uint32_t *dfu_boot_flag;
+uint32_t push_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +62,31 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+int _write(int file, char *ptr, int len) {
+        CDC_Transmit_FS((uint8_t*) ptr, len);
+        return len;
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BTN_Pin) // If the button
+	{
+		GPIO_PinState pinState = HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin);
+		if (pinState == GPIO_PIN_RESET) {
+			push_count = HAL_GetTick();
+		} else {
+			if (HAL_GetTick() - push_count > 1000) {
+				// Set the boot flag and reset the mcu.  The bootloader
+				// will detect the flag and stay in dfu mode.
+				//dfu_boot_flag = (uint32_t) DFU_BOOT_FLAG;
+				*dfu_boot_flag = DFU_BOOT_FLAG;
+				HAL_NVIC_SystemReset();
+			}
+			push_count = 0;
+		}
+
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -66,7 +96,7 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,7 +120,8 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_Delay(10);
+  MX_USB_OTG_FS_PCD_Init();
+  MX_USB_DEVICE_Init();
 
   /* USER CODE END 2 */
 
@@ -106,6 +137,8 @@ int main(void)
 	if (now % 500 == 0 && now != then) {
 
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
+		if (now % 1000 == 0) printf("Tick %lu\n", now / 1000);
 
 		then = now;
 	}
@@ -180,7 +213,7 @@ static void MX_USB_OTG_FS_PCD_Init(void)
   hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
   hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
   hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd_USB_OTG_FS.Init.Sof_enable = ENABLE;
+  hpcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
   hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
   hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
   hpcd_USB_OTG_FS.Init.vbus_sensing_enable = DISABLE;

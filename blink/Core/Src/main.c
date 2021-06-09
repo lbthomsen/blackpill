@@ -46,7 +46,6 @@
 
 /* USER CODE BEGIN PV */
 extern int _estack;
-//uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
 /* USER CODE END PV */
