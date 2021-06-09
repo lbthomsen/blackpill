@@ -149,6 +149,8 @@ int main(void)
 
   printf("\n");
 
+  HAL_I2C_Master_Receive(hi2c, DevAddress, pData, Size, Timeout)
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
