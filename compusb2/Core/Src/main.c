@@ -127,24 +127,35 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, then = 0;
+  uint32_t now = 0, last_toggle = 0, last_print = 0, loop_count = 0;
 
   for (;;)
   {
 
+	loop_count++;
+
+	// Get current tick (in ms)
 	now = HAL_GetTick();
-	if (now - then >= 500) {
+
+	if (now - last_toggle >= 500) { // Toggle twice per second
 
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-		if (now % 1000 == 0) printf("Tick %lu\n", now / 1000);
+		last_toggle = now;
+	}
 
-		then = now;
+	if (now - last_print >= 1000) { // Print once per second
+
+		printf("Tick %lu (count = %lu)\n", now / 1000, loop_count);
+
+		loop_count = 0;
+		last_print = now;
 	}
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
