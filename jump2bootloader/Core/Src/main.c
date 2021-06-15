@@ -23,7 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,7 +36,7 @@ typedef  void (*pFunction)(void);
 /* USER CODE BEGIN PD */
 #define BOOTLOADER_FLAG_VALUE 0xDEADBEEF
 #define BOOTLOADER_FLAG_OFFSET 100
-#define BOOTLOADER_ADDRESS 0x1FF00000
+#define BOOTLOADER_ADDRESS 0x1FFFD800
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -108,7 +109,7 @@ int main(void)
 		JumpToApplication = (pFunction) JumpAddress;
 
 		/* Initialize user application's Stack Pointer */
-		__set_MSP(*(__IO uint32_t*) BOOTLOADER_ADDRESS);
+		//__set_MSP(*(__IO uint32_t*) BOOTLOADER_ADDRESS);
 		JumpToApplication();
 
 	}
