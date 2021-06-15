@@ -121,7 +121,7 @@ uint8_t USBD_MC_CfgDesc[USB_MC_CONFIG_DESC_SIZ] =
   0x01,   /* bConfigurationValue: Configuration value */
   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
   0xC0,   /* bmAttributes: self powered */
-  0x32,   /* MaxPower 0 mA */
+  0xFA,   /* MaxPower 0 mA */
 
   /*---------------------------------------------------------------------------*/
   // IAD
@@ -250,6 +250,7 @@ uint8_t USBD_MC_CfgDesc[USB_MC_CONFIG_DESC_SIZ] =
   HIBYTE(MC_MAX_FS_PACKET),
   0x00     /*Polling interval in milliseconds*/
 };
+
 /* USB Standard Device Descriptor */
 uint8_t USBD_MC_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] =
 {
