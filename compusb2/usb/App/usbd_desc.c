@@ -165,9 +165,11 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   0x00,                       /*bcdUSB */
 #endif /* (USBD_LPM_ENABLED == 1) */
   0x02,
-  0x02,                       /*bDeviceClass*/
+  //0x02,                       /*bDeviceClass*/
+  0xef,                       /*bDeviceClass*/ // compusb
   0x02,                       /*bDeviceSubClass*/
-  0x00,                       /*bDeviceProtocol*/
+  //0x00,                       /*bDeviceProtocol*/
+  0x01,                       /*bDeviceProtocol*/ // compusb
   USB_MAX_EP0_SIZE,           /*bMaxPacketSize*/
   LOBYTE(USBD_VID),           /*idVendor*/
   HIBYTE(USBD_VID),           /*idVendor*/

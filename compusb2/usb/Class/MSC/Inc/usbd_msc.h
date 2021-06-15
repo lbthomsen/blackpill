@@ -55,9 +55,12 @@ extern "C" {
 #define BOT_RESET                    0xFF
 #define USB_MSC_CONFIG_DESC_SIZ      32
 
+//#define MSC_EPIN_ADDR                0x81U
+//#define MSC_EPOUT_ADDR               0x01U
 
-#define MSC_EPIN_ADDR                0x81U
-#define MSC_EPOUT_ADDR               0x01U
+// Modified for composite
+#define MSC_EPIN_ADDR                0x82U
+#define MSC_EPOUT_ADDR               0x02U
 
 /**
   * @}
