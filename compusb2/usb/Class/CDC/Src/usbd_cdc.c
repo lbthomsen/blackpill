@@ -468,16 +468,20 @@ static uint8_t USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
   USBD_CDC_HandleTypeDef *hcdc;
+  USBD_CDC_HandleTypeDef cdcInstance;
 
-  hcdc = USBD_malloc(sizeof(USBD_CDC_HandleTypeDef));
+//  hcdc = USBD_malloc(sizeof(USBD_CDC_HandleTypeDef));
+//
+//  if (hcdc == NULL)
+//  {
+//    pdev->pClassData = NULL;
+//    return (uint8_t)USBD_EMEM;
+//  }
 
-  if (hcdc == NULL)
-  {
-    pdev->pClassData = NULL;
-    return (uint8_t)USBD_EMEM;
-  }
+  //pdev->pClassData = (void *)hcdc;
+  pdev->pClassData = &cdcInstance;
+  hcdc = pdev->pClassData;
 
-  pdev->pClassData = (void *)hcdc;
 
   if (pdev->dev_speed == USBD_SPEED_HIGH)
   {
