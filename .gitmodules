@@ -1,3 +1,6 @@
 [submodule "littlefs"]
 	path = littlefs
 	url = git@github.com:littlefs-project/littlefs.git
+[submodule "stm32-bmp085"]
+	path = stm32-bmp085
+	url = git@github.com:lbthomsen/stm32-bmp085.git

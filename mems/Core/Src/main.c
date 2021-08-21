@@ -26,6 +26,7 @@
 #include "usbd_cdc_if.h"
 #include "stdio.h"
 #include "stdbool.h"
+#include "BMP085.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +52,7 @@ extern int _estack;
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
 bool scan_trigger = false;
+BMP085_HandleTypeDef BMP085 = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -134,7 +136,7 @@ int main(void)
 
 	  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
 		  // We got an ack
-		  printf("%2x ", i);
+		  printf("%2x ", i<<1);
 	  } else {
 		  printf("-- ");
 	  }
@@ -145,36 +147,38 @@ int main(void)
 
   printf("\n");
 
-  // Let's deal with the pressure/temp sensor
-  uint8_t ptbuf[24] = {0};
-  ptbuf[0] = 0xAA;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 22, 100);
+  BMP085_init(&BMP085, &hi2c1);
 
-  ptbuf[0] = 0xF4;
-  ptbuf[1] = 0x2E;
-
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 2, 100);
-
-  HAL_Delay(5);
-
-  ptbuf[0] = 0xF6;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 2, 100);
-
-  ptbuf[0] = 0xF4;
-  ptbuf[1] = 0x34;
-
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 2, 100);
-
-  HAL_Delay(5);
-
-  ptbuf[0] = 0xF6;
-  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
-  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 3, 100);
-
-
-  asm("NOP");
+//  // Let's deal with the pressure/temp sensor
+//  uint8_t ptbuf[22] = {0};
+//  ptbuf[0] = 0xAA;
+//  HAL_I2C_Master_Transmit(&hi2c1, 0xee, (uint8_t*)&ptbuf, 1, 100);
+//  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 22, 100);
+//
+//  ptbuf[0] = 0xF4;
+//  ptbuf[1] = 0x2E;
+//
+//  HAL_I2C_Master_Transmit(&hi2c1, 0xee, (uint8_t*)&ptbuf, 2, 100);
+//
+//  HAL_Delay(5);
+//
+//  ptbuf[0] = 0xF6;
+//  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
+//  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 2, 100);
+//
+//  ptbuf[0] = 0xF4;
+//  ptbuf[1] = 0x34;
+//
+//  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 2, 100);
+//
+//  HAL_Delay(5);
+//
+//  ptbuf[0] = 0xF6;
+//  HAL_I2C_Master_Transmit(&hi2c1, 0xef, (uint8_t*)&ptbuf, 1, 100);
+//  HAL_I2C_Master_Receive(&hi2c1, 0xee, (uint8_t*)&ptbuf, 3, 100);
+//
+//
+//  asm("NOP");
 
   /* USER CODE END 2 */
 
