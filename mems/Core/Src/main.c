@@ -19,6 +19,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
+#include "usb_device.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -47,6 +49,9 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+osThreadId mainTaskHandle;
+osThreadId ledTaskHandle;
+osThreadId sensorTaskHandle;
 /* USER CODE BEGIN PV */
 extern int _estack;
 uint32_t *dfu_boot_flag;
@@ -59,6 +64,10 @@ BMP085_HandleTypeDef BMP085 = {0};
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+void startMainTask(void const * argument);
+void startLedTask(void const * argument);
+void startSensorTask(void const * argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -123,7 +132,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   // Let's wait a sec before we get started
@@ -182,31 +190,47 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* definition and creation of mainTask */
+  osThreadDef(mainTask, startMainTask, osPriorityNormal, 0, 128);
+  mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
+
+  /* definition and creation of ledTask */
+  osThreadDef(ledTask, startLedTask, osPriorityLow, 0, 128);
+  ledTaskHandle = osThreadCreate(osThread(ledTask), NULL);
+
+  /* definition and creation of sensorTask */
+  osThreadDef(sensorTask, startSensorTask, osPriorityIdle, 0, 128);
+  sensorTaskHandle = osThreadCreate(osThread(sensorTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint32_t now = 0, then = 0;
-
   while (1)
   {
-
-	  now = HAL_GetTick();
-	  if (now % 500 == 0 && now != then) {
-
-		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-
-		  if (now % 1000 == 0) {
-			  printf("Tick %lu\n", now / 1000);
-		  }
-
-		  then = now;
-	  }
-
-
-	  if (scan_trigger) {
-		  scan_trigger = false;
-
-		  printf("I2C Scan!\n");
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -323,7 +347,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
@@ -331,6 +355,86 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_startMainTask */
+/**
+  * @brief  Function implementing the mainTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_startMainTask */
+void startMainTask(void const * argument)
+{
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+	printf("Tick %lu\n", osKernelSysTick() / 1000);
+    osDelay(1000);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_startLedTask */
+/**
+* @brief Function implementing the ledTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startLedTask */
+void startLedTask(void const * argument)
+{
+  /* USER CODE BEGIN startLedTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    osDelay(500);
+  }
+  /* USER CODE END startLedTask */
+}
+
+/* USER CODE BEGIN Header_startSensorTask */
+/**
+* @brief Function implementing the sensorTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startSensorTask */
+void startSensorTask(void const * argument)
+{
+  /* USER CODE BEGIN startSensorTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	BMP085_tick(&BMP085);
+    osDelay(1);
+  }
+  /* USER CODE END startSensorTask */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM10 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM10) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
