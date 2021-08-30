@@ -51,7 +51,7 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+W25QXX_HandleTypeDef w25qxx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,7 +108,7 @@ int main(void)
   HAL_Delay(3000);
   DBG("Starting (debug is %s)...\n", DBG_STATE);
 
-  if (w25qxx_init(&hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) != W25QXX_Ok) {
+  if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) != W25QXX_Ok) {
 	  Error_Handler();
   }
 
@@ -117,19 +117,21 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, then = 0;
+  uint32_t now = 0, last_tick = 0, last_blink = 0;
 
   while (1)
   {
 
 	  now = HAL_GetTick();
-	  if (now % 500 == 0 && now != then) {
 
+	  if (now - last_tick >= 1000) {
+		  DBG("Loop %lu", now / 1000);
+		  last_tick = now;
+	  }
+
+	  if (now - last_blink >= 500) {
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-
-		  if (now % 1000 == 0) DBG("Tick %lu\n", now / 1000);
-
-		  then = now;
+		  last_blink = now;
 	  }
 
     /* USER CODE END WHILE */
@@ -205,7 +207,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

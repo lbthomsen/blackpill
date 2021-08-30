@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -65,6 +65,14 @@ void Error_Handler(void);
 #define SPI1_CS_Pin GPIO_PIN_4
 #define SPI1_CS_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
+
+#ifdef DEBUG
+#define DBG(...)    printf(__VA_ARGS__);\
+                            printf("\n");
+                            //HAL_Delay(1);
+#else
+#define DBG(...)
+#endif
 
 /* USER CODE END Private defines */
 
