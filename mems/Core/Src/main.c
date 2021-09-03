@@ -52,6 +52,7 @@ I2C_HandleTypeDef hi2c1;
 osThreadId mainTaskHandle;
 osThreadId ledTaskHandle;
 osThreadId sensorTaskHandle;
+osMutexId serialMuxHandle;
 /* USER CODE BEGIN PV */
 extern int _estack;
 uint32_t *dfu_boot_flag;
@@ -110,7 +111,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
+  dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -134,26 +135,26 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  // Let's wait a sec before we get started
-  HAL_Delay(3000);
-
-  printf("Starting application\n");
-
-  // Go through all possible i2c addresses
-  for (uint8_t i = 0; i < 128; i++) {
-
-	  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
-		  // We got an ack
-		  printf("%2x ", i<<1);
-	  } else {
-		  printf("-- ");
-	  }
-
-	  if (i > 0 && (i + 1) % 16 == 0) printf("\n");
-
-  }
-
-  printf("\n");
+//  // Let's wait a sec before we get started
+//  HAL_Delay(3000);
+//
+//  printf("Starting application\n");
+//
+//  // Go through all possible i2c addresses
+//  for (uint8_t i = 0; i < 128; i++) {
+//
+//	  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
+//		  // We got an ack
+//		  printf("%2x ", i<<1);
+//	  } else {
+//		  printf("-- ");
+//	  }
+//
+//	  if (i > 0 && (i + 1) % 16 == 0) printf("\n");
+//
+//  }
+//
+//  printf("\n");
 
   BMP085_init(&BMP085, &hi2c1);
 
@@ -189,6 +190,11 @@ int main(void)
 //  asm("NOP");
 
   /* USER CODE END 2 */
+
+  /* Create the mutex(es) */
+  /* definition and creation of serialMux */
+  osMutexDef(serialMux);
+  serialMuxHandle = osMutexCreate(osMutex(serialMux));
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -371,7 +377,7 @@ void startMainTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	printf("Tick %lu\n", osKernelSysTick() / 1000);
+	DBG("Tick %lu - temp = %0.1f", osKernelSysTick() / 1000, (float)BMP085.temperature / 10);
     osDelay(1000);
   }
   /* USER CODE END 5 */

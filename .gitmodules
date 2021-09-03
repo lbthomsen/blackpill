@@ -4,3 +4,6 @@
 [submodule "stm32-bmp085"]
 	path = stm32-bmp085
 	url = git@github.com:lbthomsen/stm32-bmp085.git
+[submodule "w25qxx"]
+	path = w25qxx
+	url = git@github.com:nimaltd/w25qxx.git

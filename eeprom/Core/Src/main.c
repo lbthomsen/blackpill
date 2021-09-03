@@ -51,7 +51,7 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-W25QXX_HandleTypeDef w25qxx;
+w25qxx_t w25qxx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,9 +108,11 @@ int main(void)
   HAL_Delay(3000);
   DBG("Starting (debug is %s)...\n", DBG_STATE);
 
-  if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) != W25QXX_Ok) {
-	  Error_Handler();
-  }
+//  if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) != W25QXX_Ok) {
+//	  Error_Handler();
+//  }
+
+  W25qxx_Init();
 
   /* USER CODE END 2 */
 
@@ -204,7 +206,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;

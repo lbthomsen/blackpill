@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32f4xx_it.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +48,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_CRC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -92,15 +91,27 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
+
+  // By default LL SysTick interrupt is not enabled - let's enable it
+  LL_SYSTICK_EnableIT();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+
+  uint32_t then = 0, now = 0;
+
+  for (;;)
   {
+
+	  now = get_systick();
+	  if (now - then >= 500) {
+		  LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		  then = now;
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -147,30 +158,6 @@ void SystemClock_Config(void)
   LL_Init1msTick(96000000);
   LL_SetSystemCoreClock(96000000);
   LL_RCC_SetTIMPrescaler(LL_RCC_TIM_PRESCALER_TWICE);
-}
-
-/**
-  * @brief CRC Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CRC_Init(void)
-{
-
-  /* USER CODE BEGIN CRC_Init 0 */
-
-  /* USER CODE END CRC_Init 0 */
-
-  /* Peripheral clock enable */
-  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_CRC);
-
-  /* USER CODE BEGIN CRC_Init 1 */
-
-  /* USER CODE END CRC_Init 1 */
-  /* USER CODE BEGIN CRC_Init 2 */
-
-  /* USER CODE END CRC_Init 2 */
-
 }
 
 /**

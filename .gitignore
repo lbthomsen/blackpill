@@ -1,3 +1,5 @@
+node_modules/ 
+
 language.settings.xml
 # Prerequisites
 *.d
@@ -52,3 +54,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 /.metadata/
+/hidled/web/nbproject/private/
