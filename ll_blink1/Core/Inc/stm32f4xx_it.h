@@ -58,7 +58,7 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 /* USER CODE BEGIN EFP */
 
-uint32_t get_systick();
+uint32_t get_systick_counter();
 
 /* USER CODE END EFP */
 

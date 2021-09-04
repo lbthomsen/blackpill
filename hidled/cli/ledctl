@@ -1,0 +1,46 @@
+#!/usr/bin/env node 
+
+const HID = require("node-hid");
+
+let devices = HID.devices();
+let deviceInfo = devices.find(function(d) {
+  let isLedCtl = d.vendorId === 5824 && d.productId === 1503;
+  return isLedCtl;
+});
+
+async function run() {
+
+console.log(deviceInfo);
+
+if ( deviceInfo ) {
+  let device = new HID.HID(deviceInfo.path);
+
+  device.on("data", function(data) {
+    console.log("Received: ", data.toString());
+  });
+
+  device.on("error", function(error) {
+    console.err("Error: ", error);
+  });
+
+ 
+  device.write([0x01, 0x02, 0x04, 0x05, 0xff, 0xff]);
+  device.write([0x02, 0x02, 0x04, 0x05, 0xff, 0xff]);
+  //device.write([0x01, 0x01, 0x01, 0x05, 0xff, 0xff]);
+  //device.sendFeatureReport( [0x01, 'c', 0, 0xff,0x33,0x00, 70,0, 0] );
+  //device.sendFeatureReport([0x00, 0x01, 0x01, 0x05, 0xff, 0xff]);
+
+  let report = await device.getFeatureReport(0, 64);
+  console.log("Got report: ", report);
+
+
+}
+
+
+}
+
+run();
+
+/*
+ * vim: ts=4 et nowrap autoindent
+ */

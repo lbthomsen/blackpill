@@ -42,7 +42,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,7 +105,7 @@ int main(void)
   for (;;)
   {
 
-	  now = get_systick();
+	  now = get_systick_counter();
 	  if (now - then >= 500) {
 		  LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		  then = now;

@@ -1,0 +1,20 @@
+{
+  "name": "ledctlweb",
+  "version": "0.0.1",
+  "description": "LEDCtl Web UI",
+  "main": "index.js",
+  "scripts": {"start": "node node_modules\/.bin\/http-server src\/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lars Boegild Thomsen <lbthomsen@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.8.2",
+    "bootstrap": "^5.1.0",
+    "jquery": "^3.6.0",
+    "popper.js": "^1.16.1"
+  },
+  "devDependencies": {
+    "http-server": "^13.0.1"
+  }
+}

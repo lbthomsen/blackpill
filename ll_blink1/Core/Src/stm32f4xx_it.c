@@ -44,7 +44,7 @@
 /* USER CODE BEGIN PV */
 
 // Incremented by 1 ms systick interrupt
-uint32_t systick = 0;
+uint32_t systick_counter = 0;
 
 /* USER CODE END PV */
 
@@ -189,7 +189,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   // Just increase the systick variable
-  systick++;
+  systick_counter++;
 
   /* USER CODE END SysTick_IRQn 0 */
 
@@ -207,9 +207,9 @@ void SysTick_Handler(void)
 
 /* USER CODE BEGIN 1 */
 
-uint32_t get_systick() {
-	// Return current value of systick variable
-	return systick;
+uint32_t get_systick_counter() {
+	// Return current value of systick_counter variable
+	return systick_counter;
 }
 
 /* USER CODE END 1 */
