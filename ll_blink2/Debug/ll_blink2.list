@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_macro  00010975  00000000  00000000  00028778  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00003934  00000000  00000000  000390ed  2**0
+ 18 .debug_line   00003930  00000000  00000000  000390ed  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    00060218  00000000  00000000  0003ca21  2**0
+ 19 .debug_str    00060218  00000000  00000000  0003ca1d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  0009cc39  2**0
+ 20 .comment      00000053  00000000  00000000  0009cc35  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  000004d4  00000000  00000000  0009cc8c  2**2
+ 21 .debug_frame  000004d4  00000000  00000000  0009cc88  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -617,16 +617,14 @@ void UsageFault_Handler(void)
 void TIM4_IRQHandler(void)
 {
  800046c:	b508      	push	{r3, lr}
-  WRITE_REG(TIMx->SR, ~(TIM_SR_UIF));
- 800046e:	4b03      	ldr	r3, [pc, #12]	; (800047c <TIM4_IRQHandler+0x10>)
- 8000470:	f06f 0201 	mvn.w	r2, #1
- 8000474:	611a      	str	r2, [r3, #16]
   /* USER CODE BEGIN TIM4_IRQn 0 */
 
-	LL_TIM_ClearFlag_UPDATE(TIM4);
-
 	tim4_interrupt_callback();
- 8000476:	f7ff ff29 	bl	80002cc <tim4_interrupt_callback>
+ 800046e:	f7ff ff2d 	bl	80002cc <tim4_interrupt_callback>
+  WRITE_REG(TIMx->SR, ~(TIM_SR_UIF));
+ 8000472:	4b02      	ldr	r3, [pc, #8]	; (800047c <TIM4_IRQHandler+0x10>)
+ 8000474:	f06f 0201 	mvn.w	r2, #1
+ 8000478:	611a      	str	r2, [r3, #16]
 
   /* USER CODE END TIM4_IRQn 0 */
   /* USER CODE BEGIN TIM4_IRQn 1 */

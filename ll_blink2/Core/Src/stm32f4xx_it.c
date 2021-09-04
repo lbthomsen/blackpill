@@ -206,9 +206,9 @@ void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
 
-	LL_TIM_ClearFlag_UPDATE(TIM4);
-
 	tim4_interrupt_callback();
+
+	LL_TIM_ClearFlag_UPDATE(TIM4);
 
   /* USER CODE END TIM4_IRQn 0 */
   /* USER CODE BEGIN TIM4_IRQn 1 */
