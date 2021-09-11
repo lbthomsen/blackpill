@@ -33,6 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DFU_BOOT_FLAG 0xDEADBEEF
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +45,10 @@
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
-
+extern int _estack;
+uint32_t *dfu_boot_flag;
+uint32_t push_count = 0;
+//bool scan_trigger = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,6 +62,38 @@ static void MX_I2C1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Redirect printf to USB serial
+int _write(int file, char *ptr, int len) {
+	CDC_Transmit_FS((uint8_t *)ptr, len);
+    return len;
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BTN_Pin) // If the button
+	{
+		GPIO_PinState pinState = HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin);
+		if (pinState == GPIO_PIN_RESET) {
+			push_count = HAL_GetTick();
+		} else {
+			if (HAL_GetTick() - push_count > 1000) {
+				// Set the boot flag and reset the mcu.  The bootloader
+				// will detect the flag and stay in dfu mode.
+				*dfu_boot_flag = DFU_BOOT_FLAG;
+				HAL_NVIC_SystemReset();
+			}
+
+			//scan_trigger = true;
+
+			push_count = 0;
+		}
+
+	}
+}
+
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
+	printf("Got listen interrupt\n");
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -67,7 +103,7 @@ static void MX_I2C1_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -92,12 +128,32 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_I2C_EnableListen_IT(&hi2c1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint32_t now = 0, last_tick = 0, last_blink  = 0;
+
   while (1)
   {
+
+	  now = HAL_GetTick();
+
+	  if (now - last_blink >= 500) {
+		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
+		  last_blink = now;
+	  }
+
+	  if (now - last_tick >= 1000) {
+		  printf("Slave tick %lu\n", now / 1000);
+
+		  last_tick = now;
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,7 +222,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 66;
+  hi2c1.Init.OwnAddress1 = 64;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;

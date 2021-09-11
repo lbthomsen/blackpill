@@ -65,9 +65,9 @@
 
 #define USBD_VID     5824
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "LBthomsen"
+#define USBD_MANUFACTURER_STRING     "OptDyn"
 #define USBD_PID_FS     1503
-#define USBD_PRODUCT_STRING_FS     "RGB LED Controller"
+#define USBD_PRODUCT_STRING_FS     "Cable Control"
 #define USBD_CONFIGURATION_STRING_FS     "Custom HID Config"
 #define USBD_INTERFACE_STRING_FS     "Custom HID Interface"
 

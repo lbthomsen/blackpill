@@ -52,7 +52,7 @@ osThreadId btnTaskHandle;
 osMutexId serialMuxHandle;
 osSemaphoreId btnSemHandle;
 /* USER CODE BEGIN PV */
-
+uint32_t cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -268,11 +268,13 @@ void startMainTask(void const * argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
+
   /* Infinite loop */
   for(;;)
   {
 	DBG("Tick %lu", osKernelSysTick() / 1000);
     osDelay(500);
+    cnt++;
   }
   /* USER CODE END 5 */
 }

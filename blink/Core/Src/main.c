@@ -74,8 +74,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		} else {
 			if (HAL_GetTick() - push_count > 1000) {
 				// Set the boot flag and reset the mcu.  The bootloader
-				// will detect the flag and stay in dfu mode.
-				//dfu_boot_flag = (uint32_t) DFU_BOOT_FLAG;
+				// will detect the flag and stay in dfu mode.  This will
+				// screw up the stack but that won't matter since the device
+				// is reset immediately after.
 				*dfu_boot_flag = DFU_BOOT_FLAG;
 				HAL_NVIC_SystemReset();
 			}

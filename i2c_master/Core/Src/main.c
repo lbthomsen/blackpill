@@ -36,6 +36,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define DFU_BOOT_FLAG 0xDEADBEEF
+
+#define I2C_SLAVE_ADDR 0x20
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,6 +46,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 extern int _estack;
@@ -55,6 +58,7 @@ bool scan_trigger = false;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -121,6 +125,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -128,23 +133,35 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, then = 0;
+  uint32_t now = 0, last_tick = 0, last_blink = 0, last_i2c_check = 0;
 
   while (1)
   {
 
 	  now = HAL_GetTick();
-	  if (now % 500 == 0 && now != then) {
+
+	  if (now - last_blink >= 500) {
 
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-		  if (now % 1000 == 0) {
-			  printf("Tick %lu\n", now / 1000);
-		  }
-
-		  then = now;
+		  last_blink = now;
 	  }
 
+	  if (now - last_tick >= 1000) {
+
+		  printf("Master tick %lu\n", now / 1000);
+
+		  last_tick = now;
+	  }
+
+	  if (now - last_i2c_check >= 10000) {
+
+		  printf("Checking i2c slave\n");
+		  HAL_StatusTypeDef result = HAL_I2C_IsDeviceReady(&hi2c1, I2C_SLAVE_ADDR << 1, 1, 2);
+		  printf("Got %x\n", result);
+
+		  last_i2c_check = now;
+	  }
 
 	  if (scan_trigger) {
 		  scan_trigger = false;
@@ -203,6 +220,40 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 400000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -215,6 +266,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
