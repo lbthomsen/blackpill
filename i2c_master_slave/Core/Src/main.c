@@ -47,9 +47,10 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 // emulated I2C RAM
-static uint8_t ram[256];
-static uint8_t offset; 	// index of current RAM cell
-static uint8_t first=1;	// first byte --> new offset
+static uint8_t i2c_buffer[256];
+static uint16_t i2c_address = 0; 	// current i2c register address
+static uint16_t i2c_byte = 0;	// first byte --> new offset
+static uint8_t rx, tx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,7 +83,7 @@ int _write(int fd, char* ptr, int len) {
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	DBG("LCB");
-	first = 1;
+	i2c_byte = 0;
 	HAL_I2C_EnableListen_IT(hi2c); // slave is ready again
 }
 
@@ -91,13 +92,13 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 	DBG("ACB %s", TransferDirection==I2C_DIRECTION_RECEIVE ? "rx" : "tx" );
 
 	if( TransferDirection==I2C_DIRECTION_TRANSMIT ) {
-		if( first ) {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &offset, 1, I2C_NEXT_FRAME);
+		if( i2c_byte == 0 ) {
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_address, 2, I2C_NEXT_FRAME);
 		} else {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &rx, 1, I2C_NEXT_FRAME);
 		}
 	} else {
-		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &tx, 1, I2C_NEXT_FRAME);
 	}
 
 }
@@ -105,9 +106,9 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 
-	if(first) {
-		DBG("RXCB: offset <== %3d", offset );
-		first = 0;
+	if(i2c_byte == 0) {
+		DBG("RXCB: address <== 0x%4x", i2c_address );
+		first = 2;
 	} else {
 		DBG("RXCB: ram[%3d] <== %3d", offset,  ram[offset] );
 		offset++;
