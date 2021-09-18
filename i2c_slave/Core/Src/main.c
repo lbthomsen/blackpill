@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,10 +46,15 @@
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
+
 extern int _estack;
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
-//bool scan_trigger = false;
+
+uint8_t ram[256] = {0};
+uint8_t offset = 0;
+uint8_t first = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,7 +70,10 @@ static void MX_I2C1_Init(void);
 
 // Redirect printf to USB serial
 int _write(int file, char *ptr, int len) {
-	CDC_Transmit_FS((uint8_t *)ptr, len);
+    uint8_t result = CDC_Transmit_FS((uint8_t*) ptr, len);
+    if (result != HAL_OK) {
+            return 0;
+    }
     return len;
 }
 
@@ -90,9 +99,66 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	}
 }
 
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("STX");
+	offset++;
+	HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+};
+
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("SRX");
+	if(first) {
+		DBG("RXCB: offset <== %3d", offset );
+		first = 0;
+	} else {
+		DBG("RXCB: ram[%3d] <== %3d", offset,  ram[offset] );
+		offset++;
+	}
+	HAL_I2C_Slave_Seq_Receive_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+};
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
+	DBG("AD");
+	if( TransferDirection==I2C_DIRECTION_TRANSMIT ) {
+		if( first ) {
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &offset, 1, I2C_NEXT_FRAME);
+		} else {
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+		}
+	} else {
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
+	}
+};
+
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
-	printf("Got listen interrupt\n");
-}
+	DBG("L");
+	first = 1;
+	HAL_I2C_EnableListen_IT(hi2c); // slave is ready again
+};
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("MTX");
+};
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("MRX");
+};
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("E");
+	if( HAL_I2C_GetError(hi2c)==HAL_I2C_ERROR_AF ) {
+		// transaction terminated by master
+		DBG("ECB end" );
+		offset--;
+	} else {
+		DBG("ECB err=0x%02X", HAL_I2C_GetError(hi2c) );
+	}
+};
+
+void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c) {
+	DBG("AB");
+};
+
 
 /* USER CODE END 0 */
 
@@ -149,7 +215,7 @@ int main(void)
 	  }
 
 	  if (now - last_tick >= 1000) {
-		  printf("Slave tick %lu\n", now / 1000);
+		  DBG("Slave tick %lu", now / 1000);
 
 		  last_tick = now;
 	  }
@@ -220,7 +286,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 64;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;

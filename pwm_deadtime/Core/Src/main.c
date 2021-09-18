@@ -44,6 +44,7 @@
 TIM_HandleTypeDef htim1;
 
 osThreadId mainTaskHandle;
+osThreadId pwmUpdateTaskHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -53,6 +54,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 void startMainTask(void const * argument);
+void startPwmUpdateTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -120,6 +122,10 @@ int main(void)
   /* definition and creation of mainTask */
   osThreadDef(mainTask, startMainTask, osPriorityNormal, 0, 128);
   mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
+
+  /* definition and creation of pwmUpdateTask */
+  osThreadDef(pwmUpdateTask, startPwmUpdateTask, osPriorityLow, 0, 128);
+  pwmUpdateTaskHandle = osThreadCreate(osThread(pwmUpdateTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -230,7 +236,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 500;
+  sConfigOC.Pulse = 200;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -243,7 +249,7 @@ static void MX_TIM1_Init(void)
   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;
   sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 255;
+  sBreakDeadTimeConfig.DeadTime = 0;
   sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
   sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
   sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_ENABLE;
@@ -306,6 +312,33 @@ void startMainTask(void const * argument)
     osDelay(100);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_startPwmUpdateTask */
+/**
+* @brief Function implementing the pwmUpdateTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startPwmUpdateTask */
+void startPwmUpdateTask(void const * argument)
+{
+  /* USER CODE BEGIN startPwmUpdateTask */
+
+
+	uint32_t pwmValue = 100;
+	uint32_t pwmChange = 1;
+
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, pwmValue);
+    pwmValue += pwmChange;
+    if (pwmValue <= 100) pwmChange = 1;
+    if (pwmValue >= 900) pwmChange = -1;
+  }
+  /* USER CODE END startPwmUpdateTask */
 }
 
 /**

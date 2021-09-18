@@ -53,6 +53,8 @@ extern int _estack;
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
 bool scan_trigger = false;
+
+extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,7 +70,8 @@ static void MX_I2C1_Init(void);
 
 // Redirect printf to USB serial
 int _write(int file, char *ptr, int len) {
-	CDC_Transmit_FS((uint8_t *)ptr, len);
+    while (!(CDC_Transmit_FS((uint8_t*) ptr, len) == USBD_BUSY));
+    HAL_Delay(1);
     return len;
 }
 
@@ -149,24 +152,30 @@ int main(void)
 
 	  if (now - last_tick >= 1000) {
 
-		  printf("Master tick %lu\n", now / 1000);
+		  DBG("Master tick %lu", now / 1000);
 
 		  last_tick = now;
 	  }
 
 	  if (now - last_i2c_check >= 10000) {
 
-		  printf("Checking i2c slave\n");
-		  HAL_StatusTypeDef result = HAL_I2C_IsDeviceReady(&hi2c1, I2C_SLAVE_ADDR << 1, 1, 2);
-		  printf("Got %x\n", result);
+		  DBG("Checking i2c slave");
+
+		  HAL_StatusTypeDef result = HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(0x20 << 1), 1, 2);
+
+		  if (result == HAL_OK) {
+		  	DBG("Found slave - writing data");
+
+		  	uint8_t buffer[3] = {
+		  			0x00, 0xfe, 0xef
+		  	};
+
+		  	HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)(0x20 << 1), buffer, 3, 10);
+		  } else {
+			  DBG("Slave not found - status %x", result);
+		  }
 
 		  last_i2c_check = now;
-	  }
-
-	  if (scan_trigger) {
-		  scan_trigger = false;
-
-		  printf("I2C Scan!\n");
 	  }
 
     /* USER CODE END WHILE */
