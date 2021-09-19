@@ -50,9 +50,9 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 // emulated I2C RAM
 static uint8_t i2c_buffer[256];
-static uint16_t i2c_address = 0; 	// current i2c register address
+static uint16_t i2c_register = 0; 	// current i2c register address
 static uint16_t i2c_byte = 0;	// first byte --> new offset
-static uint8_t rx, tx;
+static uint8_t rx_buffer[32], tx_buffer[32];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,12 +95,12 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 
 	if( TransferDirection==I2C_DIRECTION_TRANSMIT ) {
 		if( i2c_byte == 0 ) {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_address, 2, I2C_NEXT_FRAME);
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_address, 1, I2C_NEXT_FRAME);
 		} else {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &rx, 1, I2C_NEXT_FRAME);
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &rx_buffer, 1, I2C_NEXT_FRAME);
 		}
 	} else {
-		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &tx, 1, I2C_NEXT_FRAME);
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &tx_buffer, 1, I2C_NEXT_FRAME);
 	}
 
 }
