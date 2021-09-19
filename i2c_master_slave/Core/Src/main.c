@@ -32,6 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define I2C_REGISTER_FINGERPRINT 0x00
+#define I2C_REGISTER_ID 0x01
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
