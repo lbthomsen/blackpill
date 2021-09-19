@@ -28,7 +28,7 @@
 
 /**
 	MiddleWare name : AL94.I-CUBE-USBD-COMPOSITE.1.0.0
-	MiddleWare fileName : ./AL94.I-CUBE-USBD-COMPOSITE_conf.h
+	MiddleWare fileName : AL94.I-CUBE-USBD-COMPOSITE_conf.h
 	MiddleWare version :
 */
 /*---------- _USBD_USE_HS  -----------*/
@@ -53,7 +53,7 @@
 #define _USBD_USE_HID_KEYBOARD      false
 
 /*---------- _USBD_USE_HID_CUSTOM  -----------*/
-#define _USBD_USE_HID_CUSTOM      false
+#define _USBD_USE_HID_CUSTOM      true
 
 /*---------- _USBD_USE_UAC_MIC  -----------*/
 #define _USBD_USE_UAC_MIC      false
@@ -65,7 +65,7 @@
 #define _USBD_USE_UVC      false
 
 /*---------- _USBD_USE_MSC  -----------*/
-#define _USBD_USE_MSC      false
+#define _USBD_USE_MSC      true
 
 /*---------- _USBD_USE_DFU  -----------*/
 #define _USBD_USE_DFU      false

@@ -436,7 +436,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 
 #else /** if HAL_PCDEx_SetRxFiFo() is used by HAL driver */
 
-    HAL_PCDEx_SetRxFiFo(hpcd_USB_OTG_PTR, 1024); // ALL OUT EP Buffer
+    HAL_PCDEx_SetRxFiFo(hpcd_USB_OTG_PTR, 128); // ALL OUT EP Buffer
 
     HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, 0, 128); // EP0 IN
 
