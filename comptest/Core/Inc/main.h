@@ -62,6 +62,13 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
+#ifdef DEBUG
+#define DBG(...)    printf(__VA_ARGS__);\
+                    printf("\n");
+#else
+#define DBG(...)
+#endif
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

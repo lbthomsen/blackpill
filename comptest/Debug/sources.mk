@@ -30,4 +30,8 @@ Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/HID_CUSTOM/Src \
 Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src \
 Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Core/Src \
 Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Target \
+Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
+Middlewares/Third_Party/FreeRTOS/Source \
+Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang \
 
