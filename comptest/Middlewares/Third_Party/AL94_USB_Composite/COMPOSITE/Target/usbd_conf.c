@@ -436,15 +436,15 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 
 #else /** if HAL_PCDEx_SetRxFiFo() is used by HAL driver */
 
-    HAL_PCDEx_SetRxFiFo(hpcd_USB_OTG_PTR, 0x80); // ALL OUT EP Buffer
+    HAL_PCDEx_SetRxFiFo(hpcd_USB_OTG_PTR, 128); // ALL OUT EP Buffer
 
-    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, 0, 0x40); // EP0 IN
+    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, 0, 16); // EP0 IN
 
 #if (USBD_USE_CDC_ACM == 1)
     for (uint8_t i = 0; i < USBD_CDC_ACM_COUNT; i++)
     {
-      HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CDC_IN_EP[i] & 0x7F), 0x80);
-      HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CDC_CMD_EP[i] & 0x7F), 0x40);
+      HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CDC_IN_EP[i] & 0x7F), 32);
+      HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CDC_CMD_EP[i] & 0x7F), 16);
     }
 #endif
 #if (USBD_USE_CDC_RNDIS == 1)
@@ -462,7 +462,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
     HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (HID_KEYBOARD_IN_EP & 0x7F), 128);
 #endif
 #if (USBD_USE_HID_CUSTOM == 1)
-    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CUSTOM_HID_IN_EP & 0x7F), 0x80);
+    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (CUSTOM_HID_IN_EP & 0x7F), 128);
 #endif
 #if (USBD_USE_UAC_MIC == 1)
     HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (AUDIO_MIC_EP & 0x7F), 512);
@@ -473,7 +473,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
     HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (UVC_IN_EP & 0x7F), 512);
 #endif
 #if (USBD_USE_MSC == 1)
-    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (MSC_IN_EP & 0x7F), 0x80);
+    HAL_PCDEx_SetTxFiFo(hpcd_USB_OTG_PTR, (MSC_IN_EP & 0x7F), 32);
 #endif
 #if (USBD_USE_DFU == 1)
 #endif
