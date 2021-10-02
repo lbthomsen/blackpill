@@ -46,6 +46,11 @@
 
 /* USER CODE BEGIN PV */
 
+uint8_t slave_receive_byte;
+
+uint8_t master_tx_buffer[32];
+uint8_t master_rx_buffer[32];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,11 +79,26 @@ int _write(int fd, char* ptr, int len) {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 	if (GPIO_Pin == BTN_Pin) {
-		DBG("BTN Event");
+		if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
+			DBG("BTN Release");
+		} else {
+			DBG("BTN Push");
+		}
 	} else if (GPIO_Pin == SPI2_SS_Pin) {
-		DBG("SPI2 SS Event");
+		if (HAL_GPIO_ReadPin(SPI2_SS_GPIO_Port, SPI2_SS_Pin) == GPIO_PIN_RESET) {
+			DBG("SPI2 SS Selected");
+			HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
+		} else {
+			DBG("SPI2 SS Done");
+			HAL_SPI_Abort(&hspi2);
+		}
 	}
 
+}
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
+	DBG("RXCB - received 0x%02x", slave_receive_byte);
+	HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
 }
 
 /* USER CODE END 0 */
@@ -121,7 +141,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, last_tick = 0, last_blink = 0;
+  uint32_t now = 0, last_tick = 0, last_blink = 0, last_spi = 0;;
 
   while (1)
   {
@@ -136,6 +156,30 @@ int main(void)
 	  if (now - last_tick >= 1000) {
 		  DBG("Tick %lu", now / 1000);
 		  last_tick = now;
+	  }
+
+	  if (now - last_spi >= 2000) {
+
+		  DBG("Preparing to transmit on SPI");
+
+		  master_tx_buffer[0] = 0x01;
+		  master_tx_buffer[1] = 0x02;
+		  master_tx_buffer[2] = 0x03;
+		  master_tx_buffer[3] = 0x04;
+		  master_tx_buffer[4] = 0x05;
+		  master_tx_buffer[5] = 0x06;
+		  master_tx_buffer[6] = 0x07;
+		  master_tx_buffer[7] = 0x08;
+		  master_tx_buffer[8] = 0x09;
+		  master_tx_buffer[9] = 0x0a;
+
+		  DBG("Tx start");
+		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_RESET);
+		  HAL_SPI_Transmit(&hspi1, &master_tx_buffer[0], 10, HAL_MAX_DELAY);
+		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_SET);
+		  DBG("Tx end");
+
+		  last_spi = now;
 	  }
 
 
