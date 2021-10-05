@@ -111,9 +111,10 @@ void StartFightTask(void *argument)
   for(;;)
   {
 	DBG("FT %lu Trying to acquire mutex", fightTaskId); osThreadYield();
+	uint32_t startTick = osKernelGetTickCount();
 	osStatus_t mutex = osMutexAcquire(oneMutexHandle, osWaitForever);
 	if (mutex == osOK) {
-		DBG("FT %lu got mutex", fightTaskId); osThreadYield();
+		DBG("FT %lu got mutex, waited %lus", fightTaskId, (osKernelGetTickCount() - startTick) / 1000); osThreadYield();
 		osMessageQueuePut(infoQueueHandle, &fightTaskId, 0, osWaitForever);
 		osDelay(1000);
 		DBG("FT %lu releasing mutex", fightTaskId); osThreadYield();
