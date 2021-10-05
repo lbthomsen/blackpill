@@ -103,7 +103,7 @@ void StartFightTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 
-	uint32_t fightTaskId = argument;
+	uint32_t fightTaskId = (uint32_t)argument;
 
 	DBG("FT Starting %lu", fightTaskId); osDelay(1);
 
@@ -114,7 +114,7 @@ void StartFightTask(void *argument)
 	osStatus_t mutex = osMutexAcquire(oneMutexHandle, osWaitForever);
 	if (mutex == osOK) {
 		DBG("FT %lu got mutex", fightTaskId); osThreadYield();
-		osMessageQueuePut(infoQueueHandle, &fightTaskId, NULL, osWaitForever);
+		osMessageQueuePut(infoQueueHandle, &fightTaskId, 0, osWaitForever);
 		osDelay(1000);
 		DBG("FT %lu releasing mutex", fightTaskId); osThreadYield();
 		osMutexRelease(oneMutexHandle);
@@ -191,8 +191,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  for (uint8_t i = 0; i < sizeof(fightTaskHandle) / sizeof(fightTaskHandle[0]); i++) {
-	  fightTaskHandle[i] = osThreadNew(StartFightTask, i, &fightTask_attributes);
+  for (uint32_t i = 0; i < sizeof(fightTaskHandle) / sizeof(fightTaskHandle[0]); i++) {
+	  fightTaskHandle[i] = osThreadNew(StartFightTask, (uint32_t *)i, &fightTask_attributes);
   }
   /* USER CODE END RTOS_THREADS */
 
