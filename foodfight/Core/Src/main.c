@@ -6,20 +6,25 @@
   ******************************************************************************
   * @attention
   *
-  * SPI Master and Slave
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.</center></h2>
+  *
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "spi.h"
-#include "usart.h"
-#include "gpio.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -29,13 +34,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
-#define SLAVE_INSTRUCTION_WAIT 0x00
-#define SLAVE_INSTRUCTION_FINGERPRINT 0x01
-#define SLAVE_INSTRUCTION_RECEIVING 0xff
-
-#define SLAVE_FINGERPRINT 0xdeadbeef
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,21 +42,37 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for oneMutex */
+osMutexId_t oneMutexHandle;
+const osMutexAttr_t oneMutex_attributes = {
+  .name = "oneMutex"
+};
 /* USER CODE BEGIN PV */
 
-uint8_t slave_tx_buffer[32];
-uint8_t slave_receive_byte;
-
-uint8_t master_tx_buffer[32];
-uint8_t master_rx_buffer[32];
-
-uint8_t slave_instruction = 0;
+osThreadId_t fightTaskHandle[10];
+const osThreadAttr_t fightTask_attributes = {
+  .name = "fightTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART1_UART_Init(void);
+void StartDefaultTask(void *argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -80,65 +94,28 @@ int _write(int fd, char* ptr, int len) {
   return -1;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+void StartFightTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
 
-	if (GPIO_Pin == BTN_Pin) {
-		if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_SET) {
-			DBG("BTN Release");
-		} else {
-			DBG("BTN Push");
-		}
-	} else if (GPIO_Pin == SPI2_SS_Pin) {
-		if (HAL_GPIO_ReadPin(SPI2_SS_GPIO_Port, SPI2_SS_Pin) == GPIO_PIN_RESET) {
-			DBG("SPI2 SS Selected");
-			HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
-		} else {
-			DBG("SPI2 SS Done");
-			HAL_SPI_Abort(&hspi2);
-			slave_instruction = SLAVE_INSTRUCTION_WAIT;
-		}
+	uint32_t fightTaskId = argument;
+
+	DBG("FT Starting %lu", fightTaskId); osDelay(1);
+
+  /* Infinite loop */
+  for(;;)
+  {
+	DBG("FT %lu Trying to acquire mutex", fightTaskId); osThreadYield();
+	osStatus_t mutex = osMutexAcquire(oneMutexHandle, osWaitForever);
+	if (mutex == osOK) {
+		DBG("FT %lu got mutex", fightTaskId); osThreadYield();
+		osDelay(1000);
+		DBG("FT %lu releasing mutex", fightTaskId); osThreadYield();
+		osMutexRelease(oneMutexHandle);
 	}
-
-}
-
-void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
-	DBG("RXCB - received 0x%02x", slave_receive_byte);
-
-	switch (slave_instruction) {
-
-	case SLAVE_INSTRUCTION_WAIT:
-		slave_instruction = slave_receive_byte;
-		HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
-		break;
-
-	case SLAVE_INSTRUCTION_FINGERPRINT:
-		slave_instruction = SLAVE_INSTRUCTION_RECEIVING;
-		slave_tx_buffer[0] = (SLAVE_FINGERPRINT & 0xff000000) >> 24;
-		slave_tx_buffer[1] = (SLAVE_FINGERPRINT & 0x00ff0000) >> 16;
-		slave_tx_buffer[2] = (SLAVE_FINGERPRINT & 0x0000ff00) >> 8;
-		slave_tx_buffer[3] = (SLAVE_FINGERPRINT & 0x000000ff);
-		HAL_SPI_Transmit_IT(&hspi2, &slave_tx_buffer[0], 4);
-		break;
-
-	case SLAVE_INSTRUCTION_RECEIVING:
-		break;
-//	default:
-//		DBG("Unknown SPI instruction 0x%02x", slave_receive_byte);
-//		slave_instruction = SLAVE_INSTRUCTION_WAIT;
-//		HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
-	}
-
-
-}
-
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
-	DBG("TXCB");
-
-	HAL_SPI_Receive_IT(&hspi2, &slave_receive_byte, 1);
-}
-
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-	DBG("TXRXCB");
+	osThreadYield();
+  }
+  /* USER CODE END 5 */
 }
 
 /* USER CODE END 0 */
@@ -171,50 +148,56 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_SPI1_Init();
-  MX_SPI2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+  /* Create the mutex(es) */
+  /* creation of oneMutex */
+  oneMutexHandle = osMutexNew(&oneMutex_attributes);
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  for (uint8_t i = 0; i < sizeof(fightTaskHandle) / sizeof(fightTaskHandle[0]); i++) {
+	  fightTaskHandle[i] = osThreadNew(StartFightTask, i, &fightTask_attributes);
+  }
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-  uint32_t now = 0, last_tick = 0, last_blink = 0, last_spi = 0;;
-
   while (1)
   {
-
-	  now = HAL_GetTick();
-
-	  if (now - last_blink >= 500) {
-		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		  last_blink = now;
-	  }
-
-	  if (now - last_tick >= 1000) {
-		  DBG("Tick %lu", now / 1000);
-		  last_tick = now;
-	  }
-
-	  if (now - last_spi >= 2000) {
-
-		  DBG("Checking slave fingerprint");
-		  //memcpy(&master_tx_buffer[0], 0, sizeof(master_tx_buffer));
-		  master_tx_buffer[0] = SLAVE_INSTRUCTION_FINGERPRINT;
-		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_RESET);
-		  HAL_SPI_Transmit(&hspi1, &master_tx_buffer[0], 1, HAL_MAX_DELAY);
-		  HAL_SPI_Receive(&hspi1, &master_rx_buffer[0], 4, HAL_MAX_DELAY);
-		  //HAL_SPI_TransmitReceive(&hspi1, &master_tx_buffer[0], &master_rx_buffer[0], 5, HAL_MAX_DELAY);
-		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_SET);
-
-		  DBG("Got 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x", master_rx_buffer[0], master_rx_buffer[1], master_rx_buffer[2], master_rx_buffer[3], master_rx_buffer[4]);
-
-		  last_spi = now;
-	  }
-
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -265,9 +248,96 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 921600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+}
+
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1000);
+    DBG("Tick %lu", osKernelGetTickCount() / 1000);
+  }
+  /* USER CODE END 5 */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM11 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM11) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
