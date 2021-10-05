@@ -106,7 +106,9 @@ void StartFightTask(void *argument)
 	uint32_t fightTaskId = (uint32_t)argument;
 	uint32_t mutexCount = 0;
 
-	DBG("FT Starting %lu", fightTaskId); osDelay(1);
+	osDelay(fightTaskId);
+	DBG("FT Starting %lu", fightTaskId);
+	osDelay(10);
 
   /* Infinite loop */
   for(;;)
