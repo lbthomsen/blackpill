@@ -51,6 +51,11 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for infoQueue */
+osMessageQueueId_t infoQueueHandle;
+const osMessageQueueAttr_t infoQueue_attributes = {
+  .name = "infoQueue"
+};
 /* Definitions for oneMutex */
 osMutexId_t oneMutexHandle;
 const osMutexAttr_t oneMutex_attributes = {
@@ -109,6 +114,7 @@ void StartFightTask(void *argument)
 	osStatus_t mutex = osMutexAcquire(oneMutexHandle, osWaitForever);
 	if (mutex == osOK) {
 		DBG("FT %lu got mutex", fightTaskId); osThreadYield();
+		osMessageQueuePut(infoQueueHandle, &fightTaskId, NULL, osWaitForever);
 		osDelay(1000);
 		DBG("FT %lu releasing mutex", fightTaskId); osThreadYield();
 		osMutexRelease(oneMutexHandle);
@@ -170,6 +176,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of infoQueue */
+  infoQueueHandle = osMessageQueueNew (16, sizeof(uint8_t), &infoQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -309,11 +319,21 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+
+	uint8_t taskNumber;
+
+	DBG("Starting default task");
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
-    DBG("Tick %lu", osKernelGetTickCount() / 1000);
+
+	  osStatus_t status = osMessageQueueGet(infoQueueHandle, &taskNumber, NULL, osWaitForever);
+
+	  if (status == osOK) {
+		  DBG("DT: looks like task %lu got the mutex", taskNumber);
+	  }
+
   }
   /* USER CODE END 5 */
 }

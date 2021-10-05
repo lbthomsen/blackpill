@@ -62,7 +62,8 @@ void Error_Handler(void);
 
 #ifdef DEBUG
 #define DBG(...)    printf(__VA_ARGS__);\
-                    printf("\n");
+                    printf("\n");\
+                    osThreadYield();
 #else
 #define DBG(...)
 #endif

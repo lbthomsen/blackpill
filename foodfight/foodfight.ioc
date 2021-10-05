@@ -1,6 +1,8 @@
 #MicroXplorer Configuration settings - do not modify
-FREERTOS.IPParameters=Tasks01,Mutexes01,configUSE_NEWLIB_REENTRANT
+FREERTOS.FootprintOK=true
+FREERTOS.IPParameters=Tasks01,Mutexes01,configUSE_NEWLIB_REENTRANT,Queues01,FootprintOK
 FREERTOS.Mutexes01=oneMutex,Dynamic,NULL
+FREERTOS.Queues01=infoQueue,16,uint8_t,0,Dynamic,NULL,NULL
 FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
 FREERTOS.configUSE_NEWLIB_REENTRANT=1
 File.Version=6
