@@ -117,7 +117,7 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
 		slave_tx_buffer[1] = (SLAVE_FINGERPRINT & 0x00ff0000) >> 16;
 		slave_tx_buffer[2] = (SLAVE_FINGERPRINT & 0x0000ff00) >> 8;
 		slave_tx_buffer[3] = (SLAVE_FINGERPRINT & 0x000000ff);
-		HAL_SPI_Transmit_IT(&hspi2, &slave_tx_buffer[0], 4);
+		HAL_SPI_Transmit_IT(&hspi2, &slave_tx_buffer[0], 5);
 		break;
 
 	case SLAVE_INSTRUCTION_RECEIVING:
@@ -205,7 +205,7 @@ int main(void)
 		  master_tx_buffer[0] = SLAVE_INSTRUCTION_FINGERPRINT;
 		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_RESET);
 		  HAL_SPI_Transmit(&hspi1, &master_tx_buffer[0], 1, HAL_MAX_DELAY);
-		  HAL_SPI_Receive(&hspi1, &master_rx_buffer[0], 4, HAL_MAX_DELAY);
+		  HAL_SPI_Receive(&hspi1, &master_rx_buffer[0], 5, HAL_MAX_DELAY);
 		  //HAL_SPI_TransmitReceive(&hspi1, &master_tx_buffer[0], &master_rx_buffer[0], 5, HAL_MAX_DELAY);
 		  HAL_GPIO_WritePin(SPI1_SS_GPIO_Port, SPI1_SS_Pin, GPIO_PIN_SET);
 
