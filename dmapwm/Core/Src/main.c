@@ -128,11 +128,11 @@ void HAL_TIM_PWM_PulseFinishedHalfCpltCallback(TIM_HandleTypeDef *htim) {
 		if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
 			xTaskGenericNotifyFromISR(pwmBuf1TaskHandle,
 					(uint32_t) &dma_buffer1[0], eSetValueWithOverwrite, NULL,
-					xHigherPriorityTaskWoken);
+					&xHigherPriorityTaskWoken);
 		} else {
 			xTaskGenericNotifyFromISR(pwmBuf2TaskHandle,
 					(uint32_t) &dma_buffer2[0], eSetValueWithOverwrite, NULL,
-					xHigherPriorityTaskWoken);
+					&xHigherPriorityTaskWoken);
 		}
 		//update_next_buffer(&dma_buffer[BUFFER_SIZE]);
 	}
@@ -148,11 +148,11 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
 		if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
 			xTaskGenericNotifyFromISR(pwmBuf1TaskHandle,
 					(uint32_t) &dma_buffer1[BUFFER_SIZE],
-					eSetValueWithOverwrite, NULL, xHigherPriorityTaskWoken);
+					eSetValueWithOverwrite, NULL, &xHigherPriorityTaskWoken);
 		} else {
 			xTaskGenericNotifyFromISR(pwmBuf2TaskHandle,
 					(uint32_t) &dma_buffer2[BUFFER_SIZE],
-					eSetValueWithOverwrite, NULL, xHigherPriorityTaskWoken);
+					eSetValueWithOverwrite, NULL, &xHigherPriorityTaskWoken);
 		}
 		//update_next_buffer(&dma_buffer[BUFFER_SIZE]);
 	}
@@ -528,8 +528,6 @@ void startDefaultTask(void *argument) {
 /* USER CODE END Header_startLedTask */
 void startLedTask(void *argument) {
 	/* USER CODE BEGIN startLedTask */
-
-	uint32_t oldValue;
 
 	/* Infinite loop */
 	for (;;) {
