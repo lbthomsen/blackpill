@@ -50,6 +50,8 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 
+float ta, tb; // transfer function using calibration data
+
 uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = {0}; // ADC_SAMPLES samples, 2 channels, 2 buffers
 
 uint32_t tim_cnt = 0;
@@ -96,7 +98,7 @@ static inline void process_adc_buffer(uint16_t *buffer) {
     	sum2 += buffer[1 + i * 2];
     }
 
-    temp = (float)(sum1 * 0.322265625 / ADC_SAMPLES - 279);
+    temp = (float)(ta * sum1 / ADC_SAMPLES + tb);
     vref = (float)sum2 / 1000 / ADC_SAMPLES;
 
 }
@@ -108,6 +110,19 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]); // We're all the way through the buffer, so deal with second half
+}
+
+void calculate_calibration() {
+
+	float x1 = (float)*TEMPSENSOR_CAL1_ADDR;
+	float x2 = (float)*TEMPSENSOR_CAL2_ADDR;
+	float y1 = (float)TEMPSENSOR_CAL1_TEMP;
+	float y2 = (float)TEMPSENSOR_CAL2_TEMP;
+
+	// Simple linear equation y = ax + b based on two points
+	ta = (float)( (y2 - y1) / (x2 - x1) );
+	tb = (float) ( ( x2 * y1 - x1 * y2 ) / (x2 - x1) );
+
 }
 
 /* USER CODE END 0 */
@@ -145,6 +160,9 @@ int main(void)
   MX_TIM3_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+
+  // Calculate transfer function values - a and b in simple linear equation y = ax + b
+  calculate_calibration();
 
   HAL_TIM_Base_Start_IT(&htim3); // First get the timer running
 
