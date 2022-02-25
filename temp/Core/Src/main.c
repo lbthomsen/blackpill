@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_SAMPLES 10
+#define ADC_SAMPLES 100
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -83,7 +83,7 @@ int _write(int file, char *ptr, int len) {
 // TIM3 is used for ADC/DMA but we use the same to toggle the LED
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM3) {
-		if (tim_cnt % 50 == 0)
+		if (tim_cnt % 500 == 0)
 			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		tim_cnt++;
 	}
@@ -98,7 +98,7 @@ static inline void process_adc_buffer(uint16_t *buffer) {
     	sum2 += buffer[1 + i * 2];
     }
 
-    temp = (float)(ta * sum1 / ADC_SAMPLES + tb);
+    temp = (float)(ta * (float)(sum1 / ADC_SAMPLES) + tb);
     vref = (float)sum2 / 1000 / ADC_SAMPLES;
 
 }
@@ -275,7 +275,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -315,7 +315,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 959;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 999;
+  htim3.Init.Period = 99;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)

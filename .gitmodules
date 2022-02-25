@@ -7,3 +7,6 @@
 [submodule "w25qxx"]
 	path = w25qxx
 	url = git@github.com:nimaltd/w25qxx.git
+[submodule "lvgl"]
+	path = lvgl
+	url = https://github.com/lvgl/lvgl
