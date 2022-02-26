@@ -54,7 +54,8 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-w25qxx_t w25qxx;
+//w25qxx_t w25qxx;
+W25QXX_HandleTypeDef w25qxx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -121,7 +122,7 @@ int main(void)
 
   DBG("\n-----------------\nStarting (debug is %s)...", DBG_STATE);
 
-  W25qxx_Init();
+  w25qxx_init(w25qxx, &hspi1, &SPI1_CS_GPIO_Port, SPI1_CS_Pin);
 
   /* USER CODE END 2 */
 
