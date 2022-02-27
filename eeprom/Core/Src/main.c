@@ -84,6 +84,26 @@ int _write(int fd, char* ptr, int len) {
   return -1;
 }
 
+void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
+	uint32_t i = 0;
+
+	printf("%s\n", header);
+
+	for (i = 0; i < len; ++i) {
+		if (i % 16 == 0) {
+			printf("0x%08X: ", start);
+		}
+
+		printf("%02X ", buf[i]);
+
+		if ((i + 1) % 16 == 0) {
+			printf("\n");
+		}
+
+		++start;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -122,7 +142,36 @@ int main(void)
 
   DBG("\n-----------------\nStarting (debug is %s)...", DBG_STATE);
 
-  w25qxx_init(w25qxx, &hspi1, &SPI1_CS_GPIO_Port, SPI1_CS_Pin);
+  if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) == W25QXX_Ok) {
+	  DBG("W25QXX successfully initialized");
+	  DBG("Manufacturer       = 0x%2X", w25qxx.manufacturer_id);
+	  DBG("Device             = 0x%4X", w25qxx.device_id);
+	  DBG("Block size         = 0x%04X (%lu)", w25qxx.block_size, w25qxx.block_size);
+	  DBG("Block count        = 0x%04X (%lu)", w25qxx.block_count, w25qxx.block_count);
+	  DBG("Total size (in kB) = 0x%04X (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
+  }
+
+  uint8_t buf[256] = {0};
+
+  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+	  dump_hex("First: ", 0, buf, 256);
+  }
+
+  if (w25qxx_erase(&w25qxx, 0x0100, 0x1000) == W25QXX_Ok) {
+	  DBG("Erased");
+
+	  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+	  	  dump_hex("After erase: ", 0, buf, 256);
+	  }
+
+  }
+
+  // Create a well known pattern
+  for (int i = 0; i < 256; ++i) buf[i] = i;
+
+  if (w25qxx_write(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+	  dump_hex("Successfully written: ", 0, buf, 256);
+  }
 
   /* USER CODE END 2 */
 
@@ -136,10 +185,10 @@ int main(void)
 
 	  now = HAL_GetTick();
 
-	  if (now - last_tick >= 1000) {
-		  DBG("Loop %lu", now / 1000);
-		  last_tick = now;
-	  }
+//	  if (now - last_tick >= 1000) {
+//		  DBG("Loop %lu", now / 1000);
+//		  last_tick = now;
+//	  }
 
 	  if (now - last_blink >= 500) {
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
