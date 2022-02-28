@@ -157,7 +157,7 @@ int main(void)
 	  dump_hex("First: ", 0, buf, 256);
   }
 
-  if (w25qxx_erase(&w25qxx, 0x000, 0x10000) == W25QXX_Ok) {
+  if (w25qxx_erase(&w25qxx, 0x00, 0x100) == W25QXX_Ok) {
 	  DBG("Erased");
 
 	  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
