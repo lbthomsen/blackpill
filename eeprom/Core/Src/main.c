@@ -56,6 +56,8 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 //w25qxx_t w25qxx;
 W25QXX_HandleTypeDef w25qxx;
+
+uint8_t buf[256] = {0}; // Buffer for playing with w25qxx
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +104,14 @@ void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
 
 		++start;
 	}
+}
+
+uint32_t get_sum(uint8_t *buf, uint32_t len) {
+	uint32_t sum = 0;
+	for (uint32_t i = 0; i < len; ++i) {
+		sum += buf[i];
+	}
+	return sum;
 }
 
 /* USER CODE END 0 */
@@ -151,34 +161,34 @@ int main(void)
 	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
   }
 
-  uint8_t buf[256] = {0};
 
-  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-	  dump_hex("First: ", 0, buf, 256);
-  }
-
-  if (w25qxx_erase(&w25qxx, 0x00, 0x100) == W25QXX_Ok) {
-	  DBG("Erased");
-
-	  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-	  	  dump_hex("After erase: ", 0, buf, 256);
-	  }
-
-  }
-
-  // Create a well known pattern
-  for (int i = 0; i < 256; ++i) buf[i] = i;
-
-  if (w25qxx_write(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-	  dump_hex("Successfully written: ", 0, buf, 256);
-  }
+//
+//  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+//	  dump_hex("First: ", 0, buf, 256);
+//  }
+//
+//  if (w25qxx_erase(&w25qxx, 0x00, 0x100) == W25QXX_Ok) {
+//	  DBG("Erased");
+//
+//	  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+//	  	  dump_hex("After erase: ", 0, buf, 256);
+//	  }
+//
+//  }
+//
+//  // Create a well known pattern
+//  for (int i = 0; i < 256; ++i) buf[i] = i;
+//
+//  if (w25qxx_write(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
+//	  dump_hex("Successfully written: ", 0, buf, 256);
+//  }
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, last_tick = 0, last_blink = 0;
+  uint32_t now = 0, last_tick = 0, last_blink = 0, last_run = 0;
 
   while (1)
   {
@@ -193,6 +203,36 @@ int main(void)
 	  if (now - last_blink >= 500) {
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		  last_blink = now;
+	  }
+
+	  if (now - last_run >= 10000) { // Every 10 secs
+
+		  DBG("-----------");
+
+		  DBG("Reading first page");
+		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+			  DBG("  - sum = %lu", get_sum(buf, 256));
+		  }
+
+		  DBG("Erasing first page");
+		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
+			  DBG("Reading first page");
+			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+			  			  DBG("  - sum = %lu", get_sum(buf, 256));
+			  		  }
+		  }
+
+		  // Create a well known pattern
+		  for (int i = 0; i < 256; ++i) buf[i] = i;
+		  DBG("Writing first page");
+		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+			  DBG("Reading first page");
+					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+						  DBG("  - sum = %lu", get_sum(buf, 256));
+					  }
+		  }
+
+		  last_run = now;
 	  }
 
     /* USER CODE END WHILE */
