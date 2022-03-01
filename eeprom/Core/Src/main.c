@@ -161,28 +161,6 @@ int main(void)
 	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
   }
 
-
-//
-//  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-//	  dump_hex("First: ", 0, buf, 256);
-//  }
-//
-//  if (w25qxx_erase(&w25qxx, 0x00, 0x100) == W25QXX_Ok) {
-//	  DBG("Erased");
-//
-//	  if (w25qxx_read(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-//	  	  dump_hex("After erase: ", 0, buf, 256);
-//	  }
-//
-//  }
-//
-//  // Create a well known pattern
-//  for (int i = 0; i < 256; ++i) buf[i] = i;
-//
-//  if (w25qxx_write(&w25qxx, 0, &buf, 256) == W25QXX_Ok) {
-//	  dump_hex("Successfully written: ", 0, buf, 256);
-//  }
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -211,14 +189,16 @@ int main(void)
 
 		  DBG("Reading first page");
 		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  DBG("  - sum = %lu", get_sum(buf, 256));
+			  //DBG("  - sum = %lu", get_sum(buf, 256));
+			  dump_hex("First page at start", 0, &buf, 256);
 		  }
 
 		  DBG("Erasing first page");
 		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
 			  DBG("Reading first page");
 			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  			  DBG("  - sum = %lu", get_sum(buf, 256));
+			  			  //DBG("  - sum = %lu", get_sum(buf, 256));
+			  			dump_hex("After erase", 0, &buf, 256);
 			  		  }
 		  }
 
@@ -228,7 +208,8 @@ int main(void)
 		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
 			  DBG("Reading first page");
 					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-						  DBG("  - sum = %lu", get_sum(buf, 256));
+						  //DBG("  - sum = %lu", get_sum(buf, 256));
+						  dump_hex("After write", 0, &buf, 256);
 					  }
 		  }
 
