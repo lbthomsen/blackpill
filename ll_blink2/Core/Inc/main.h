@@ -94,5 +94,3 @@ void tim4_interrupt_callback();
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
