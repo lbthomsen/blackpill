@@ -141,12 +141,12 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+	DBG("Firing up PWM");
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);   // Output PWM Generation
+
 	DBG("Firing up PWM Input Capture");
 	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge
 	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge
-
-	DBG("Firing up PWM");
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);   // Output PWM Generation
 
   /* USER CODE END 2 */
 

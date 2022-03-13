@@ -1771,29 +1771,29 @@ void Error_Handler(void)
  8001266:	f7ff ff1b 	bl	80010a0 <MX_USART1_UART_Init>
   MX_TIM2_Init();
  800126a:	f7ff ff33 	bl	80010d4 <MX_TIM2_Init>
-	DBG("Firing up PWM Input Capture");
+	DBG("Firing up PWM");
  800126e:	4831      	ldr	r0, [pc, #196]	; (8001334 <main+0xe4>)
  8001270:	f002 fbaa 	bl	80039c8 <iprintf>
  8001274:	200a      	movs	r0, #10
  8001276:	f002 fbbf 	bl	80039f8 <putchar>
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge
- 800127a:	4c2f      	ldr	r4, [pc, #188]	; (8001338 <main+0xe8>)
- 800127c:	2100      	movs	r1, #0
- 800127e:	4620      	mov	r0, r4
- 8001280:	f001 fcaa 	bl	8002bd8 <HAL_TIM_IC_Start_IT>
-	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge
- 8001284:	2104      	movs	r1, #4
- 8001286:	4620      	mov	r0, r4
- 8001288:	f001 fc18 	bl	8002abc <HAL_TIM_IC_Start>
-	DBG("Firing up PWM");
- 800128c:	482b      	ldr	r0, [pc, #172]	; (800133c <main+0xec>)
- 800128e:	f002 fb9b 	bl	80039c8 <iprintf>
- 8001292:	200a      	movs	r0, #10
- 8001294:	f002 fbb0 	bl	80039f8 <putchar>
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);   // Output PWM Generation
- 8001298:	2100      	movs	r1, #0
- 800129a:	4829      	ldr	r0, [pc, #164]	; (8001340 <main+0xf0>)
- 800129c:	f001 fb96 	bl	80029cc <HAL_TIM_PWM_Start>
+ 800127a:	2100      	movs	r1, #0
+ 800127c:	482e      	ldr	r0, [pc, #184]	; (8001338 <main+0xe8>)
+ 800127e:	f001 fba5 	bl	80029cc <HAL_TIM_PWM_Start>
+	DBG("Firing up PWM Input Capture");
+ 8001282:	482e      	ldr	r0, [pc, #184]	; (800133c <main+0xec>)
+ 8001284:	f002 fba0 	bl	80039c8 <iprintf>
+ 8001288:	200a      	movs	r0, #10
+ 800128a:	f002 fbb5 	bl	80039f8 <putchar>
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge
+ 800128e:	4c2c      	ldr	r4, [pc, #176]	; (8001340 <main+0xf0>)
+ 8001290:	2100      	movs	r1, #0
+ 8001292:	4620      	mov	r0, r4
+ 8001294:	f001 fca0 	bl	8002bd8 <HAL_TIM_IC_Start_IT>
+	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge
+ 8001298:	2104      	movs	r1, #4
+ 800129a:	4620      	mov	r0, r4
+ 800129c:	f001 fc0e 	bl	8002abc <HAL_TIM_IC_Start>
 	uint32_t now = 0, last_blink = 0, last_print = 0, last_change = 0;
  80012a0:	2700      	movs	r7, #0
  80012a2:	463e      	mov	r6, r7
@@ -1819,7 +1819,7 @@ void Error_Handler(void)
 			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_count][0]);
  80012c8:	491e      	ldr	r1, [pc, #120]	; (8001344 <main+0xf4>)
  80012ca:	680b      	ldr	r3, [r1, #0]
- 80012cc:	4a1c      	ldr	r2, [pc, #112]	; (8001340 <main+0xf0>)
+ 80012cc:	4a1a      	ldr	r2, [pc, #104]	; (8001338 <main+0xe8>)
  80012ce:	6810      	ldr	r0, [r2, #0]
  80012d0:	4a1d      	ldr	r2, [pc, #116]	; (8001348 <main+0xf8>)
  80012d2:	f852 7033 	ldr.w	r7, [r2, r3, lsl #3]
@@ -1871,9 +1871,9 @@ void Error_Handler(void)
  8001330:	4626      	mov	r6, r4
  8001332:	e7c5      	b.n	80012c0 <main+0x70>
  8001334:	08005ba0 	.word	0x08005ba0
- 8001338:	200002fc 	.word	0x200002fc
- 800133c:	08005bbc 	.word	0x08005bbc
- 8001340:	20000270 	.word	0x20000270
+ 8001338:	20000270 	.word	0x20000270
+ 800133c:	08005bb0 	.word	0x08005bb0
+ 8001340:	200002fc 	.word	0x200002fc
  8001344:	20000260 	.word	0x20000260
  8001348:	20000000 	.word	0x20000000
  800134c:	40020800 	.word	0x40020800
