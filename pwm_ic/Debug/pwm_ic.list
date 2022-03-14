@@ -9,43 +9,43 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .rodata       00000454  08005b88  08005b88  00015b88  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  08005fdc  08005fdc  0002023c  2**0
+  3 .ARM.extab    00000000  08005fdc  08005fdc  0002029c  2**0
                   CONTENTS
   4 .ARM          00000008  08005fdc  08005fdc  00015fdc  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  08005fe4  08005fe4  0002023c  2**0
+  5 .preinit_array 00000000  08005fe4  08005fe4  0002029c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
   6 .init_array   00000004  08005fe4  08005fe4  00015fe4  2**2
                   CONTENTS, ALLOC, LOAD, DATA
   7 .fini_array   00000004  08005fe8  08005fe8  00015fe8  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         0000023c  20000000  08005fec  00020000  2**2
+  8 .data         0000029c  20000000  08005fec  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          0000011c  2000023c  08006228  0002023c  2**2
+  9 .bss          0000011c  2000029c  08006288  0002029c  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  20000358  08006228  00020358  2**0
+ 10 ._user_heap_stack 00000600  200003b8  08006288  000203b8  2**0
                   ALLOC
- 11 .ARM.attributes 00000030  00000000  00000000  0002023c  2**0
+ 11 .ARM.attributes 00000030  00000000  00000000  0002029c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000127a5  00000000  00000000  0002026c  2**0
+ 12 .debug_info   000127aa  00000000  00000000  000202cc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002042  00000000  00000000  00032a11  2**0
+ 13 .debug_abbrev 00002028  00000000  00000000  00032a76  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_loc    0000d313  00000000  00000000  00034a53  2**0
+ 14 .debug_loc    0000d313  00000000  00000000  00034a9e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00000bd8  00000000  00000000  00041d68  2**3
+ 15 .debug_aranges 00000bd8  00000000  00000000  00041db8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 00000b90  00000000  00000000  00042940  2**3
+ 16 .debug_ranges 00000b90  00000000  00000000  00042990  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  0001721d  00000000  00000000  000434d0  2**0
+ 17 .debug_macro  0001721d  00000000  00000000  00043520  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00011f62  00000000  00000000  0005a6ed  2**0
+ 18 .debug_line   00011f62  00000000  00000000  0005a73d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    0008f5da  00000000  00000000  0006c64f  2**0
+ 19 .debug_str    0008f5d8  00000000  00000000  0006c69f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  000fbc29  2**0
+ 20 .comment      00000053  00000000  00000000  000fbc77  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00003100  00000000  00000000  000fbc7c  2**2
+ 21 .debug_frame  00003100  00000000  00000000  000fbccc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -62,7 +62,7 @@ Disassembly of section .text:
  80001b2:	2301      	movs	r3, #1
  80001b4:	7023      	strb	r3, [r4, #0]
  80001b6:	bd10      	pop	{r4, pc}
- 80001b8:	2000023c 	.word	0x2000023c
+ 80001b8:	2000029c 	.word	0x2000029c
  80001bc:	00000000 	.word	0x00000000
  80001c0:	08005b6c 	.word	0x08005b6c
 
@@ -75,7 +75,7 @@ Disassembly of section .text:
  80001ce:	f3af 8000 	nop.w
  80001d2:	bd08      	pop	{r3, pc}
  80001d4:	00000000 	.word	0x00000000
- 80001d8:	20000240 	.word	0x20000240
+ 80001d8:	200002a0 	.word	0x200002a0
  80001dc:	08005b6c 	.word	0x08005b6c
 
 080001e0 <strlen>:
@@ -1322,7 +1322,7 @@ int _write(int fd, char *ptr, int len) {
 			return -1;
  8000f66:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
  8000f6a:	e7f8      	b.n	8000f5e <_write+0x1a>
- 8000f6c:	200002b8 	.word	0x200002b8
+ 8000f6c:	20000318 	.word	0x20000318
 
 08000f70 <HAL_TIM_IC_CaptureCallback>:
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
@@ -1364,9 +1364,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
  8000fc8:	e7d7      	b.n	8000f7a <HAL_TIM_IC_CaptureCallback+0xa>
  8000fca:	bf00      	nop
  8000fcc:	4cb71b00 	.word	0x4cb71b00
- 8000fd0:	2000025c 	.word	0x2000025c
+ 8000fd0:	200002bc 	.word	0x200002bc
  8000fd4:	42c80000 	.word	0x42c80000
- 8000fd8:	20000258 	.word	0x20000258
+ 8000fd8:	200002b8 	.word	0x200002b8
 
 08000fdc <Error_Handler>:
   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
@@ -1479,7 +1479,7 @@ void Error_Handler(void)
     Error_Handler();
  800107a:	f7ff ffaf 	bl	8000fdc <Error_Handler>
  800107e:	bf00      	nop
- 8001080:	20000270 	.word	0x20000270
+ 8001080:	200002d0 	.word	0x200002d0
  8001084:	40000800 	.word	0x40000800
 
 08001088 <MX_USART1_UART_Init>:
@@ -1514,7 +1514,7 @@ void Error_Handler(void)
     Error_Handler();
  80010ae:	f7ff ff95 	bl	8000fdc <Error_Handler>
  80010b2:	bf00      	nop
- 80010b4:	200002b8 	.word	0x200002b8
+ 80010b4:	20000318 	.word	0x20000318
  80010b8:	40011000 	.word	0x40011000
 
 080010bc <MX_TIM2_Init>:
@@ -1646,7 +1646,7 @@ void Error_Handler(void)
     Error_Handler();
  800118a:	f7ff ff27 	bl	8000fdc <Error_Handler>
  800118e:	bf00      	nop
- 8001190:	200002fc 	.word	0x200002fc
+ 8001190:	2000035c 	.word	0x2000035c
 
 08001194 <SystemClock_Config>:
 {
@@ -1770,12 +1770,12 @@ void Error_Handler(void)
  800126c:	f002 fba0 	bl	80039b0 <iprintf>
  8001270:	200a      	movs	r0, #10
  8001272:	f002 fbb5 	bl	80039e0 <putchar>
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge - rinse and repeat
  8001276:	4c2c      	ldr	r4, [pc, #176]	; (8001328 <main+0xf0>)
  8001278:	2100      	movs	r1, #0
  800127a:	4620      	mov	r0, r4
  800127c:	f001 fca0 	bl	8002bc0 <HAL_TIM_IC_Start_IT>
-	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge
+	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge - stop second counter
  8001280:	2104      	movs	r1, #4
  8001282:	4620      	mov	r0, r4
  8001284:	f001 fc0e 	bl	8002aa4 <HAL_TIM_IC_Start>
@@ -1801,7 +1801,7 @@ void Error_Handler(void)
  80012a8:	1be3      	subs	r3, r4, r7
  80012aa:	f5b3 6ffa 	cmp.w	r3, #2000	; 0x7d0
  80012ae:	d3f0      	bcc.n	8001292 <main+0x5a>
-			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_count][0]);
+			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_idx][0]);
  80012b0:	491e      	ldr	r1, [pc, #120]	; (800132c <main+0xf4>)
  80012b2:	680b      	ldr	r3, [r1, #0]
  80012b4:	4a1a      	ldr	r2, [pc, #104]	; (8001320 <main+0xe8>)
@@ -1809,17 +1809,17 @@ void Error_Handler(void)
  80012b8:	4a1d      	ldr	r2, [pc, #116]	; (8001330 <main+0xf8>)
  80012ba:	f852 7033 	ldr.w	r7, [r2, r3, lsl #3]
  80012be:	6287      	str	r7, [r0, #40]	; 0x28
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_count][1]);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_idx][1]);
  80012c0:	eb02 02c3 	add.w	r2, r2, r3, lsl #3
  80012c4:	6852      	ldr	r2, [r2, #4]
  80012c6:	6342      	str	r2, [r0, #52]	; 0x34
-			++pwm_vals_count;
+			++pwm_vals_idx;
  80012c8:	3301      	adds	r3, #1
  80012ca:	600b      	str	r3, [r1, #0]
-			if (pwm_vals_count >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
- 80012cc:	2b0b      	cmp	r3, #11
+			if (pwm_vals_idx >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
+ 80012cc:	2b17      	cmp	r3, #23
  80012ce:	d9df      	bls.n	8001290 <main+0x58>
-				pwm_vals_count = 0;
+				pwm_vals_idx = 0;
  80012d0:	2200      	movs	r2, #0
  80012d2:	600a      	str	r2, [r1, #0]
 			last_change = now;
@@ -1832,7 +1832,7 @@ void Error_Handler(void)
 			last_blink = now;
  80012e2:	4625      	mov	r5, r4
  80012e4:	e7dc      	b.n	80012a0 <main+0x68>
-			DBG("Tick %4lu freq = %4.1f Hz duty = %2.1f %%", now / 1000, freq, duty);
+			DBG("Tick %5lu freq = %7.1f Hz duty = %4.1f %%", now / 1000, freq, duty);
  80012e6:	4b14      	ldr	r3, [pc, #80]	; (8001338 <main+0x100>)
  80012e8:	6818      	ldr	r0, [r3, #0]
  80012ea:	f7ff f935 	bl	8000558 <__aeabi_f2d>
@@ -1856,15 +1856,15 @@ void Error_Handler(void)
  8001318:	4626      	mov	r6, r4
  800131a:	e7c5      	b.n	80012a8 <main+0x70>
  800131c:	08005b88 	.word	0x08005b88
- 8001320:	20000270 	.word	0x20000270
+ 8001320:	200002d0 	.word	0x200002d0
  8001324:	08005b98 	.word	0x08005b98
- 8001328:	200002fc 	.word	0x200002fc
- 800132c:	20000260 	.word	0x20000260
+ 8001328:	2000035c 	.word	0x2000035c
+ 800132c:	200002c0 	.word	0x200002c0
  8001330:	20000000 	.word	0x20000000
  8001334:	40020800 	.word	0x40020800
- 8001338:	2000025c 	.word	0x2000025c
+ 8001338:	200002bc 	.word	0x200002bc
  800133c:	10624dd3 	.word	0x10624dd3
- 8001340:	20000258 	.word	0x20000258
+ 8001340:	200002b8 	.word	0x200002b8
  8001344:	08005bb4 	.word	0x08005bb4
 
 08001348 <HAL_MspInit>:
@@ -2253,7 +2253,7 @@ void TIM2_IRQHandler(void)
 }
  8001510:	bd08      	pop	{r3, pc}
  8001512:	bf00      	nop
- 8001514:	200002fc 	.word	0x200002fc
+ 8001514:	2000035c 	.word	0x2000035c
 
 08001518 <_getpid>:
 }
@@ -2424,8 +2424,8 @@ void *_sbrk(ptrdiff_t incr)
  80015a6:	bf00      	nop
  80015a8:	20020000 	.word	0x20020000
  80015ac:	00000400 	.word	0x00000400
- 80015b0:	20000264 	.word	0x20000264
- 80015b4:	20000358 	.word	0x20000358
+ 80015b0:	200002c4 	.word	0x200002c4
+ 80015b4:	200003b8 	.word	0x200003b8
 
 080015b8 <SystemInit>:
   */
@@ -2530,13 +2530,13 @@ LoopFillZerobss:
   ldr r0, =_sdata
  8001608:	20000000 	.word	0x20000000
   ldr r1, =_edata
- 800160c:	2000023c 	.word	0x2000023c
+ 800160c:	2000029c 	.word	0x2000029c
   ldr r2, =_sidata
  8001610:	08005fec 	.word	0x08005fec
   ldr r2, =_sbss
- 8001614:	2000023c 	.word	0x2000023c
+ 8001614:	2000029c 	.word	0x2000029c
   ldr r4, =_ebss
- 8001618:	20000358 	.word	0x20000358
+ 8001618:	200003b8 	.word	0x200003b8
 
 0800161c <ADC_IRQHandler>:
  * @retval None       
@@ -2603,9 +2603,9 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 }
  800165c:	bd10      	pop	{r4, pc}
  800165e:	bf00      	nop
- 8001660:	20000064 	.word	0x20000064
- 8001664:	20000060 	.word	0x20000060
- 8001668:	20000068 	.word	0x20000068
+ 8001660:	200000c4 	.word	0x200000c4
+ 8001664:	200000c0 	.word	0x200000c0
+ 8001668:	200000c8 	.word	0x200000c8
 
 0800166c <HAL_Init>:
 {
@@ -2652,8 +2652,8 @@ __weak void HAL_IncTick(void)
 }
  80016ac:	4770      	bx	lr
  80016ae:	bf00      	nop
- 80016b0:	20000344 	.word	0x20000344
- 80016b4:	20000064 	.word	0x20000064
+ 80016b0:	200003a4 	.word	0x200003a4
+ 80016b4:	200000c4 	.word	0x200000c4
 
 080016b8 <HAL_GetTick>:
   *       implementations in user file.
@@ -2667,7 +2667,7 @@ __weak uint32_t HAL_GetTick(void)
 }
  80016bc:	4770      	bx	lr
  80016be:	bf00      	nop
- 80016c0:	20000344 	.word	0x20000344
+ 80016c0:	200003a4 	.word	0x200003a4
 
 080016c4 <HAL_NVIC_SetPriorityGrouping>:
 __STATIC_INLINE void __NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
@@ -4110,8 +4110,8 @@ __weak uint32_t HAL_RCC_GetSysClockFreq(void)
  8001f4c:	40023c00 	.word	0x40023c00
  8001f50:	40023800 	.word	0x40023800
  8001f54:	08005be0 	.word	0x08005be0
- 8001f58:	20000060 	.word	0x20000060
- 8001f5c:	20000068 	.word	0x20000068
+ 8001f58:	200000c0 	.word	0x200000c0
+ 8001f5c:	200000c8 	.word	0x200000c8
 
 08001f60 <HAL_RCC_GetHCLKFreq>:
   * @retval HCLK frequency
@@ -4124,7 +4124,7 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
  8001f62:	6818      	ldr	r0, [r3, #0]
  8001f64:	4770      	bx	lr
  8001f66:	bf00      	nop
- 8001f68:	20000060 	.word	0x20000060
+ 8001f68:	200000c0 	.word	0x200000c0
 
 08001f6c <HAL_RCC_GetPCLK1Freq>:
   * @note   Each time PCLK1 changes, this function must be called to update the
@@ -6904,7 +6904,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  800307a:	6818      	ldr	r0, [r3, #0]
  800307c:	4770      	bx	lr
  800307e:	bf00      	nop
- 8003080:	2000006c 	.word	0x2000006c
+ 8003080:	200000cc 	.word	0x200000cc
 
 08003084 <__libc_init_array>:
  8003084:	b570      	push	{r4, r5, r6, lr}
@@ -7891,7 +7891,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  80039d4:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
  80039d8:	b004      	add	sp, #16
  80039da:	4770      	bx	lr
- 80039dc:	2000006c 	.word	0x2000006c
+ 80039dc:	200000cc 	.word	0x200000cc
 
 080039e0 <putchar>:
  80039e0:	4b09      	ldr	r3, [pc, #36]	; (8003a08 <putchar+0x28>)
@@ -7911,7 +7911,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  80039fe:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
  8003a02:	f001 bd23 	b.w	800544c <_putc_r>
  8003a06:	bf00      	nop
- 8003a08:	2000006c 	.word	0x2000006c
+ 8003a08:	200000cc 	.word	0x200000cc
 
 08003a0c <quorem>:
  8003a0c:	e92d 4ff7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -9257,25 +9257,25 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8004780:	4801      	ldr	r0, [pc, #4]	; (8004788 <__sfp_lock_acquire+0x8>)
  8004782:	f000 b8b8 	b.w	80048f6 <__retarget_lock_acquire_recursive>
  8004786:	bf00      	nop
- 8004788:	20000350 	.word	0x20000350
+ 8004788:	200003b0 	.word	0x200003b0
 
 0800478c <__sfp_lock_release>:
  800478c:	4801      	ldr	r0, [pc, #4]	; (8004794 <__sfp_lock_release+0x8>)
  800478e:	f000 b8b3 	b.w	80048f8 <__retarget_lock_release_recursive>
  8004792:	bf00      	nop
- 8004794:	20000350 	.word	0x20000350
+ 8004794:	200003b0 	.word	0x200003b0
 
 08004798 <__sinit_lock_acquire>:
  8004798:	4801      	ldr	r0, [pc, #4]	; (80047a0 <__sinit_lock_acquire+0x8>)
  800479a:	f000 b8ac 	b.w	80048f6 <__retarget_lock_acquire_recursive>
  800479e:	bf00      	nop
- 80047a0:	2000034b 	.word	0x2000034b
+ 80047a0:	200003ab 	.word	0x200003ab
 
 080047a4 <__sinit_lock_release>:
  80047a4:	4801      	ldr	r0, [pc, #4]	; (80047ac <__sinit_lock_release+0x8>)
  80047a6:	f000 b8a7 	b.w	80048f8 <__retarget_lock_release_recursive>
  80047aa:	bf00      	nop
- 80047ac:	2000034b 	.word	0x2000034b
+ 80047ac:	200003ab 	.word	0x200003ab
 
 080047b0 <__sinit>:
  80047b0:	b510      	push	{r4, lr}
@@ -9409,7 +9409,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
 080048ec <_localeconv_r>:
  80048ec:	4800      	ldr	r0, [pc, #0]	; (80048f0 <_localeconv_r+0x4>)
  80048ee:	4770      	bx	lr
- 80048f0:	200001c0 	.word	0x200001c0
+ 80048f0:	20000220 	.word	0x20000220
 
 080048f4 <__retarget_lock_init_recursive>:
  80048f4:	4770      	bx	lr
@@ -9427,7 +9427,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8004900:	6818      	ldr	r0, [r3, #0]
  8004902:	f000 bbef 	b.w	80050e4 <_malloc_r>
  8004906:	bf00      	nop
- 8004908:	2000006c 	.word	0x2000006c
+ 8004908:	200000cc 	.word	0x200000cc
 
 0800490c <memcpy>:
  800490c:	440a      	add	r2, r1
@@ -10234,7 +10234,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  80050da:	e7c7      	b.n	800506c <_free_r+0x28>
  80050dc:	b003      	add	sp, #12
  80050de:	bd30      	pop	{r4, r5, pc}
- 80050e0:	20000268 	.word	0x20000268
+ 80050e0:	200002c8 	.word	0x200002c8
 
 080050e4 <_malloc_r>:
  80050e4:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
@@ -10313,8 +10313,8 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  800518a:	d1dd      	bne.n	8005148 <_malloc_r+0x64>
  800518c:	e7cf      	b.n	800512e <_malloc_r+0x4a>
  800518e:	bf00      	nop
- 8005190:	20000268 	.word	0x20000268
- 8005194:	2000026c 	.word	0x2000026c
+ 8005190:	200002c8 	.word	0x200002c8
+ 8005194:	200002cc 	.word	0x200002cc
 
 08005198 <__sfputc_r>:
  8005198:	6893      	ldr	r3, [r2, #8]
@@ -10687,7 +10687,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  80054f2:	b103      	cbz	r3, 80054f6 <_sbrk_r+0x1a>
  80054f4:	6023      	str	r3, [r4, #0]
  80054f6:	bd38      	pop	{r3, r4, r5, pc}
- 80054f8:	20000354 	.word	0x20000354
+ 80054f8:	200003b4 	.word	0x200003b4
 
 080054fc <__sread>:
  80054fc:	b510      	push	{r4, lr}
@@ -10841,7 +10841,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005642:	b103      	cbz	r3, 8005646 <_write_r+0x1e>
  8005644:	6023      	str	r3, [r4, #0]
  8005646:	bd38      	pop	{r3, r4, r5, pc}
- 8005648:	20000354 	.word	0x20000354
+ 8005648:	200003b4 	.word	0x200003b4
 
 0800564c <__swsetup_r>:
  800564c:	4b32      	ldr	r3, [pc, #200]	; (8005718 <__swsetup_r+0xcc>)
@@ -10932,7 +10932,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005712:	2000      	movs	r0, #0
  8005714:	e7f7      	b.n	8005706 <__swsetup_r+0xba>
  8005716:	bf00      	nop
- 8005718:	2000006c 	.word	0x2000006c
+ 8005718:	200000cc 	.word	0x200000cc
  800571c:	08005ce4 	.word	0x08005ce4
  8005720:	08005d04 	.word	0x08005d04
  8005724:	08005cc4 	.word	0x08005cc4
@@ -10957,7 +10957,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  800574e:	461c      	mov	r4, r3
  8005750:	e7f3      	b.n	800573a <__assert_func+0x12>
  8005752:	bf00      	nop
- 8005754:	2000006c 	.word	0x2000006c
+ 8005754:	200000cc 	.word	0x200000cc
  8005758:	08005e95 	.word	0x08005e95
  800575c:	08005ea2 	.word	0x08005ea2
  8005760:	08005ed0 	.word	0x08005ed0
@@ -10976,7 +10976,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  800577a:	b103      	cbz	r3, 800577e <_close_r+0x1a>
  800577c:	6023      	str	r3, [r4, #0]
  800577e:	bd38      	pop	{r3, r4, r5, pc}
- 8005780:	20000354 	.word	0x20000354
+ 8005780:	200003b4 	.word	0x200003b4
 
 08005784 <__sflush_r>:
  8005784:	898a      	ldrh	r2, [r1, #12]
@@ -11170,7 +11170,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005920:	f85d eb04 	ldr.w	lr, [sp], #4
  8005924:	b003      	add	sp, #12
  8005926:	4770      	bx	lr
- 8005928:	2000006c 	.word	0x2000006c
+ 8005928:	200000cc 	.word	0x200000cc
 
 0800592c <_lseek_r>:
  800592c:	b538      	push	{r3, r4, r5, lr}
@@ -11188,7 +11188,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005946:	b103      	cbz	r3, 800594a <_lseek_r+0x1e>
  8005948:	6023      	str	r3, [r4, #0]
  800594a:	bd38      	pop	{r3, r4, r5, pc}
- 800594c:	20000354 	.word	0x20000354
+ 800594c:	200003b4 	.word	0x200003b4
 
 08005950 <__swhatbuf_r>:
  8005950:	b570      	push	{r4, r5, r6, lr}
@@ -11300,13 +11300,13 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005a3c:	4801      	ldr	r0, [pc, #4]	; (8005a44 <__malloc_lock+0x8>)
  8005a3e:	f7fe bf5a 	b.w	80048f6 <__retarget_lock_acquire_recursive>
  8005a42:	bf00      	nop
- 8005a44:	2000034c 	.word	0x2000034c
+ 8005a44:	200003ac 	.word	0x200003ac
 
 08005a48 <__malloc_unlock>:
  8005a48:	4801      	ldr	r0, [pc, #4]	; (8005a50 <__malloc_unlock+0x8>)
  8005a4a:	f7fe bf55 	b.w	80048f8 <__retarget_lock_release_recursive>
  8005a4e:	bf00      	nop
- 8005a50:	2000034c 	.word	0x2000034c
+ 8005a50:	200003ac 	.word	0x200003ac
 
 08005a54 <_read_r>:
  8005a54:	b538      	push	{r3, r4, r5, lr}
@@ -11324,7 +11324,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005a6e:	b103      	cbz	r3, 8005a72 <_read_r+0x1e>
  8005a70:	6023      	str	r3, [r4, #0]
  8005a72:	bd38      	pop	{r3, r4, r5, pc}
- 8005a74:	20000354 	.word	0x20000354
+ 8005a74:	200003b4 	.word	0x200003b4
 
 08005a78 <__ascii_wctomb>:
  8005a78:	b149      	cbz	r1, 8005a8e <__ascii_wctomb+0x16>
@@ -11363,7 +11363,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005aba:	6023      	str	r3, [r4, #0]
  8005abc:	bd38      	pop	{r3, r4, r5, pc}
  8005abe:	bf00      	nop
- 8005ac0:	20000354 	.word	0x20000354
+ 8005ac0:	200003b4 	.word	0x200003b4
 
 08005ac4 <_isatty_r>:
  8005ac4:	b538      	push	{r3, r4, r5, lr}
@@ -11379,7 +11379,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005ada:	b103      	cbz	r3, 8005ade <_isatty_r+0x1a>
  8005adc:	6023      	str	r3, [r4, #0]
  8005ade:	bd38      	pop	{r3, r4, r5, pc}
- 8005ae0:	20000354 	.word	0x20000354
+ 8005ae0:	200003b4 	.word	0x200003b4
 
 08005ae4 <_raise_r>:
  8005ae4:	291f      	cmp	r1, #31
@@ -11423,7 +11423,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005b38:	6818      	ldr	r0, [r3, #0]
  8005b3a:	f7ff bfd3 	b.w	8005ae4 <_raise_r>
  8005b3e:	bf00      	nop
- 8005b40:	2000006c 	.word	0x2000006c
+ 8005b40:	200000cc 	.word	0x200000cc
 
 08005b44 <_kill_r>:
  8005b44:	b538      	push	{r3, r4, r5, lr}
@@ -11441,7 +11441,7 @@ __STATIC_FORCEINLINE uint32_t __STREXW(uint32_t value, volatile uint32_t *addr)
  8005b5e:	6023      	str	r3, [r4, #0]
  8005b60:	bd38      	pop	{r3, r4, r5, pc}
  8005b62:	bf00      	nop
- 8005b64:	20000354 	.word	0x20000354
+ 8005b64:	200003b4 	.word	0x200003b4
 
 08005b68 <_getpid_r>:
  8005b68:	f7fb bcd6 	b.w	8001518 <_getpid>
