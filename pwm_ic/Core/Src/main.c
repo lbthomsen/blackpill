@@ -47,7 +47,11 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
+// Define some test pwm values - first column is prescaler value for pwm and second row is duty cycle (of 1000)
 uint32_t pwm_vals[][2] = {
+		{19199, 100},
+		{19199, 500},
+		{19199, 900},
 		{9599, 100},
 		{9599, 500},
 		{9599, 900},
@@ -60,10 +64,21 @@ uint32_t pwm_vals[][2] = {
 		{47, 100},
 		{47, 500},
 		{47, 900},
+		{23, 100},
+		{23, 500},
+		{23, 900},
+		{11, 100},
+		{11, 500},
+		{11, 900},
+		{5, 100},
+		{5, 500},
+		{5, 900},
 };
 
-uint32_t pwm_vals_count = 0;
+// Used to cycle around the pwm values
+uint32_t pwm_vals_idx = 0;
 
+// Will be calculated in interrupt callback
 float freq = 0;
 float duty = 0;
 /* USER CODE END PV */
@@ -145,8 +160,8 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);   // Output PWM Generation
 
 	DBG("Firing up PWM Input Capture");
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge
-	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge - rinse and repeat
+	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge - stop second counter
 
   /* USER CODE END 2 */
 
@@ -166,19 +181,19 @@ int main(void)
 		}
 
 		if (now - last_print >= 1000) {
-			DBG("Tick %4lu freq = %4.1f Hz duty = %2.1f %%", now / 1000, freq, duty);
+			DBG("Tick %5lu freq = %7.1f Hz duty = %4.1f %%", now / 1000, freq, duty);
 
 			last_print = now;
 		}
 
 		if (now - last_change >= 2000) {
 
-			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_count][0]);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_count][1]);
+			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_idx][0]);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_idx][1]);
 
-			++pwm_vals_count;
-			if (pwm_vals_count >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
-				pwm_vals_count = 0;
+			++pwm_vals_idx;
+			if (pwm_vals_idx >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
+				pwm_vals_idx = 0;
 			}
 
 			last_change = now;
