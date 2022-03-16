@@ -6,24 +6,22 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * <h2><center>&copy; Copyright (c) 2022 Lars Boegild Thomsen <lbthomsen@gmail.com>
  * All rights reserved.</center></h2>
  *
- * This software component is licensed by ST under BSD 3-Clause license,
+ * This software component is licensed under MIT license,
  * the "License"; You may not use this file except in compliance with the
  * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
+ *                        opensource.org/licenses/MIT
  *
  ******************************************************************************
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usbd_cdc_if.h"
 #include "stdio.h"
 /* USER CODE END Includes */
 
@@ -43,16 +41,19 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 extern int _estack;
 uint32_t *dfu_boot_flag;
 uint32_t push_count = 0;
+uint32_t cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -60,9 +61,19 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int _write(int file, char *ptr, int len) {
-	CDC_Transmit_FS((uint8_t *)ptr, len);
-    return len;
+// Send printf to uart1
+int _write(int fd, char *ptr, int len) {
+	HAL_StatusTypeDef hstatus;
+
+	if (fd == 1 || fd == 2) {
+		hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len,
+				HAL_MAX_DELAY);
+		if (hstatus == HAL_OK)
+			return len;
+		else
+			return -1;
+	}
+	return -1;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
@@ -95,7 +106,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  dfu_boot_flag = (uint32_t *)(&_estack - 100); // 100 bytes below top of stack
+	dfu_boot_flag = (uint32_t*) (&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -116,7 +127,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -124,22 +135,28 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	uint32_t now = 0, then = 0;
+	uint32_t now = 0, blink = 0, print = 0;
 
 	while (1) {
 
 		now = HAL_GetTick();
-		if (now % 500 == 0 && now != then) {
+
+		if (now - blink >= 500) {
 
 			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-			// Only every second time
-			if (now % 1000 == 0) {
-				printf("Tick, now = %lu\n", now);
-			}
+			blink = now;
 
-			then = now;
 		}
+
+		if (now - print >= 1000) {
+
+			printf("Tick, now = %lu\n", now);
+			++cnt;
+
+			print = now;
+		}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -167,8 +184,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLM = 12;
+  RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -188,6 +205,39 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 921600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
 }
 
 /**
@@ -261,4 +311,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

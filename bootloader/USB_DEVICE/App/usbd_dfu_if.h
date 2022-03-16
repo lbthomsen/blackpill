@@ -133,4 +133,3 @@ extern USBD_DFU_MediaTypeDef USBD_DFU_fops_FS;
 
 #endif /* __USBD_DFU_IF_H__ */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -6,13 +6,13 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * <h2><center>&copy; Copyright (c) 2022 Lars Boegild Thomsen <lbthomsen@gmail.com>
  * All rights reserved.</center></h2>
  *
- * This software component is licensed by ST under BSD 3-Clause license,
+ * This software component is licensed under MIT license,
  * the "License"; You may not use this file except in compliance with the
  * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
+ *                        opensource.org/licenses/MIT
  *
  ******************************************************************************
  */
@@ -30,7 +30,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-typedef  void (*pFunction)(void);
+typedef void (*pFunction)(void);
 
 /* USER CODE END PTD */
 
@@ -69,7 +69,7 @@ static void MX_GPIO_Init(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == BTN_Pin) // If the button
 	{
-			HAL_NVIC_SystemReset();
+		HAL_NVIC_SystemReset();
 	}
 }
 /* USER CODE END 0 */
@@ -82,27 +82,26 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-  dfu_boot_flag = (uint32_t *)(&_estack - 100); // set in linker script
+	dfu_boot_flag = (uint32_t*) (&_estack - 100); // set in linker script
 
-  if (*dfu_boot_flag != DFU_BOOT_FLAG)
-  {
+	if (*dfu_boot_flag != DFU_BOOT_FLAG) {
 
-      /* Test if user code is programmed starting from address 0x08008000 */
-      if (((*(__IO uint32_t *) USBD_DFU_APP_DEFAULT_ADD) & 0x2FFC0000) == 0x20000000)
-      {
+		/* Test if user code is programmed starting from address 0x08008000 */
+		if (((*(__IO uint32_t*) USBD_DFU_APP_DEFAULT_ADD) & 0x2FFC0000)
+				== 0x20000000) {
 
-          /* Jump to user application */
-          JumpAddress = *(__IO uint32_t *) (USBD_DFU_APP_DEFAULT_ADD + 4);
-          JumpToApplication = (pFunction) JumpAddress;
+			/* Jump to user application */
+			JumpAddress = *(__IO uint32_t*) (USBD_DFU_APP_DEFAULT_ADD + 4);
+			JumpToApplication = (pFunction) JumpAddress;
 
-          /* Initialize user application's Stack Pointer */
-          __set_MSP(*(__IO uint32_t *) USBD_DFU_APP_DEFAULT_ADD);
-          JumpToApplication();
-      }
+			/* Initialize user application's Stack Pointer */
+			__set_MSP(*(__IO uint32_t*) USBD_DFU_APP_DEFAULT_ADD);
+			JumpToApplication();
+		}
 
-  }
+	}
 
-  *dfu_boot_flag = 0; // So next boot won't be affected
+	*dfu_boot_flag = 0; // So next boot won't be affected
 
   /* USER CODE END 1 */
 
@@ -264,4 +263,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

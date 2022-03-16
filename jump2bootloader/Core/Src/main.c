@@ -36,7 +36,7 @@ typedef  void (*pFunction)(void);
 /* USER CODE BEGIN PD */
 #define BOOTLOADER_FLAG_VALUE 0xDEADBEEF
 #define BOOTLOADER_FLAG_OFFSET 100
-#define BOOTLOADER_ADDRESS 0x1FFFD800
+#define BOOTLOADER_ADDRESS 0x1FFF0000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,7 +48,6 @@ typedef  void (*pFunction)(void);
 
 /* USER CODE BEGIN PV */
 extern int _estack;
-//uint32_t dfu_boot_flag __attribute__ ((section (".noinit")));
 uint32_t *bootloader_flag;
 uint32_t push_count = 0;
 pFunction JumpToApplication;
@@ -77,9 +76,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			push_count = HAL_GetTick();
 		} else {
 			if (HAL_GetTick() - push_count > 1000) {
-				// Set the boot flag and reset the mcu.  The bootloader
-				// will detect the flag and stay in dfu mode.
-				//dfu_boot_flag = (uint32_t) DFU_BOOT_FLAG;
 				*bootloader_flag = BOOTLOADER_FLAG_VALUE;
 				HAL_NVIC_SystemReset();
 			}
@@ -277,4 +273,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
