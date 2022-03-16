@@ -76,6 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			push_count = HAL_GetTick();
 		} else {
 			if (HAL_GetTick() - push_count > 1000) {
+				// This is going to mess up the stack, but as we go straight to a system reset we do not care
 				*bootloader_flag = BOOTLOADER_FLAG_VALUE;
 				HAL_NVIC_SystemReset();
 			}
@@ -94,18 +95,16 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+	// Very naughty but at this point the stack has not grown more than 15 bytes, so this is safe
 	bootloader_flag = (uint32_t*) (&_estack - BOOTLOADER_FLAG_OFFSET); // 100 bytes below top of stack
 
 	if (*bootloader_flag == BOOTLOADER_FLAG_VALUE) {
 
 		*bootloader_flag = 0;
 
-		/* Jump to user application */
+		/* Jump to system memory bootloader */
 		JumpAddress = *(__IO uint32_t*) (BOOTLOADER_ADDRESS + 4);
 		JumpToApplication = (pFunction) JumpAddress;
-
-		/* Initialize user application's Stack Pointer */
-		//__set_MSP(*(__IO uint32_t*) BOOTLOADER_ADDRESS);
 		JumpToApplication();
 
 	}
