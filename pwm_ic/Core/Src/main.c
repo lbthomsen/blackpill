@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TIMER_CLOCK_FREQ 96000000 // APB1 Timer Clock
+#define TIMER_CLOCK_FREQ 100000000 // APB1 Timer Clock
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,36 +49,38 @@ UART_HandleTypeDef huart1;
 
 // Define some test pwm values - first column is prescaler value for pwm and second row is duty cycle (of 1000)
 uint32_t pwm_vals[][2] = {
-		{19199, 100},
-		{19199, 500},
-		{19199, 900},
-		{9599, 100},
-		{9599, 500},
-		{9599, 900},
-		{959, 100},
-		{959, 500},
-		{959, 900},
-		{95, 100},
-		{95, 500},
-		{95, 900},
-		{47, 100},
-		{47, 500},
-		{47, 900},
-		{23, 100},
-		{23, 500},
-		{23, 900},
-		{11, 100},
-		{11, 500},
-		{11, 900},
-		{5, 100},
-		{5, 500},
-		{5, 900},
+		{19999, 100},
+		{19999, 500},
+		{19999, 900},
+		{9999, 100},
+		{9999, 500},
+		{9999, 900},
+		{999, 100},
+		{999, 500},
+		{999, 900},
+		{99, 100},
+		{99, 500},
+		{99, 900},
+		{49, 100},
+		{49, 500},
+		{49, 900},
+		{24, 100},
+		{24, 500},
+		{24, 900},
+		{9, 100},
+		{9, 500},
+		{9, 900},
+		{4, 100},
+		{4, 500},
+		{4, 900},
 };
 
 // Used to cycle around the pwm values
 uint32_t pwm_vals_idx = 0;
 
 // Will be calculated in interrupt callback
+uint32_t cnt_full = 0;
+uint32_t cnt_high = 0;
 float freq = 0;
 float duty = 0;
 /* USER CODE END PV */
@@ -113,11 +115,11 @@ int _write(int fd, char *ptr, int len) {
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM2) {
-		uint32_t cl = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-		uint32_t ch = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+		cnt_full = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) + 2;
+		cnt_high = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2) + 2;
 
-		freq = (float) TIMER_CLOCK_FREQ / (cl + 1);
-		duty = (float) 100 * ch / cl;
+		freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
+		duty = (float) 100 * cnt_high / cnt_full;
 	}
 }
 
@@ -181,7 +183,7 @@ int main(void)
 		}
 
 		if (now - last_print >= 1000) {
-			DBG("Tick %5lu freq = %7.1f Hz duty = %4.1f %%", now / 1000, freq, duty);
+			DBG("Tick %5lu count = %8lu freq = %8.2f Hz duty = %5.2f %%", now / 1000, cnt_full, freq, duty);
 
 			last_print = now;
 		}
@@ -226,8 +228,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLM = 12;
+  RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -343,7 +345,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 47;
+  htim4.Init.Prescaler = 99;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 999;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
