@@ -183,7 +183,7 @@ int main(void)
 		}
 
 		if (now - last_print >= 1000) {
-			DBG("Tick %5lu count = %8lu freq = %8.2f Hz duty = %5.2f %%", now / 1000, cnt_full, freq, duty);
+			DBG("Tick %5lu count = %8lu freq = %10.4f Hz duty = %7.4f %%", now / 1000, cnt_full, freq, duty);
 
 			last_print = now;
 		}

@@ -1836,7 +1836,7 @@ void Error_Handler(void)
 			last_blink = now;
  80012ea:	4625      	mov	r5, r4
  80012ec:	e7dc      	b.n	80012a8 <main+0x68>
-			DBG("Tick %5lu count = %8lu freq = %8.2f Hz duty = %5.2f %%", now / 1000, cnt_full, freq, duty);
+			DBG("Tick %5lu count = %8lu freq = %10.4f Hz duty = %7.4f %%", now / 1000, cnt_full, freq, duty);
  80012ee:	4b15      	ldr	r3, [pc, #84]	; (8001344 <main+0x104>)
  80012f0:	f8d3 8000 	ldr.w	r8, [r3]
  80012f4:	4e14      	ldr	r6, [pc, #80]	; (8001348 <main+0x108>)
