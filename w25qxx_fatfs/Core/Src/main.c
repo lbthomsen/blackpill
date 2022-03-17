@@ -6,19 +6,19 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -33,11 +33,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#ifdef DEBUG
-#define DBG_STATE "enabled"
-#else
-#define DBG_STATE "disabled"
-#endif // DEBUG
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,10 +46,9 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-//w25qxx_t w25qxx;
+
 W25QXX_HandleTypeDef w25qxx;
 
-uint8_t buf[256] = {0}; // Buffer for playing with w25qxx
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,34 +75,6 @@ int _write(int fd, char* ptr, int len) {
       return -1;
   }
   return -1;
-}
-
-void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
-	uint32_t i = 0;
-
-	printf("%s\n", header);
-
-	for (i = 0; i < len; ++i) {
-		if (i % 16 == 0) {
-			printf("0x%08x: ", start);
-		}
-
-		printf("%02x ", buf[i]);
-
-		if ((i + 1) % 16 == 0) {
-			printf("\n");
-		}
-
-		++start;
-	}
-}
-
-uint32_t get_sum(uint8_t *buf, uint32_t len) {
-	uint32_t sum = 0;
-	for (uint32_t i = 0; i < len; ++i) {
-		sum += buf[i];
-	}
-	return sum;
 }
 
 /* USER CODE END 0 */
@@ -143,10 +109,12 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
-  DBG("\n-----------------\nStarting (debug is %s)...", DBG_STATE);
+  DBG("\n-----------\nStart - peripherals initialized");
 
+  DBG("Initializing W25Qxx");
   if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) == W25QXX_Ok) {
 	  DBG("W25QXX successfully initialized");
 	  DBG("Manufacturer       = 0x%2x", w25qxx.manufacturer_id);
@@ -154,6 +122,9 @@ int main(void)
 	  DBG("Block size         = 0x%04x (%lu)", w25qxx.block_size, w25qxx.block_size);
 	  DBG("Block count        = 0x%04x (%lu)", w25qxx.block_count, w25qxx.block_count);
 	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
+  } else {
+	  DBG("Failed");
+	  Error_Handler();
   }
 
   /* USER CODE END 2 */
@@ -161,55 +132,29 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, last_tick = 0, last_blink = 0, last_run = 0;
+  uint32_t now = 0, last_print = 0, last_blink = 0;
 
   while (1)
   {
 
 	  now = HAL_GetTick();
 
-//	  if (now - last_tick >= 1000) {
-//		  DBG("Loop %lu", now / 1000);
-//		  last_tick = now;
-//	  }
-
 	  if (now - last_blink >= 500) {
+
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
 		  last_blink = now;
+
 	  }
 
-	  if (now - last_run >= 10000) { // Every 10 secs
+	  if (now - last_print >= 1000) {
 
-		  DBG("-----------");
+		  DBG("Tick %lu", now / 1000);
 
-		  DBG("Reading first page");
-		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  //DBG("  - sum = %lu", get_sum(buf, 256));
-			  dump_hex("First page at start", 0, &buf, 256);
-		  }
+		  last_print = now;
 
-		  DBG("Erasing first page");
-		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
-			  DBG("Reading first page");
-			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  			  //DBG("  - sum = %lu", get_sum(buf, 256));
-			  			dump_hex("After erase", 0, &buf, 256);
-			  		  }
-		  }
-
-		  // Create a well known pattern
-		  for (int i = 0; i < 256; ++i) buf[i] = i;
-		  DBG("Writing first page");
-		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  DBG("Reading first page");
-					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-						  //DBG("  - sum = %lu", get_sum(buf, 256));
-						  dump_hex("After write", 0, &buf, 256);
-					  }
-		  }
-
-		  last_run = now;
 	  }
+
 
     /* USER CODE END WHILE */
 
@@ -352,27 +297,31 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI1_CS_Pin */
   GPIO_InitStruct.Pin = SPI1_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
