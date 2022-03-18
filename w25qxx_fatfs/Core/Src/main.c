@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -47,7 +46,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
-W25QXX_HandleTypeDef w25qxx;
+W25QXX_HandleTypeDef w25qxx = {0};
 
 /* USER CODE END PV */
 
@@ -109,10 +108,11 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
   DBG("\n-----------\nStart - peripherals initialized");
+
+  HAL_Delay(10);
 
   DBG("Initializing W25Qxx");
   if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) == W25QXX_Ok) {
@@ -121,10 +121,13 @@ int main(void)
 	  DBG("Device             = 0x%4x", w25qxx.device_id);
 	  DBG("Block size         = 0x%04x (%lu)", w25qxx.block_size, w25qxx.block_size);
 	  DBG("Block count        = 0x%04x (%lu)", w25qxx.block_count, w25qxx.block_count);
+	  DBG("Sector size        = 0x%04x (%lu)", w25qxx.sector_size, w25qxx.sector_size);
+	  DBG("Sectors per block  = 0x%04x (%lu)", w25qxx.sectors_in_block, w25qxx.sectors_in_block);
+	  DBG("Page size          = 0x%04x (%lu)", w25qxx.page_size, w25qxx.page_size);
+	  DBG("Pages per sector   = 0x%04x (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
 	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
   } else {
 	  DBG("Failed");
-	  Error_Handler();
   }
 
   /* USER CODE END 2 */
@@ -147,9 +150,9 @@ int main(void)
 
 	  }
 
-	  if (now - last_print >= 1000) {
+	  if (now - last_print >= 10000) {
 
-		  DBG("Tick %lu", now / 1000);
+		  DBG("Tick %lu", now / 10000);
 
 		  last_print = now;
 
@@ -297,7 +300,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -316,7 +319,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = SPI1_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/

@@ -51,10 +51,11 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-//w25qxx_t w25qxx;
-W25QXX_HandleTypeDef w25qxx;
+
+W25QXX_HandleTypeDef w25qxx = {0};
 
 uint8_t buf[256] = {0}; // Buffer for playing with w25qxx
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -153,6 +154,10 @@ int main(void)
 	  DBG("Device             = 0x%4x", w25qxx.device_id);
 	  DBG("Block size         = 0x%04x (%lu)", w25qxx.block_size, w25qxx.block_size);
 	  DBG("Block count        = 0x%04x (%lu)", w25qxx.block_count, w25qxx.block_count);
+	  DBG("Sector size        = 0x%04x (%lu)", w25qxx.sector_size, w25qxx.sector_size);
+	  DBG("Sectors per block  = 0x%04x (%lu)", w25qxx.sectors_in_block, w25qxx.sectors_in_block);
+	  DBG("Page size          = 0x%04x (%lu)", w25qxx.page_size, w25qxx.page_size);
+	  DBG("Pages per sector   = 0x%04x (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
 	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
   }
 
@@ -178,7 +183,7 @@ int main(void)
 		  last_blink = now;
 	  }
 
-	  if (now - last_run >= 10000) { // Every 10 secs
+	  if (now - last_run >= 10000000) { // Every 10 secs
 
 		  DBG("-----------");
 
