@@ -169,7 +169,9 @@ int main(void)
 	if (FATFS_LinkDriver(&w25qxx_Driver, w25qxx_driver_Path) == 0) {
 		DBG("Driver linked");
 
-		fres = f_mkfs((TCHAR const*) w25qxx_driver_Path, FM_EXFAT, 0, rtext, sizeof(rtext));
+		DBG("Trying to format")
+		fres = f_mkfs((TCHAR const*) w25qxx_driver_Path, FM_ANY, 0, rtext, sizeof(rtext));
+		DBG("Returned: %d", fres);
 
 		if (f_mount(&w25qxx_Driver, (TCHAR const*) w25qxx_driver_Path, 0)
 				== FR_OK) {

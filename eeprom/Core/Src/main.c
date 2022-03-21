@@ -54,7 +54,7 @@ UART_HandleTypeDef huart1;
 
 W25QXX_HandleTypeDef w25qxx = {0};
 
-uint8_t buf[256] = {0}; // Buffer for playing with w25qxx
+uint8_t buf[0x2000] = {0}; // Buffer for playing with w25qxx
 
 /* USER CODE END PV */
 
@@ -91,7 +91,7 @@ void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
 
 	for (i = 0; i < len; ++i) {
 		if (i % 16 == 0) {
-			printf("0x%08x: ", start);
+			printf("0x%08lx: ", start);
 		}
 
 		printf("%02x ", buf[i]);
@@ -152,13 +152,39 @@ int main(void)
 	  DBG("W25QXX successfully initialized");
 	  DBG("Manufacturer       = 0x%2x", w25qxx.manufacturer_id);
 	  DBG("Device             = 0x%4x", w25qxx.device_id);
-	  DBG("Block size         = 0x%04x (%lu)", w25qxx.block_size, w25qxx.block_size);
-	  DBG("Block count        = 0x%04x (%lu)", w25qxx.block_count, w25qxx.block_count);
-	  DBG("Sector size        = 0x%04x (%lu)", w25qxx.sector_size, w25qxx.sector_size);
-	  DBG("Sectors per block  = 0x%04x (%lu)", w25qxx.sectors_in_block, w25qxx.sectors_in_block);
-	  DBG("Page size          = 0x%04x (%lu)", w25qxx.page_size, w25qxx.page_size);
-	  DBG("Pages per sector   = 0x%04x (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
-	  DBG("Total size (in kB) = 0x%04x (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
+	  DBG("Block size         = 0x%04lx (%lu)", w25qxx.block_size, w25qxx.block_size);
+	  DBG("Block count        = 0x%04lx (%lu)", w25qxx.block_count, w25qxx.block_count);
+	  DBG("Sector size        = 0x%04lx (%lu)", w25qxx.sector_size, w25qxx.sector_size);
+	  DBG("Sectors per block  = 0x%04lx (%lu)", w25qxx.sectors_in_block, w25qxx.sectors_in_block);
+	  DBG("Page size          = 0x%04lx (%lu)", w25qxx.page_size, w25qxx.page_size);
+	  DBG("Pages per sector   = 0x%04lx (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
+	  DBG("Total size (in kB) = 0x%04lx (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
+  }
+
+  DBG("Reading first page");
+  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+	  //DBG("  - sum = %lu", get_sum(buf, 256));
+	  dump_hex("First page at start", 0, (uint8_t *)&buf, 0x1000);
+  }
+
+  DBG("Erasing first page");
+  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
+	  DBG("Reading first page");
+	  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+	  			  //DBG("  - sum = %lu", get_sum(buf, 256));
+	  			dump_hex("After erase", 0, (uint8_t *)&buf, 0x1000);
+	  		  }
+  }
+
+  // Create a well known pattern
+  for (int i = 0; i < sizeof(buf) / sizeof(buf[0]); ++i) buf[i] = i % 256;
+  DBG("Writing first page");
+  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+	  DBG("Reading first page");
+			  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+				  //DBG("  - sum = %lu", get_sum(buf, 256));
+				  dump_hex("After write", 0, (uint8_t *)&buf, 0x1000);
+			  }
   }
 
   /* USER CODE END 2 */
@@ -183,38 +209,38 @@ int main(void)
 		  last_blink = now;
 	  }
 
-	  if (now - last_run >= 10000000) { // Every 10 secs
-
-		  DBG("-----------");
-
-		  DBG("Reading first page");
-		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  //DBG("  - sum = %lu", get_sum(buf, 256));
-			  dump_hex("First page at start", 0, &buf, 256);
-		  }
-
-		  DBG("Erasing first page");
-		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
-			  DBG("Reading first page");
-			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  			  //DBG("  - sum = %lu", get_sum(buf, 256));
-			  			dump_hex("After erase", 0, &buf, 256);
-			  		  }
-		  }
-
-		  // Create a well known pattern
-		  for (int i = 0; i < 256; ++i) buf[i] = i;
-		  DBG("Writing first page");
-		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-			  DBG("Reading first page");
-					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-						  //DBG("  - sum = %lu", get_sum(buf, 256));
-						  dump_hex("After write", 0, &buf, 256);
-					  }
-		  }
-
-		  last_run = now;
-	  }
+//	  if (now - last_run >= 10000000) { // Every 10 secs
+//
+//		  DBG("-----------");
+//
+//		  DBG("Reading first page");
+//		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+//			  //DBG("  - sum = %lu", get_sum(buf, 256));
+//			  dump_hex("First page at start", 0, (uint8_t *)&buf, 256);
+//		  }
+//
+//		  DBG("Erasing first page");
+//		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
+//			  DBG("Reading first page");
+//			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+//			  			  //DBG("  - sum = %lu", get_sum(buf, 256));
+//			  			dump_hex("After erase", 0, (uint8_t *)&buf, 256);
+//			  		  }
+//		  }
+//
+//		  // Create a well known pattern
+//		  for (int i = 0; i < 256; ++i) buf[i] = i;
+//		  DBG("Writing first page");
+//		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+//			  DBG("Reading first page");
+//					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
+//						  //DBG("  - sum = %lu", get_sum(buf, 256));
+//						  dump_hex("After write", 0, (uint8_t *)&buf, 256);
+//					  }
+//		  }
+//
+//		  last_run = now;
+//	  }
 
     /* USER CODE END WHILE */
 
