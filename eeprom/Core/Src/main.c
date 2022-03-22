@@ -229,11 +229,11 @@ int main(void)
   uint32_t start;
   uint32_t sectors = 0x1000; // Entire chip
 
-  DBG("Erasing %lu sectors - 0x%08lx (%lu) bytes", sectors, sectors * w25qxx.sector_size, sectors * w25qxx.sector_size);
+  DBG("Stress testing w25qxx device: sectors = %lu", sectors);
+
+  DBG("Doing chip erase");
   start = HAL_GetTick();
-  for (uint32_t i = 0; i < sectors; ++i) {
-	  w25qxx_erase(&w25qxx, i * w25qxx.sector_size, sizeof(buf));
-  }
+  w25qxx_chip_erase(&w25qxx);
   DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
 
   fill_buffer(1, buf, sizeof(buf));
@@ -252,9 +252,11 @@ int main(void)
   }
   DBG("Done reading - took %lu ms", HAL_GetTick() - start);
 
-  DBG("Doing chip erase");
+  DBG("Erasing %lu sectors sequentially", sectors);
   start = HAL_GetTick();
-  w25qxx_chip_erase(&w25qxx);
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_erase(&w25qxx, i * w25qxx.sector_size, sizeof(buf));
+  }
   DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
 
   /* USER CODE END 2 */
