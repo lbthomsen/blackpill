@@ -7,12 +7,12 @@
 [submodule "lvgl"]
 	path = lvgl
 	url = https://github.com/lvgl/lvgl
-[submodule "w25qxx"]
-	path = w25qxx
-	url = git@github.com:nimaltd/w25qxx.git
 [submodule "stm32-w25qxx"]
 	path = stm32-w25qxx
 	url = git@github.com:lbthomsen/stm32-w25qxx.git
+	branch = master
 [submodule "stm32-w25qxx-fatfs"]
 	path = stm32-w25qxx-fatfs
 	url = git@github.com:lbthomsen/stm32-w25qxx-fatfs.git
+	branch = master
+
