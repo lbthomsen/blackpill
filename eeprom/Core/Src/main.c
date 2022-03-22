@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "string.h"
 #include "w25qxx.h"
 /* USER CODE END Includes */
 
@@ -46,15 +47,15 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- SPI_HandleTypeDef hspi1;
+ CRC_HandleTypeDef hcrc;
+
+SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
 W25QXX_HandleTypeDef w25qxx = {0};
-
-uint8_t buf[0x2000] = {0}; // Buffer for playing with w25qxx
 
 /* USER CODE END PV */
 
@@ -63,6 +64,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_CRC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -84,12 +86,14 @@ int _write(int fd, char* ptr, int len) {
   return -1;
 }
 
+// Dump hex to serial console
 void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
 	uint32_t i = 0;
 
 	printf("%s\n", header);
 
 	for (i = 0; i < len; ++i) {
+
 		if (i % 16 == 0) {
 			printf("0x%08lx: ", start);
 		}
@@ -101,6 +105,22 @@ void dump_hex(char *header, uint32_t start, uint8_t *buf, uint32_t len) {
 		}
 
 		++start;
+	}
+}
+
+void fill_buffer(uint8_t pattern, uint8_t *buf, uint32_t len) {
+	switch (pattern) {
+	case 0:
+		memset(buf, 0, len);
+		break;
+	case 1:
+		memset(buf, 0xaa, len); // 10101010
+		break;
+	case 2:
+		for (uint32_t i = 0; i < len; ++i) buf[i] = i % 256;
+		break;
+	default:
+		DBG("Programmer is a moron");
 	}
 }
 
@@ -144,11 +164,15 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
+
+  W25QXX_result_t res;
 
   DBG("\n-----------------\nStarting (debug is %s)...", DBG_STATE);
 
-  if (w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin) == W25QXX_Ok) {
+  res = w25qxx_init(&w25qxx, &hspi1, SPI1_CS_GPIO_Port, SPI1_CS_Pin);
+  if (res == W25QXX_Ok) {
 	  DBG("W25QXX successfully initialized");
 	  DBG("Manufacturer       = 0x%2x", w25qxx.manufacturer_id);
 	  DBG("Device             = 0x%4x", w25qxx.device_id);
@@ -159,88 +183,96 @@ int main(void)
 	  DBG("Page size          = 0x%04lx (%lu)", w25qxx.page_size, w25qxx.page_size);
 	  DBG("Pages per sector   = 0x%04lx (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
 	  DBG("Total size (in kB) = 0x%04lx (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
+  } else {
+	  DBG("Unable to initialize w25qxx");
   }
 
-  DBG("Reading first page");
-  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
-	  //DBG("  - sum = %lu", get_sum(buf, 256));
-	  dump_hex("First page at start", 0, (uint8_t *)&buf, 0x1000);
-  }
+  uint8_t buf[w25qxx.sector_size]; // Buffer the size of a sector
 
-  DBG("Erasing first page");
-  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
+  for (uint8_t run = 0; run <= 2; ++run) {
+
+	  DBG("\n-------------\nRun %d", run);
+
 	  DBG("Reading first page");
-	  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
-	  			  //DBG("  - sum = %lu", get_sum(buf, 256));
-	  			dump_hex("After erase", 0, (uint8_t *)&buf, 0x1000);
-	  		  }
+
+	  res = w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, sizeof(buf));
+	  if (res == W25QXX_Ok) {
+		  dump_hex("First page at start", 0, (uint8_t *)&buf, sizeof(buf));
+	  } else {
+		  DBG("Unable to read w25qxx");
+	  }
+
+	  DBG("Erasing first page");
+	  if (w25qxx_erase(&w25qxx, 0, sizeof(buf)) == W25QXX_Ok) {
+		  DBG("Reading first page");
+		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, sizeof(buf)) == W25QXX_Ok) {
+			dump_hex("After erase", 0, (uint8_t *)&buf, sizeof(buf));
+		  }
+	  }
+
+	  // Create a well known pattern
+	  fill_buffer(run, buf, sizeof(buf));
+
+	  // Write it to device
+	  DBG("Writing first page");
+	  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+		  // now read it back
+		  DBG("Reading first page");
+		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+			  //DBG("  - sum = %lu", get_sum(buf, 256));
+			  dump_hex("After write", 0, (uint8_t *)&buf, 0x1000);
+		  }
+	  }
   }
 
-  // Create a well known pattern
-  for (int i = 0; i < sizeof(buf) / sizeof(buf[0]); ++i) buf[i] = i % 256;
-  DBG("Writing first page");
-  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
-	  DBG("Reading first page");
-			  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
-				  //DBG("  - sum = %lu", get_sum(buf, 256));
-				  dump_hex("After write", 0, (uint8_t *)&buf, 0x1000);
-			  }
+  // Let's do a stress test
+  uint32_t start;
+  uint32_t sectors = 0x1000; // Entire chip
+
+  DBG("Erasing %lu sectors - 0x%08lx (%lu) bytes", sectors, sectors * w25qxx.sector_size, sectors * w25qxx.sector_size);
+  start = HAL_GetTick();
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_erase(&w25qxx, i * w25qxx.sector_size, sizeof(buf));
   }
+  DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
+
+  fill_buffer(1, buf, sizeof(buf));
+
+  DBG("Writing %lu sectors", sectors);
+  start = HAL_GetTick();
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_write(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
+  }
+  DBG("Done writing - took %lu ms", HAL_GetTick() - start);
+
+  DBG("Reading %lu sectors", sectors);
+  start = HAL_GetTick();
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_read(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
+  }
+  DBG("Done reading - took %lu ms", HAL_GetTick() - start);
+
+  DBG("Doing chip erase");
+  start = HAL_GetTick();
+  w25qxx_chip_erase(&w25qxx);
+  DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, last_tick = 0, last_blink = 0, last_run = 0;
+  uint32_t now = 0, last_blink = 0;
 
   while (1)
   {
 
 	  now = HAL_GetTick();
 
-//	  if (now - last_tick >= 1000) {
-//		  DBG("Loop %lu", now / 1000);
-//		  last_tick = now;
-//	  }
-
 	  if (now - last_blink >= 500) {
 		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		  last_blink = now;
 	  }
-
-//	  if (now - last_run >= 10000000) { // Every 10 secs
-//
-//		  DBG("-----------");
-//
-//		  DBG("Reading first page");
-//		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-//			  //DBG("  - sum = %lu", get_sum(buf, 256));
-//			  dump_hex("First page at start", 0, (uint8_t *)&buf, 256);
-//		  }
-//
-//		  DBG("Erasing first page");
-//		  if (w25qxx_erase(&w25qxx, 0, 256) == W25QXX_Ok) {
-//			  DBG("Reading first page");
-//			  		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-//			  			  //DBG("  - sum = %lu", get_sum(buf, 256));
-//			  			dump_hex("After erase", 0, (uint8_t *)&buf, 256);
-//			  		  }
-//		  }
-//
-//		  // Create a well known pattern
-//		  for (int i = 0; i < 256; ++i) buf[i] = i;
-//		  DBG("Writing first page");
-//		  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-//			  DBG("Reading first page");
-//					  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 256) == W25QXX_Ok) {
-//						  //DBG("  - sum = %lu", get_sum(buf, 256));
-//						  dump_hex("After write", 0, (uint8_t *)&buf, 256);
-//					  }
-//		  }
-//
-//		  last_run = now;
-//	  }
 
     /* USER CODE END WHILE */
 
@@ -292,6 +324,32 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief CRC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_CRC_Init(void)
+{
+
+  /* USER CODE BEGIN CRC_Init 0 */
+
+  /* USER CODE END CRC_Init 0 */
+
+  /* USER CODE BEGIN CRC_Init 1 */
+
+  /* USER CODE END CRC_Init 1 */
+  hcrc.Instance = CRC;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CRC_Init 2 */
+
+  /* USER CODE END CRC_Init 2 */
+
 }
 
 /**

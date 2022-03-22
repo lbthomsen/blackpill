@@ -69,7 +69,6 @@ void Error_Handler(void);
 #ifdef DEBUG
 #define DBG(...)    printf(__VA_ARGS__);\
                             printf("\n");
-                            //HAL_Delay(1);
 #else
 #define DBG(...)
 #endif
