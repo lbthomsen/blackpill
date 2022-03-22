@@ -1,10 +1,12 @@
 #MicroXplorer Configuration settings - do not modify
-FATFS.IPParameters=_USE_LFN,_MAX_SS,_MIN_SS,_FS_EXFAT,_USE_LABEL
+FATFS.IPParameters=_USE_LFN,_MAX_SS,_MIN_SS,_FS_EXFAT,_USE_LABEL,_USE_TRIM,_FS_NORTC
 FATFS._FS_EXFAT=1
+FATFS._FS_NORTC=1
 FATFS._MAX_SS=4096
 FATFS._MIN_SS=4096
-FATFS._USE_LABEL=1
+FATFS._USE_LABEL=0
 FATFS._USE_LFN=1
+FATFS._USE_TRIM=1
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
 KeepUserPlacement=false

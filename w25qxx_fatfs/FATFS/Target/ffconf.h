@@ -69,7 +69,7 @@
 /* This option switches attribute manipulation functions, f_chmod() and f_utime().
 /  (0:Disable or 1:Enable) Also _FS_READONLY needs to be 0 to enable this option. */
 
-#define _USE_LABEL           1
+#define _USE_LABEL           0
 /* This option switches volume label functions, f_getlabel() and f_setlabel().
 /  (0:Disable or 1:Enable) */
 
@@ -182,7 +182,7 @@
 /  to variable sector size and GET_SECTOR_SIZE command must be implemented to the
 /  disk_ioctl() function. */
 
-#define	_USE_TRIM      0
+#define	_USE_TRIM      1
 /* This option switches support of ATA-TRIM. (0:Disable or 1:Enable)
 /  To enable Trim function, also CTRL_TRIM command should be implemented to the
 /  disk_ioctl() function. */
@@ -213,7 +213,7 @@
 /  When enable exFAT, also LFN needs to be enabled. (_USE_LFN >= 1)
 /  Note that enabling exFAT discards C89 compatibility. */
 
-#define _FS_NORTC	0
+#define _FS_NORTC	1
 #define _NORTC_MON	6
 #define _NORTC_MDAY	4
 #define _NORTC_YEAR	2015

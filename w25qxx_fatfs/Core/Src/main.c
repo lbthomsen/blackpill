@@ -166,29 +166,29 @@ int main(void)
 
 	//w25qxx_diskio_sethandler(&w25qxx);
 
-	if (FATFS_LinkDriver(&w25qxx_Driver, w25qxx_driver_Path) == 0) {
+	if (FATFS_LinkDriver(&w25qxx_Driver, &w25qxx_driver_Path) == 0) {
 		DBG("Driver linked");
 
 		DBG("Trying to format")
-		fres = f_mkfs((TCHAR const*) w25qxx_driver_Path, FM_ANY, 0, rtext, sizeof(rtext));
-		DBG("Returned: %d", fres);
+		fres = f_mkfs((TCHAR const*)&w25qxx_driver_Path, FM_FAT, 0, rtext, sizeof(rtext));
+		DBG("Mkfs returned: %d", fres);
 
-		if (f_mount(&w25qxx_Driver, (TCHAR const*) w25qxx_driver_Path, 0)
-				== FR_OK) {
-			DBG("FATFS Mounted");
 
-			if (f_open(&w25qxx_driver_File, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE)
-					== FR_OK) {
-				DBG("File opened")
+		fres = f_mount(&w25qxx_driver_FatFS, (TCHAR const*) &w25qxx_driver_Path, 1);
+		DBG("Mount returned: %d", fres);
+
+		fres = f_open(&w25qxx_driver_File, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE);
+		DBG("Open returned %d", fres);
 				if (f_write(&w25qxx_driver_File, wtext, sizeof(wtext), (void*) &wbytes)
 						== FR_OK)
 
 				{
 					DBG("File written");
+					f_sync(&w25qxx_driver_File);
 					f_close(&w25qxx_driver_File);
 				}
-			}
-		}
+
+
 	} else {
 		DBG("Driver link failed");
 	}
