@@ -236,9 +236,30 @@ int main(void)
   w25qxx_chip_erase(&w25qxx);
   DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
 
+  fill_buffer(0, buf, sizeof(buf));
+
+  DBG("Writing all zeroes %lu sectors", sectors);
+  start = HAL_GetTick();
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_write(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
+  }
+  DBG("Done writing - took %lu ms", HAL_GetTick() - start);
+
+  DBG("Reading %lu sectors", sectors);
+  start = HAL_GetTick();
+  for (uint32_t i = 0; i < sectors; ++i) {
+	  w25qxx_read(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
+  }
+  DBG("Done reading - took %lu ms", HAL_GetTick() - start);
+
+  DBG("Doing chip erase");
+  start = HAL_GetTick();
+  w25qxx_chip_erase(&w25qxx);
+  DBG("Done erasing - took %lu ms", HAL_GetTick() - start);
+
   fill_buffer(1, buf, sizeof(buf));
 
-  DBG("Writing %lu sectors", sectors);
+  DBG("Writing 10101010 %lu sectors", sectors);
   start = HAL_GetTick();
   for (uint32_t i = 0; i < sectors; ++i) {
 	  w25qxx_write(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
