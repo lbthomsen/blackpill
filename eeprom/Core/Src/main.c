@@ -215,6 +215,8 @@ int main(void)
 	  DBG("Unable to initialize w25qxx");
   }
 
+  HAL_Delay(10);
+
   uint8_t buf[w25qxx.sector_size]; // Buffer the size of a sector
 
   for (uint8_t run = 0; run <= 2; ++run) {
@@ -255,7 +257,7 @@ int main(void)
 
   // Let's do a stress test
   uint32_t start;
-  uint32_t sectors = 0x800; // Entire chip
+  uint32_t sectors = w25qxx.block_count * w25qxx.sectors_in_block; // Entire chip
 
   DBG("Stress testing w25qxx device: sectors = %lu", sectors);
 
@@ -501,20 +503,19 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
