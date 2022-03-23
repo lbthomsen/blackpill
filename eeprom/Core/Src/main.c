@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "stdbool.h"
 #include "string.h"
 #include "w25qxx.h"
 /* USER CODE END Includes */
@@ -122,6 +123,33 @@ void fill_buffer(uint8_t pattern, uint8_t *buf, uint32_t len) {
 	default:
 		DBG("Programmer is a moron");
 	}
+}
+
+bool check_buffer(uint8_t pattern, uint8_t *buf, uint32_t len) {
+
+	bool ret = true;
+
+	switch (pattern) {
+	case 0:
+		for (uint32_t i = 0; i < len; ++i) {
+			if (buf[i] != 0) ret = false;
+		}
+		break;
+	case 1:
+		for (uint32_t i = 0; i < len; ++i) {
+			if (buf[i] != 0xaa) ret = false;
+		}
+		break;
+	case 2:
+		for (uint32_t i = 0; i < len; ++i) {
+			if (buf[i] != i % 256) ret = false;
+		}
+		break;
+	default:
+		DBG("Programmer is a moron");
+	}
+
+	return ret;
 }
 
 uint32_t get_sum(uint8_t *buf, uint32_t len) {
@@ -227,7 +255,7 @@ int main(void)
 
   // Let's do a stress test
   uint32_t start;
-  uint32_t sectors = 0x1000; // Entire chip
+  uint32_t sectors = 0x800; // Entire chip
 
   DBG("Stress testing w25qxx device: sectors = %lu", sectors);
 
@@ -252,6 +280,13 @@ int main(void)
   }
   DBG("Done reading - took %lu ms", HAL_GetTick() - start);
 
+  DBG("Validating buffer");
+  if (check_buffer(0, buf, sizeof(buf))) {
+	  DBG("OK");
+  } else {
+	  DBG("Not OK");
+  }
+
   DBG("Doing chip erase");
   start = HAL_GetTick();
   w25qxx_chip_erase(&w25qxx);
@@ -272,6 +307,13 @@ int main(void)
 	  w25qxx_read(&w25qxx, i * w25qxx.sector_size, buf, sizeof(buf));
   }
   DBG("Done reading - took %lu ms", HAL_GetTick() - start);
+
+  DBG("Validating buffer");
+  if (check_buffer(1, buf, sizeof(buf))) {
+	  DBG("OK");
+  } else {
+	  DBG("Not OK");
+  }
 
   DBG("Erasing %lu sectors sequentially", sectors);
   start = HAL_GetTick();
@@ -459,19 +501,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
