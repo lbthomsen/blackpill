@@ -21,6 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "lfs.h"
 #include "w25qxx.h"
 #include "w25qxx_littlefs.h"
 /* USER CODE END Includes */
@@ -46,6 +48,9 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 W25QXX_HandleTypeDef w25qxx;
+lfs_file_t file;
+lfs_dir_t dir;
+struct lfs_info info;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,14 +121,113 @@ int main(void)
 	  Error_Handler();
   }
 
+  DBG("W25QXX successfully initialized");
+  DBG("Manufacturer       = 0x%2x", w25qxx.manufacturer_id);
+  DBG("Device             = 0x%4x", w25qxx.device_id);
+  DBG("Block size         = 0x%04lx (%lu)", w25qxx.block_size, w25qxx.block_size);
+  DBG("Block count        = 0x%04lx (%lu)", w25qxx.block_count, w25qxx.block_count);
+  DBG("Sector size        = 0x%04lx (%lu)", w25qxx.sector_size, w25qxx.sector_size);
+  DBG("Sectors per block  = 0x%04lx (%lu)", w25qxx.sectors_in_block, w25qxx.sectors_in_block);
+  DBG("Page size          = 0x%04lx (%lu)", w25qxx.page_size, w25qxx.page_size);
+  DBG("Pages per sector   = 0x%04lx (%lu)", w25qxx.pages_in_sector, w25qxx.pages_in_sector);
+  DBG("Total size (in kB) = 0x%04lx (%lu)", (w25qxx.block_count * w25qxx.block_size) / 1024, (w25qxx.block_count * w25qxx.block_size) / 1024);
 
+  w25qxx_littlefs_init(&w25qxx);
+
+  // read current count
+  uint32_t boot_count = 0;
+
+  lfs_file_open(&littlefs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
+  lfs_file_read(&littlefs, &file, &boot_count, sizeof(boot_count));
+
+  // update boot count
+  boot_count += 1;
+  lfs_file_rewind(&littlefs, &file);
+  lfs_file_write(&littlefs, &file, &boot_count, sizeof(boot_count));
+
+  // remember the storage is not updated until the file is closed successfully
+  lfs_file_close(&littlefs, &file);
+
+  uint32_t start_uptime = 0;
+
+  lfs_file_open(&littlefs, &file, "uptime", LFS_O_RDWR | LFS_O_CREAT);
+  lfs_file_read(&littlefs, &file, &start_uptime, sizeof(start_uptime));
+  lfs_file_close(&littlefs, &file);
+
+  DBG("Boot count = %lu start uptime = %lu", boot_count, start_uptime);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint32_t last_blink = 0, last_update = 0, last_status = 0, now = 0;
+
   while (1)
   {
+
+	  now = HAL_GetTick();
+
+	  if (now - last_blink >= 500) {
+		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		  last_blink = now;
+	  }
+
+	  if (now - last_update >= 1000) {
+
+		  uint32_t total_uptime = start_uptime + now;
+
+		  DBG("Total uptime = %lu", total_uptime);
+
+		  //timer_start();
+		  uint32_t start = HAL_GetTick();
+		  lfs_file_open(&littlefs, &file, "uptime", LFS_O_RDWR);
+		  lfs_file_rewind(&littlefs, &file);
+		  lfs_file_write(&littlefs, &file, &total_uptime, sizeof(total_uptime));
+		  lfs_file_close(&littlefs, &file);
+		  DBG("File update took %lu ms", HAL_GetTick() - start);
+
+		  last_update = now;
+	  }
+
+	  if (now - last_status >= 10000) {
+
+		  lfs_dir_open(&littlefs, &dir, "/");
+
+		  lfs_dir_read(&littlefs, &dir, &info);
+
+		  while (true) {
+			  int res = lfs_dir_read(&littlefs, &dir, &info);
+			  if (res < 0) {
+				  return res;
+			  }
+
+			  if (res == 0) {
+				  break;
+			  }
+
+			  switch (info.type) {
+				  case LFS_TYPE_REG: printf("reg "); break;
+				  case LFS_TYPE_DIR: printf("dir "); break;
+				  default:           printf("?   "); break;
+			  }
+
+			  static const char *prefixes[] = {"", "K", "M", "G"};
+			  for (int i = sizeof(prefixes)/sizeof(prefixes[0])-1; i >= 0; i--) {
+				  if (info.size >= (1 << 10*i)-1) {
+					  printf("%*lu%sB ", 4-(i != 0), info.size >> 10*i, prefixes[i]);
+					  break;
+				  }
+			  }
+
+			  printf("%s\n", info.name);
+		  }
+
+		  lfs_dir_close(&littlefs, &dir);
+
+		  last_status = now;
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -230,7 +334,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 921600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -257,11 +361,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI1_CS_Pin */
   GPIO_InitStruct.Pin = SPI1_CS_Pin;
