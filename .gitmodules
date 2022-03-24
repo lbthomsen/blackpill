@@ -16,3 +16,7 @@
 	url = git@github.com:lbthomsen/stm32-w25qxx-fatfs.git
 	branch = master
 
+[submodule "stm32-w25qxx-littlefs"]
+	path = stm32-w25qxx-littlefs
+	url = git@github.com:lbthomsen/stm32-w25qxx-littlefs.git
+	branch = master
