@@ -156,6 +156,19 @@ int main(void)
 
   DBG("Boot count = %lu start uptime = %lu", boot_count, start_uptime);
 
+  DBG("Creating one large file");
+
+  uint8_t buf[0x1000];
+  for (int i = 0; i < sizeof(buf); ++i) buf[i] = (uint8_t)random();
+
+  lfs_remove(&littlefs, "random.dat");
+  lfs_file_open(&littlefs, &file, "random.dat", LFS_O_RDWR | LFS_O_CREAT | LFS_O_TRUNC);
+  for (int b = 0; b < 0x800; ++b) {
+	  lfs_file_write(&littlefs, &file, &buf, sizeof(buf));
+	  //DBG("Written %d bytes", sizeof(buf));
+  }
+  lfs_file_close(&littlefs, &file);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
