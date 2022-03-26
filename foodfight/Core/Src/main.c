@@ -42,7 +42,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart1;
+ UART_HandleTypeDef huart1;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -233,6 +233,7 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -248,6 +249,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -325,20 +327,28 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 
-	uint8_t taskNumber;
+	uint32_t fightTaskId = (uint32_t)argument;
+	uint32_t mutexCount = 0;
 
-	DBG("Starting default task");
+	osDelay(fightTaskId);
+	DBG("FT Starting %lu", fightTaskId);
+	osDelay(10);
 
   /* Infinite loop */
   for(;;)
   {
-
-	  osStatus_t status = osMessageQueueGet(infoQueueHandle, &taskNumber, NULL, osWaitForever);
-
-	  if (status == osOK) {
-		  DBG("DT: looks like task %lu got the mutex", taskNumber);
-	  }
-
+	DBG("FT %lu Trying to acquire mutex", fightTaskId); osThreadYield();
+	uint32_t startTick = osKernelGetTickCount();
+	osStatus_t mutex = osMutexAcquire(oneMutexHandle, osWaitForever);
+	if (mutex == osOK) {
+		mutexCount++;
+		DBG("FT %lu got mutex number %lu, waited %lus", fightTaskId, mutexCount, (osKernelGetTickCount() - startTick) / 1000); osThreadYield();
+		osMessageQueuePut(infoQueueHandle, &fightTaskId, 0, osWaitForever);
+		osDelay(1000);
+		DBG("FT %lu releasing mutex", fightTaskId); osThreadYield();
+		osMutexRelease(oneMutexHandle);
+	}
+	osThreadYield();
   }
   /* USER CODE END 5 */
 }
@@ -395,5 +405,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

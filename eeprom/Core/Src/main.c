@@ -48,9 +48,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CRC_HandleTypeDef hcrc;
-
-SPI_HandleTypeDef hspi1;
+ SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
 
@@ -65,7 +63,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_CRC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -192,7 +189,6 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
   W25QXX_result_t res;
@@ -217,7 +213,7 @@ int main(void)
 
   HAL_Delay(10);
 
-  uint8_t buf[w25qxx.sector_size]; // Buffer the size of a sector
+  uint8_t buf[w25qxx.page_size]; // Buffer the size of a page
 
   for (uint8_t run = 0; run <= 2; ++run) {
 
@@ -245,12 +241,12 @@ int main(void)
 
 	  // Write it to device
 	  DBG("Writing first page");
-	  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+	  if (w25qxx_write(&w25qxx, 0, (uint8_t *)&buf, sizeof(buf)) == W25QXX_Ok) {
 		  // now read it back
 		  DBG("Reading first page");
-		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, 0x1000) == W25QXX_Ok) {
+		  if (w25qxx_read(&w25qxx, 0, (uint8_t *)&buf, sizeof(buf)) == W25QXX_Ok) {
 			  //DBG("  - sum = %lu", get_sum(buf, 256));
-			  dump_hex("After write", 0, (uint8_t *)&buf, 0x1000);
+			  dump_hex("After write", 0, (uint8_t *)&buf, sizeof(buf));
 		  }
 	  }
   }
@@ -391,32 +387,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief CRC Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CRC_Init(void)
-{
-
-  /* USER CODE BEGIN CRC_Init 0 */
-
-  /* USER CODE END CRC_Init 0 */
-
-  /* USER CODE BEGIN CRC_Init 1 */
-
-  /* USER CODE END CRC_Init 1 */
-  hcrc.Instance = CRC;
-  if (HAL_CRC_Init(&hcrc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN CRC_Init 2 */
-
-  /* USER CODE END CRC_Init 2 */
-
 }
 
 /**
