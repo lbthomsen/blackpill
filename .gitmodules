@@ -24,3 +24,6 @@
 	path = stm32-jdy40
 	url = git@github.com:lbthomsen/stm32-jdy40.git
 	branch = master
+[submodule "cAT"]
+	path = cAT
+	url = git@github.com:lbthomsen/cAT.git
