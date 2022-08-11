@@ -27,3 +27,7 @@
 [submodule "cAT"]
 	path = cAT
 	url = git@github.com:lbthomsen/cAT.git
+[submodule "stm32-max72xx"]
+	path = stm32-max72xx
+	url = git@github.com:lbthomsen/stm32-max72xx.git
+	branch = master
