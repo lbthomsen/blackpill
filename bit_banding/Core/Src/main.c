@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 Lars Boegild Thomsen <lbthomsen@gmail.com>
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022 Lars Boegild Thomsen <lbthomsen@gmail.com>
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -57,17 +57,17 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 // Send printf to uart1
-int _write(int fd, char* ptr, int len) {
-  HAL_StatusTypeDef hstatus;
+int _write(int fd, char *ptr, int len) {
+    HAL_StatusTypeDef hstatus;
 
-  if (fd == 1 || fd == 2) {
-    hstatus = HAL_UART_Transmit(&huart1, (uint8_t *) ptr, len, HAL_MAX_DELAY);
-    if (hstatus == HAL_OK)
-      return len;
-    else
-      return -1;
-  }
-  return -1;
+    if (fd == 1 || fd == 2) {
+        hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len, HAL_MAX_DELAY);
+        if (hstatus == HAL_OK)
+            return len;
+        else
+            return -1;
+    }
+    return -1;
 }
 
 /* USER CODE END 0 */
@@ -103,54 +103,54 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  DBG("\n\n--------\nStarting");
+    DBG("\n\n--------\nStarting");
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint8_t original = 0;
-  uint8_t *bit7 = (uint8_t *)BITBAND_REGION_BIT(&original, 7);
-  uint8_t *bit6 = (uint8_t *)BITBAND_REGION_BIT(&original, 6);
-  uint8_t *bit5 = (uint8_t *)BITBAND_REGION_BIT(&original, 5);
-  uint8_t *bit4 = (uint8_t *)BITBAND_REGION_BIT(&original, 4);
-  uint8_t *bit3 = (uint8_t *)BITBAND_REGION_BIT(&original, 3);
-  uint8_t *bit2 = (uint8_t *)BITBAND_REGION_BIT(&original, 2);
-  uint8_t *bit1 = (uint8_t *)BITBAND_REGION_BIT(&original, 1);
-  uint8_t *bit0 = (uint8_t *)BITBAND_REGION_BIT(&original, 0);
+    uint8_t original = 0;
 
-  uint8_t toggle_bit = 0;
-  uint32_t now = 0, last_tick = 0, last_blink = 0;
+    uint8_t *bit7 = (uint8_t*) BITBAND_REGION_BIT(&original, 7);
+    uint8_t *bit6 = (uint8_t*) BITBAND_REGION_BIT(&original, 6);
+    uint8_t *bit5 = (uint8_t*) BITBAND_REGION_BIT(&original, 5);
+    uint8_t *bit4 = (uint8_t*) BITBAND_REGION_BIT(&original, 4);
+    uint8_t *bit3 = (uint8_t*) BITBAND_REGION_BIT(&original, 3);
+    uint8_t *bit2 = (uint8_t*) BITBAND_REGION_BIT(&original, 2);
+    uint8_t *bit1 = (uint8_t*) BITBAND_REGION_BIT(&original, 1);
+    uint8_t *bit0 = (uint8_t*) BITBAND_REGION_BIT(&original, 0);
 
-  while (1)
-  {
+    uint8_t toggle_bit = 0;
+    uint32_t now = 0, last_tick = 0, last_blink = 0;
 
-      now = HAL_GetTick();
+    while (1) {
 
-      if (now - last_blink >= 500) {
-          HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-          last_blink = now;
-      }
+        now = HAL_GetTick();
 
-      if (now - last_tick >= 1000) {
+        if (now - last_blink >= 500) {
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+            last_blink = now;
+        }
 
-          DBG("Tick %5lu: %d%d%d%d%d%d%d%d", now / 1000, *bit7, *bit6, *bit5, *bit4, *bit3, *bit2, *bit1, *bit0);
+        if (now - last_tick >= 100) {
 
-          uint8_t *bb = (uint8_t *)BITBAND_REGION_BIT(&original, toggle_bit);
-          *bb = !*bb;
+            DBG("Tick %5lu: %d%d%d%d%d%d%d%d", now / 1000, *bit7, *bit6, *bit5, *bit4, *bit3, *bit2, *bit1, *bit0);
 
-          ++toggle_bit;
-          if (toggle_bit > 7) toggle_bit = 0;
+            uint8_t *bb = (uint8_t*) BITBAND_REGION_BIT(&original, toggle_bit);
+            *bb = !*bb;
 
-          last_tick = now;
-      }
+            ++toggle_bit;
+            if (toggle_bit > 7)
+                toggle_bit = 0;
 
+            last_tick = now;
+        }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -215,7 +215,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 921600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -269,11 +269,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1) {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 

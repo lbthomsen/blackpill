@@ -1,29 +1,27 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usbd_cdc_if.h"
 #include "stdio.h"
 /* USER CODE END Includes */
 
@@ -34,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ADC_RESOLUTION 4095
 #define ADC_SAMPLES 100
 /* USER CODE END PD */
 
@@ -43,21 +42,26 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 TIM_HandleTypeDef htim3;
+
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
 float ta, tb; // transfer function using calibration data
 
-uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = {0}; // ADC_SAMPLES samples, 2 channels, 2 buffers
+uint16_t adc_buffer[ADC_SAMPLES * 2 * 2] = { 0 }; // ADC_SAMPLES samples, 2 channels, 2 buffers
 
 uint32_t tim_cnt = 0;
 
-float temp = 0; // Result of temp calculation
+uint16_t vref_avg = 0;
+uint16_t temp_avg = 0;
+float vdda = 0; // Result of VDDA calculation
 float vref = 0; // Result of vref calculation
+float temp = 0; // Result of temp calculation
 
 /* USER CODE END PV */
 
@@ -67,6 +71,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -74,19 +79,27 @@ static void MX_TIM3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// Redirect printf to USB serial
-int _write(int file, char *ptr, int len) {
-	CDC_Transmit_FS((uint8_t *)ptr, len);
-    return len;
+// Send printf to uart1
+int _write(int fd, char *ptr, int len) {
+    HAL_StatusTypeDef hstatus;
+
+    if (fd == 1 || fd == 2) {
+        hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len, HAL_MAX_DELAY);
+        if (hstatus == HAL_OK)
+            return len;
+        else
+            return -1;
+    }
+    return -1;
 }
 
 // TIM3 is used for ADC/DMA but we use the same to toggle the LED
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM3) {
-		if (tim_cnt % 500 == 0)
-			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		tim_cnt++;
-	}
+    if (htim->Instance == TIM3) {
+        if (tim_cnt % 500 == 0)
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        tim_cnt++;
+    }
 }
 
 // Process half a buffer full of data
@@ -94,34 +107,42 @@ static inline void process_adc_buffer(uint16_t *buffer) {
 
     uint32_t sum1 = 0, sum2 = 0;
     for (int i = 0; i < ADC_SAMPLES; ++i) {
-    	sum1 += buffer[i * 2];
-    	sum2 += buffer[1 + i * 2];
+        sum1 += buffer[i * 2];
+        sum2 += buffer[1 + i * 2];
     }
 
-    temp = (float)(ta * (float)(sum1 / ADC_SAMPLES) + tb);
-    vref = (float)sum2 / 1000 / ADC_SAMPLES;
+    vref_avg = sum2 / ADC_SAMPLES;
+    temp_avg = sum1 / ADC_SAMPLES;
+
+    // VDDA can be calculated based on the measured vref and the calibration data
+    vdda = (float)VREFINT_CAL_VREF * (float)*VREFINT_CAL_ADDR / vref_avg / 1000;
+
+    // Knowing vdda and the resolution of adc - the actual voltage can be calculated
+    vref = (float) vdda / ADC_RESOLUTION * vref_avg;
+
+    temp = (float) (ta * (float) (sum1 / ADC_SAMPLES) + tb);
+    //vref = (float) sum2 / 1000 / ADC_SAMPLES;
 
 }
 
-
-void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc) {
-	process_adc_buffer(&adc_buffer[0]); // We're half way through the buffer, so can safely deal with first half
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
+    process_adc_buffer(&adc_buffer[0]); // We're half way through the buffer, so can safely deal with first half
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]); // We're all the way through the buffer, so deal with second half
+    process_adc_buffer(&adc_buffer[ADC_SAMPLES * 2]); // We're all the way through the buffer, so deal with second half
 }
 
 void calculate_calibration() {
 
-	float x1 = (float)*TEMPSENSOR_CAL1_ADDR;
-	float x2 = (float)*TEMPSENSOR_CAL2_ADDR;
-	float y1 = (float)TEMPSENSOR_CAL1_TEMP;
-	float y2 = (float)TEMPSENSOR_CAL2_TEMP;
+    float x1 = (float) *TEMPSENSOR_CAL1_ADDR;
+    float x2 = (float) *TEMPSENSOR_CAL2_ADDR;
+    float y1 = (float) TEMPSENSOR_CAL1_TEMP;
+    float y2 = (float) TEMPSENSOR_CAL2_TEMP;
 
-	// Simple linear equation y = ax + b based on two points
-	ta = (float)( (y2 - y1) / (x2 - x1) );
-	tb = (float) ( ( x2 * y1 - x1 * y2 ) / (x2 - x1) );
+    // Simple linear equation y = ax + b based on two points
+    ta = (float) ((y2 - y1) / (x2 - x1));
+    tb = (float) ((x2 * y1 - x1 * y2) / (x2 - x1));
 
 }
 
@@ -158,38 +179,46 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
-  MX_USB_DEVICE_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  // Calculate transfer function values - a and b in simple linear equation y = ax + b
-  calculate_calibration();
+    printf("\n\nStarting\n");
+    printf("VREFINT_CAL = %d (0x%04x)\n", (uint16_t)*VREFINT_CAL_ADDR, (uint16_t)*VREFINT_CAL_ADDR);
+    printf("TEMPSENSOR_CAL1 = %d (0x%04x)\n", (uint16_t)*TEMPSENSOR_CAL1_ADDR, (uint16_t)*TEMPSENSOR_CAL1_ADDR);
+    printf("TEMPSENSOR_CAL2 = %d (0x%04x)\n", (uint16_t)*TEMPSENSOR_CAL2_ADDR, (uint16_t)*TEMPSENSOR_CAL2_ADDR);
 
-  HAL_TIM_Base_Start_IT(&htim3); // First get the timer running
+    // Calculate transfer function values - a and b in simple linear equation y = ax + b
+    ta = (float)((uint16_t)TEMPSENSOR_CAL2_TEMP - (uint16_t)TEMPSENSOR_CAL1_TEMP) / ((uint16_t)*TEMPSENSOR_CAL2_ADDR - (uint16_t)*TEMPSENSOR_CAL1_ADDR);
+    tb = (uint16_t)TEMPSENSOR_CAL1_TEMP - ta * (uint16_t)*TEMPSENSOR_CAL1_ADDR;
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buffer, ADC_SAMPLES * 2 * 2); // Now fire up the ADC DMA
+    printf("Temp calibration: t = %0.3f * tmeasured + %0.3f\n", ta, tb);
+
+    HAL_TIM_Base_Start_IT(&htim3); // First get the timer running
+
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buffer, ADC_SAMPLES * 2 * 2); // Now fire up the ADC DMA
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint32_t now = 0, then = 0;
+    uint32_t now = 0, then = 0;
 
-  for (;;) // Just to fuel the debate if this is better than while(1)
-  {
+    for (;;) { // Just to fuel the debate if this is better than while(1)
 
-	  now = HAL_GetTick();
-	  if (now % 1000 == 0 && now != then) {
+        now = HAL_GetTick();
 
-		  printf("Temperature = %4.2f °C   Vref = %2.2f V\n", temp, vref);
+        if (now - then >= 1000) {
 
-		  then = now;
-	  }
+            printf("VDDA = %5.3f V Vref = %5.3f V (raw = %d) Temp = %4.2f °C (raw = %d)\n", vdda, vref, vref_avg, temp, temp_avg);
+
+            then = now;
+        }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -279,7 +308,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -341,6 +370,39 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 921600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -407,11 +469,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1) {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 
