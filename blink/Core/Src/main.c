@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DFU_BOOT_FLAG 0xDEADBEEF
+//#define DFU_BOOT_FLAG 0xDEADBEEF
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -76,26 +76,26 @@ int _write(int fd, char *ptr, int len) {
 	return -1;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == BTN_Pin) // If the button
-	{
-		GPIO_PinState pinState = HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin);
-		if (pinState == GPIO_PIN_RESET) {
-			push_count = HAL_GetTick();
-		} else {
-			if (HAL_GetTick() - push_count > 1000) {
-				// Set the boot flag and reset the mcu.  The bootloader
-				// will detect the flag and stay in dfu mode.  This will
-				// screw up the stack but that won't matter since the device
-				// is reset immediately after.
-				*dfu_boot_flag = DFU_BOOT_FLAG;
-				HAL_NVIC_SystemReset();
-			}
-			push_count = 0;
-		}
-
-	}
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+//	if (GPIO_Pin == BTN_Pin) // If the button
+//	{
+//		GPIO_PinState pinState = HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin);
+//		if (pinState == GPIO_PIN_RESET) {
+//			push_count = HAL_GetTick();
+//		} else {
+//			if (HAL_GetTick() - push_count > 1000) {
+//				// Set the boot flag and reset the mcu.  The bootloader
+//				// will detect the flag and stay in dfu mode.  This will
+//				// screw up the stack but that won't matter since the device
+//				// is reset immediately after.
+//				*dfu_boot_flag = DFU_BOOT_FLAG;
+//				HAL_NVIC_SystemReset();
+//			}
+//			push_count = 0;
+//		}
+//
+//	}
+//}
 
 /* USER CODE END 0 */
 
@@ -106,7 +106,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	dfu_boot_flag = (uint32_t*) (&_estack - 100); // 100 bytes below top of stack
+	//dfu_boot_flag = (uint32_t*) (&_estack - 100); // 100 bytes below top of stack
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -177,6 +177,7 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -192,6 +193,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -310,4 +312,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
