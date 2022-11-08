@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,9 +50,9 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 // emulated I2C RAM
 static uint8_t i2c_buffer[256];
-static uint16_t i2c_register = 0; 	// current i2c register address
+static uint16_t i2c_address = 0; 	// current i2c register address
 static uint16_t i2c_byte = 0;	// first byte --> new offset
-static uint8_t rx_buffer[32], tx_buffer[32];
+static uint8_t rx, tx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -84,23 +84,23 @@ int _write(int fd, char* ptr, int len) {
 
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-	DBG("ListenCb");
+	DBG("LCB");
 	i2c_byte = 0;
 	HAL_I2C_EnableListen_IT(hi2c); // slave is ready again
 }
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
 {
-	DBG("AddrCb %s", TransferDirection==I2C_DIRECTION_RECEIVE ? "rx" : "tx" );
+	DBG("ACB %s", TransferDirection==I2C_DIRECTION_RECEIVE ? "rx" : "tx" );
 
 	if( TransferDirection==I2C_DIRECTION_TRANSMIT ) {
 		if( i2c_byte == 0 ) {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_register, 1, I2C_NEXT_FRAME);
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_address, 2, I2C_NEXT_FRAME);
 		} else {
-			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &rx_buffer, 1, I2C_NEXT_FRAME);
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &rx, 1, I2C_NEXT_FRAME);
 		}
 	} else {
-		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &tx_buffer, 1, I2C_NEXT_FRAME);
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &tx, 1, I2C_NEXT_FRAME);
 	}
 
 }
@@ -108,20 +108,20 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 
-	if(i2c_offset == 0) {
-		DBG("SlaveRxCB: register <== 0x%4x", i2c_register );
-		i2c_offset++;
+	if(i2c_byte == 0) {
+		DBG("RXCB: address <== 0x%4x", i2c_address );
+		first = 2;
 	} else {
-		DBG("SlaveRxCB: ram[%3d] <== %3d", i2c_register,  0 );
-		i2c_register++;
+		DBG("RXCB: ram[%3d] <== %3d", offset,  ram[offset] );
+		offset++;
 	}
-	HAL_I2C_Slave_Seq_Receive_IT(hi2c, &slave_rx_buffer[0], 1, I2C_NEXT_FRAME);
+	HAL_I2C_Slave_Seq_Receive_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
 }
 
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-	DBG("TXCB: ram[%3d] ==> %3d", offset, ram[i2c_offset] );
-	i2c_offset++;
+	DBG("TXCB: ram[%3d] ==> %3d", offset, ram[offset] );
+	offset++;
 	HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &ram[offset], 1, I2C_NEXT_FRAME);
 }
 
@@ -235,7 +235,6 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -251,7 +250,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -418,3 +416,5 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
