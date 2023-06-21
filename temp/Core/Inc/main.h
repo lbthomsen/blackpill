@@ -32,7 +32,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -63,7 +65,15 @@ void Error_Handler(void);
 #define BTN_Pin GPIO_PIN_0
 #define BTN_GPIO_Port GPIOA
 #define BTN_EXTI_IRQn EXTI0_IRQn
+
 /* USER CODE BEGIN Private defines */
+
+#ifdef DEBUG
+#define DBG(...)    printf(__VA_ARGS__);\
+                    printf("\n")
+#else
+#define DBG(...)
+#endif
 
 /* USER CODE END Private defines */
 
