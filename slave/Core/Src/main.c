@@ -1,27 +1,29 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 Lars Boegild Thomsen <lbthomsen@gmail.com>
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 
+#include "slavelib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,7 +33,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SLAVE_DEVICE_ID          0x0000
+#define SLAVE_DEVICE_REV_HI      0x0001
+#define SLAVE_DEVICE_REV_LO      0x0002
+#define SLAVE_DEVICE_MEM_BANK_0  0x1000
+#define SLAVE_DEVICE_MEM_BANK_1  0x2000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,6 +58,31 @@ UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
 
+const uint8_t device_id = 0xfa;
+const uint8_t device_rev_hi = 0x00;
+const uint8_t device_rev_lo   = 0x01;
+
+uint8_t bank0[1024] = {0};
+uint8_t bank1[1024] = {1};
+
+const slave_register_typedef slave_register[] = {
+        {
+                SLAVE_DEVICE_ID,
+                SLAVE_REGISTER_RO,
+                &device_id
+        },
+        {
+                SLAVE_DEVICE_REV_HI,
+                SLAVE_REGISTER_RO,
+                &device_rev_hi
+        },
+        {
+                SLAVE_DEVICE_REV_HI,
+                SLAVE_REGISTER_RO,
+                &device_rev_lo
+        }
+};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,6 +101,20 @@ static void MX_USART6_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// Send printf to uart1
+int _write(int fd, char *ptr, int len) {
+    HAL_StatusTypeDef hstatus;
+
+    if (fd == 1 || fd == 2) {
+        hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len, HAL_MAX_DELAY);
+        if (hstatus == HAL_OK)
+            return len;
+        else
+            return -1;
+    }
+    return -1;
+}
 
 /* USER CODE END 0 */
 
@@ -109,17 +154,55 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-HAL_I2C_Slave_Receive_IT(hi2c, pData, Size)
+
+  DBG("\n\n\n--------\nStarting");
+
+  DBG("Device ID = 0x%02x", (uint8_t)*slave_register[0].data_address);
+
+  DBG("Scanning i2c bus");
+  // Go through all possible i2c addresses
+  for (uint8_t i = 0; i < 128; i++) {
+
+      if (HAL_I2C_IsDeviceReady(&hi2c2, (uint16_t) (i << 1), 3, 5) == HAL_OK) {
+          // We got an ack
+          printf("%2x ", i);
+      } else {
+          printf("-- ");
+      }
+
+      if (i > 0 && (i + 1) % 16 == 0)
+          printf("\n");
+
+  }
+
+  printf("\n");
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+
+  uint32_t now = 0, last_blink = 0, last_tick = 0;
+
+    while (1) {
+
+        now = HAL_GetTick();
+
+        if (now - last_blink >= 500) {
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+            last_blink = now;
+        }
+
+        if (now - last_tick >= 1000) {
+            DBG("Tick %lu", now / 1000);
+            last_tick = now;
+        }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -184,9 +267,9 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 48;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -218,7 +301,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 100000;
+  hi2c2.Init.ClockSpeed = 400000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -327,7 +410,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 921600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -360,7 +443,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 921600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -393,7 +476,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;
+  huart6.Init.BaudRate = 921600;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
@@ -417,13 +500,31 @@ static void MX_USART6_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BTN_Pin */
+  GPIO_InitStruct.Pin = BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -440,11 +541,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1) {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 

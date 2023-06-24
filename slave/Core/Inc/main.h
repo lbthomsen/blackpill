@@ -57,8 +57,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define I2C_SLAVE_ADDRESS 0x18
+#define LED_Pin GPIO_PIN_13
+#define LED_GPIO_Port GPIOC
+#define BTN_Pin GPIO_PIN_0
+#define BTN_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+
+#ifdef DEBUG
+#define DBG(...)    printf(__VA_ARGS__);\
+                    printf("\n")
+#else
+#define DBG(...)
+#endif
 
 /* USER CODE END Private defines */
 
