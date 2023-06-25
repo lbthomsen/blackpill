@@ -31,7 +31,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -57,7 +59,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define I2C_SLAVE_ADDRESS 0x18
+#define I2C_SLAVE_ADDRESS 0x09
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
 #define BTN_Pin GPIO_PIN_0

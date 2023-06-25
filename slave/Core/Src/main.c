@@ -21,8 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-
 #include "slavelib.h"
 /* USER CODE END Includes */
 
@@ -66,22 +64,39 @@ uint8_t bank0[1024] = {0};
 uint8_t bank1[1024] = {1};
 
 const slave_register_typedef slave_register[] = {
-        {
-                SLAVE_DEVICE_ID,
-                SLAVE_REGISTER_RO,
-                &device_id
-        },
-        {
-                SLAVE_DEVICE_REV_HI,
-                SLAVE_REGISTER_RO,
-                &device_rev_hi
-        },
-        {
-                SLAVE_DEVICE_REV_HI,
-                SLAVE_REGISTER_RO,
-                &device_rev_lo
-        }
+    {
+        SLAVE_DEVICE_ID,
+        SLAVE_REGISTER_RO,
+        &device_id,
+        sizeof(device_id)
+    },
+    {
+        SLAVE_DEVICE_REV_HI,
+        SLAVE_REGISTER_RO,
+        &device_rev_hi,
+        sizeof(device_rev_hi)
+    },
+    {
+        SLAVE_DEVICE_REV_HI,
+        SLAVE_REGISTER_RO,
+        &device_rev_lo,
+        sizeof(device_rev_lo)
+    },
+    {
+        SLAVE_DEVICE_MEM_BANK_0,
+        SLAVE_REGISTER_MEM,
+        &bank0[0],
+        sizeof(bank0)
+    },
+    {
+        SLAVE_DEVICE_MEM_BANK_1,
+        SLAVE_REGISTER_MEM,
+        &bank1[0],
+        sizeof(bank1)
+    }
 };
+
+slave_i2c_handle_typedef slave_i2c_handle;
 
 /* USER CODE END PV */
 
@@ -114,6 +129,40 @@ int _write(int fd, char *ptr, int len) {
             return -1;
     }
     return -1;
+}
+
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_tx_callback(&slave_i2c_handle);
+}
+
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_rx_callback(&slave_i2c_handle);
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
+    if (hi2c->Instance == I2C1) slave_i2c_addr_callback(&slave_i2c_handle, TransferDirection, AddrMatchCode);
+}
+
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_listen_callback(&slave_i2c_handle);
+}
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_mem_tx_callback(&slave_i2c_handle);
+}
+
+uint8_t i2c_read_register(uint16_t address) {
+    uint8_t data;
+    if (HAL_I2C_Master_Transmit(&hi2c2, (uint16_t)(I2C_SLAVE_ADDRESS << 1), (uint8_t *)&address, 2, HAL_MAX_DELAY) != HAL_OK) {
+        Error_Handler();
+    }
+
+    if (HAL_I2C_Master_Receive(&hi2c2, (uint16_t)(I2C_SLAVE_ADDRESS << 1), &data, 1, HAL_MAX_DELAY) != HAL_OK) {
+        Error_Handler();
+    }
+
+    return data;
+
 }
 
 /* USER CODE END 0 */
@@ -159,23 +208,27 @@ int main(void)
 
   DBG("Device ID = 0x%02x", (uint8_t)*slave_register[0].data_address);
 
+  if (slave_i2c_init(&slave_i2c_handle, &hi2c1) != SLAVE_Ok) {
+      DBG("Slave i2c init failed");
+      Error_Handler();
+  }
+
   DBG("Scanning i2c bus");
   // Go through all possible i2c addresses
   for (uint8_t i = 0; i < 128; i++) {
 
       if (HAL_I2C_IsDeviceReady(&hi2c2, (uint16_t) (i << 1), 3, 5) == HAL_OK) {
           // We got an ack
-          printf("%2x ", i);
-      } else {
-          printf("-- ");
+          printf("I2c Slave found on address %02x\n", i);
       }
-
-      if (i > 0 && (i + 1) % 16 == 0)
-          printf("\n");
-
   }
 
   printf("\n");
+
+  uint8_t value;
+
+  value = i2c_read_register(SLAVE_DEVICE_ID);
+  DBG("I2C device reported: 0x%02x", value);
 
 
   /* USER CODE END 2 */
@@ -191,13 +244,14 @@ int main(void)
 
         if (now - last_blink >= 500) {
             HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
             last_blink = now;
         }
 
-        if (now - last_tick >= 1000) {
-            DBG("Tick %lu", now / 1000);
-            last_tick = now;
-        }
+//        if (now - last_tick >= 1000) {
+//            DBG("Tick %lu", now / 1000);
+//            last_tick = now;
+//        }
 
     /* USER CODE END WHILE */
 
@@ -269,7 +323,7 @@ static void MX_I2C1_Init(void)
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 48;
+  hi2c1.Init.OwnAddress1 = 18;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
