@@ -34,6 +34,8 @@ typedef struct {
 
 typedef struct {
     I2C_HandleTypeDef *i2c_handle;
+    uint8_t receive_count;
+    uint8_t receive_buffer[32];
 } slave_i2c_handle_typedef;
 
 slave_return_type slave_i2c_init(slave_i2c_handle_typedef *i2c_slave, I2C_HandleTypeDef *i2c_handle);
@@ -44,6 +46,8 @@ void slave_i2c_addr_callback(slave_i2c_handle_typedef *i2c_slave, uint8_t direct
 void slave_i2c_listen_callback(slave_i2c_handle_typedef *i2c_slave);
 void slave_i2c_mem_tx_callback(slave_i2c_handle_typedef *i2c_slave);
 void slave_i2c_mem_rx_callback(slave_i2c_handle_typedef *i2c_slave);
+void slave_i2c_error_callback(slave_i2c_handle_typedef *i2c_slave);
+void slave_i2c_abort_callback(slave_i2c_handle_typedef *i2c_slave);
 
 #endif
 

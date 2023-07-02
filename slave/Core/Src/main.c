@@ -151,6 +151,14 @@ void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c) {
     if (hi2c->Instance == I2C1) slave_i2c_mem_tx_callback(&slave_i2c_handle);
 }
 
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_error_callback(&slave_i2c_handle);
+}
+
+void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) slave_i2c_abort_callback(&slave_i2c_handle);
+}
+
 uint8_t i2c_read_register(uint16_t address) {
     uint8_t data;
     if (HAL_I2C_Master_Transmit(&hi2c2, (uint16_t)(I2C_SLAVE_ADDRESS << 1), (uint8_t *)&address, 2, HAL_MAX_DELAY) != HAL_OK) {
@@ -206,7 +214,7 @@ int main(void)
 
   DBG("\n\n\n--------\nStarting");
 
-  DBG("Device ID = 0x%02x", (uint8_t)*slave_register[0].data_address);
+  DBG("Device configured as 0x%02x, ver. %d:%02d", (uint8_t)*slave_register[0].data_address, (uint8_t)*slave_register[1].data_address, (uint8_t)*slave_register[2].data_address);
 
   if (slave_i2c_init(&slave_i2c_handle, &hi2c1) != SLAVE_Ok) {
       DBG("Slave i2c init failed");
@@ -223,11 +231,9 @@ int main(void)
       }
   }
 
-  printf("\n");
-
   uint8_t value;
 
-  value = i2c_read_register(SLAVE_DEVICE_ID);
+  value = i2c_read_register(0x05);
   DBG("I2C device reported: 0x%02x", value);
 
 
