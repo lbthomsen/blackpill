@@ -1,0 +1,4 @@
+../usbhid/usbd_custom_hid_if.c:169:15:CUSTOM_HID_Init_FS	1
+../usbhid/usbd_custom_hid_if.c:180:15:CUSTOM_HID_DeInit_FS	1
+../usbhid/usbd_custom_hid_if.c:193:15:CUSTOM_HID_OutEvent_FS	1
+../usbhid/usbd_custom_hid_if.c:221:8:USBD_CUSTOM_HID_SendReport_FS	1

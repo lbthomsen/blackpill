@@ -1,0 +1,5 @@
+../Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c:156:17:USBH_GetFreePipe	3
+../Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c:85:20:USBH_OpenPipe	1
+../Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c:102:20:USBH_ClosePipe	1
+../Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c:117:9:USBH_AllocPipe	2
+../Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c:139:20:USBH_FreePipe	2

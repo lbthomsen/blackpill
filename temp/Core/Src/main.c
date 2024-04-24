@@ -116,10 +116,12 @@ static inline void process_adc_buffer(uint16_t *buffer) {
     vdda = (float) VREFINT_CAL_VREF * (float) *VREFINT_CAL_ADDR / vref_avg / 1000;
 
     // Knowing vdda and the resolution of adc - the actual voltage can be calculated
-    vref = (float) vdda / ADC_RESOLUTION * vref_avg;
+    //vref = (float) vdda / ADC_RESOLUTION * vref_avg;
+    vref = __LL_ADC_CALC_VREFANALOG_VOLTAGE(vref_avg, ADC_RESOLUTION_12B);
 
-    temp = (float) ( (float)( (float)(TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) / (float)(*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR)) * (temp_avg - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP);
 
+    //temp = (float) ( (float)( (float)(TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) / (float)(*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR)) * (temp_avg - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP);
+    temp = __LL_ADC_CALC_TEMPERATURE(vref, temp_avg, ADC_RESOLUTION_12B);
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {

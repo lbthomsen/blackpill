@@ -1,0 +1,17 @@
+../lvgl/src/misc/lv_txt.c:508:16:lv_txt_utf8_size	5
+../lvgl/src/misc/lv_txt.c:526:17:lv_txt_unicode_to_utf8	5
+../lvgl/src/misc/lv_txt.c:559:17:lv_txt_utf8_conv_wc	5
+../lvgl/src/misc/lv_txt.c:587:17:lv_txt_utf8_next	12
+../lvgl/src/misc/lv_txt.c:662:17:lv_txt_utf8_prev	5
+../lvgl/src/misc/lv_txt.c:695:17:lv_txt_utf8_get_byte_id	4
+../lvgl/src/misc/lv_txt.c:715:17:lv_txt_utf8_get_char_id	2
+../lvgl/src/misc/lv_txt.c:734:17:lv_txt_utf8_get_length	2
+../lvgl/src/misc/lv_txt.c:381:6:_lv_txt_is_cmd	7
+../lvgl/src/misc/lv_txt.c:170:17:lv_txt_get_next_word	28
+../lvgl/src/misc/lv_txt.c:278:10:_lv_txt_get_next_line	22
+../lvgl/src/misc/lv_txt.c:412:6:_lv_txt_ins	6
+../lvgl/src/misc/lv_txt.c:433:6:_lv_txt_cut	3
+../lvgl/src/misc/lv_txt.c:449:8:_lv_txt_set_text_vfmt	2
+../lvgl/src/misc/lv_txt.c:492:6:_lv_txt_encoded_letter_next_2	2
+../lvgl/src/misc/lv_txt.c:342:12:lv_txt_get_width	10
+../lvgl/src/misc/lv_txt.c:91:6:lv_txt_get_size	10

@@ -1,0 +1,11 @@
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:295:9:USBD_MSC_Init	3
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:344:9:USBD_MSC_DeInit	2
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:376:9:USBD_MSC_Setup	21
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:503:9:USBD_MSC_DataIn	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:517:9:USBD_MSC_DataOut	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:530:10:USBD_MSC_GetHSCfgDesc	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:543:10:USBD_MSC_GetFSCfgDesc	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:556:10:USBD_MSC_GetOtherSpeedCfgDesc	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:568:10:USBD_MSC_GetDeviceQualifierDescriptor	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:580:9:USBD_MSC_RegisterStorage	2
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/Class/MSC/Src/usbd_msc.c:592:6:USBD_Update_MSC_DESC	1

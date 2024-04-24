@@ -1,0 +1,7 @@
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:110:13:lv_animimg_constructor	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:128:13:index_change	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:59:12:lv_animimg_create	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:67:6:lv_animimg_set_src	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:76:6:lv_animimg_start	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:87:6:lv_animimg_set_duration	1
+../lvgl/src/extra/widgets/animimg/lv_animimg.c:95:6:lv_animimg_set_repeat_count	1

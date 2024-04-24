@@ -1,0 +1,9 @@
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:612:17:UTILS_GetPLLOutputFrequency	1
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:643:20:UTILS_PLL_IsBusy	3
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:258:6:LL_Init1msTick	1
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:274:6:LL_mDelay	4
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:324:6:LL_SetSystemCoreClock	1
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:339:13:LL_SetFlashLatency	21
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:682:20:UTILS_EnablePLLAndSwitchSystem	7
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:484:13:LL_PLL_ConfigSystemClock_HSI	4
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c:541:13:LL_PLL_ConfigSystemClock_HSE	5

@@ -1,6 +1,6 @@
 ../Core/Src/main.c:376:13:MX_GPIO_Init	1
 ../Core/Src/main.c:72:5:_write	3
-../Core/Src/main.c:85:6:HAL_TIM_IC_CaptureCallback	2
+../Core/Src/main.c:85:6:HAL_TIM_IC_CaptureCallback	11
 ../Core/Src/main.c:177:6:handle_data	1
 ../Core/Src/main.c:396:6:Error_Handler	1
 ../Core/Src/main.c:278:13:MX_TIM1_Init	1

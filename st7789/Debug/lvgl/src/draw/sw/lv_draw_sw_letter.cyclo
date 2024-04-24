@@ -1,0 +1,2 @@
+../lvgl/src/draw/sw/lv_draw_sw_letter.c:163:35:draw_letter_normal	23
+../lvgl/src/draw/sw/lv_draw_sw_letter.c:95:6:lv_draw_sw_letter	13

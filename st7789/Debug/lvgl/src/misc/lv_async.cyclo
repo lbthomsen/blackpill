@@ -1,0 +1,2 @@
+../lvgl/src/misc/lv_async.c:72:13:lv_async_timer_cb	1
+../lvgl/src/misc/lv_async.c:45:10:lv_async_call	3

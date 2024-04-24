@@ -1,0 +1,3 @@
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/App/usbd_hid_custom_if.c:193:15:CUSTOM_HID_Init	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/App/usbd_hid_custom_if.c:204:15:CUSTOM_HID_DeInit	1
+../Middlewares/Third_Party/AL94_USB_Composite/COMPOSITE/App/usbd_hid_custom_if.c:217:15:CUSTOM_HID_OutEvent	1

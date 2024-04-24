@@ -1,0 +1,3 @@
+../Core/Src/stm32f4xx_hal_timebase_tim.c:42:19:HAL_InitTick	2
+../Core/Src/stm32f4xx_hal_timebase_tim.c:95:6:HAL_SuspendTick	1
+../Core/Src/stm32f4xx_hal_timebase_tim.c:107:6:HAL_ResumeTick	1

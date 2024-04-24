@@ -1,0 +1,5 @@
+../lvgl/src/extra/themes/mono/lv_theme_mono.c:200:13:theme_apply	35
+../lvgl/src/extra/themes/mono/lv_theme_mono.c:494:13:style_init_reset	2
+../lvgl/src/extra/themes/mono/lv_theme_mono.c:77:13:style_init	17
+../lvgl/src/extra/themes/mono/lv_theme_mono.c:167:6:lv_theme_mono_is_inited	1
+../lvgl/src/extra/themes/mono/lv_theme_mono.c:172:14:lv_theme_mono_init	4

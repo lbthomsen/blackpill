@@ -1,0 +1,6 @@
+../lvgl/src/widgets/lv_slider.c:425:13:position_knob	2
+../lvgl/src/widgets/lv_slider.c:79:13:lv_slider_constructor	2
+../lvgl/src/widgets/lv_slider.c:328:13:draw_knob	26
+../lvgl/src/widgets/lv_slider.c:94:13:lv_slider_event	54
+../lvgl/src/widgets/lv_slider.c:59:12:lv_slider_create	1
+../lvgl/src/widgets/lv_slider.c:67:6:lv_slider_is_dragged	1
