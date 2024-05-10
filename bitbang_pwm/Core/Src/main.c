@@ -51,6 +51,8 @@ UART_HandleTypeDef huart1;
 uint8_t led_pwm_cnt = 0;
 uint8_t led_pwm_val = 0;
 int8_t led_pwm_chg = 1;
+
+uint32_t loop_cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,19 +144,22 @@ int main(void) {
             led_pwm_val += led_pwm_chg;
 
             if (led_pwm_val == 0)
-                led_pwm_chg = 1;
-            if (led_pwm_val == 255)
-                led_pwm_chg = -1;
+                led_pwm_chg = 1;     // Go up
+            if (led_pwm_val == 100)
+                led_pwm_chg = -1;    // Go down
 
             last_chg = now;
         }
 
         if (now - last_tick >= 1000) {
 
-            DBG("Tick %lu val=%d\n", now / 1000, led_pwm_val);
+            DBG("Tick %lu (loop: %lu) val=%d\n", now / 1000, loop_cnt, led_pwm_val);
 
+            loop_cnt = 0;
             last_tick = now;
         }
+
+        ++loop_cnt;
 
         /* USER CODE END WHILE */
 
