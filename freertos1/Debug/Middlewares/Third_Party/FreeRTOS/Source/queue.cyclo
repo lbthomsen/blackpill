@@ -5,6 +5,12 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:466:14:prvInitialiseMutex	2
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:496:16:xQueueCreateMutex	1
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:512:16:xQueueCreateMutexStatic	1
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:532:15:xQueueGetMutexHolder	2
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:563:15:xQueueGetMutexHolderFromISR	3
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:589:13:xQueueGiveMutexRecursive	4
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:644:13:xQueueTakeMutexRecursive	4
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:686:16:xQueueCreateCountingSemaphoreStatic	4
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:714:16:xQueueCreateCountingSemaphore	4
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:740:12:xQueueGenericSend	23
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:950:12:xQueueGenericSendFromISR	14
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:1112:12:xQueueGiveFromISR	11
@@ -17,6 +23,9 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:1946:13:uxQueueSpacesAvailable	2
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:1963:13:uxQueueMessagesWaitingFromISR	2
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:1975:6:vQueueDelete	3
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2019:14:uxQueueGetQueueNumber	1
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2029:7:vQueueSetQueueNumber	1
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2039:10:ucQueueGetQueueType	1
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2049:21:prvGetDisinheritPriorityAfterTimeout	2
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2074:19:prvCopyDataToQueue	8
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2153:13:prvCopyDataFromQueue	3
@@ -28,3 +37,4 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2648:7:vQueueAddToRegistry	3
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2677:14:pcQueueGetName	3
 ../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2705:7:vQueueUnregisterQueue	3
+../Middlewares/Third_Party/FreeRTOS/Source/queue.c:2737:7:vQueueWaitForMessageRestricted	4

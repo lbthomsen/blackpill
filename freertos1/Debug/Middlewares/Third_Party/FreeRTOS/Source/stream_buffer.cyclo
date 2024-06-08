@@ -20,3 +20,6 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1134:15:prvReadBytesFromBuffer	7
 ../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1189:15:prvBytesInBuffer	2
 ../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1209:13:prvInitialiseNewStreamBuffer	2
+../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1237:14:uxStreamBufferGetStreamBufferNumber	1
+../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1247:7:vStreamBufferSetStreamBufferNumber	1
+../Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c:1257:10:ucStreamBufferGetStreamBufferType	1

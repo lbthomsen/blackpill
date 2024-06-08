@@ -31,3 +31,7 @@
 	path = stm32-max72xx
 	url = git@github.com:lbthomsen/stm32-max72xx.git
 	branch = master
+[submodule "stm32-ws2812b"]
+	path = stm32-ws2812b
+	url = git@github.com:lbthomsen/stm32-ws2812b.git
+	branch = master
