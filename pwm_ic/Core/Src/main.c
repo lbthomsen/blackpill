@@ -49,41 +49,40 @@ UART_HandleTypeDef huart1;
 
 // Define some test pwm values - first column is prescaler value for pwm and second row is duty cycle (of 1000)
 uint32_t pwm_vals[][2] = {
-		{19999, 100},
-		{19999, 500},
-		{19999, 900},
-		{9999, 100},
-		{9999, 500},
-		{9999, 900},
-		{999, 100},
-		{999, 500},
-		{999, 900},
-		{99, 100},
-		{99, 500},
-		{99, 900},
-		{49, 100},
-		{49, 500},
-		{49, 900},
-		{24, 100},
-		{24, 500},
-		{24, 900},
-		{9, 100},
-		{9, 500},
-		{9, 900},
-		{4, 100},
-		{4, 500},
-		{4, 900},
-		{2, 100},
-		{2, 500},
-		{2, 900},
-		{1, 100},
-		{1, 500},
-		{1, 900},
-		{0, 100},
-		{0, 500},
-		{0, 900},
+		{19999, 10},
+		{19999, 50},
+		{19999, 90},
+		{9999, 10},
+		{9999, 50},
+		{9999, 90},
+		{999, 10},
+		{999, 50},
+		{999, 90},
+		{99, 10},
+		{99, 50},
+		{99, 90},
+		{49, 10},
+		{49, 50},
+		{49, 90},
+		{24, 10},
+		{24, 50},
+		{24, 90},
+		{9, 10},
+		{9, 50},
+		{9, 90},
+		{4, 10},
+		{4, 50},
+		{4, 90},
+		{2, 10},
+		{2, 50},
+		{2, 90},
+		{1, 10},
+		{1, 50},
+		{1, 90},
+		{0, 10},
+		{0, 50},
+		{0, 90},
 };
-
 // Used to cycle around the pwm values
 uint32_t pwm_vals_idx = 0;
 
@@ -127,8 +126,8 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		cnt_full = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) + 2;
 		cnt_high = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2) + 2;
 
-		freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
-		duty = (float) 100 * cnt_high / cnt_full;
+//		freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
+//		duty = (float) 100 * cnt_high / cnt_full;
 	}
 }
 
@@ -140,6 +139,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -179,25 +179,31 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	uint32_t now = 0, last_blink = 0, last_print = 0, last_change = 0;
+	uint32_t now = 0, next_blink = 500, next_print = 1000, next_change = 0;
 
 	while (1) {
 
 		now = HAL_GetTick();
 
-		if (now - last_blink >= 500) {
+		if (now >= next_blink) {
 			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-			last_blink = now;
+			next_blink = now + 500;
 		}
 
-		if (now - last_print >= 1000) {
-			DBG("Tick %5lu count = %8lu freq = %10.4f Hz duty = %7.4f %%", now / 1000, cnt_full, freq, duty);
+		if (now >= next_print) {
 
-			last_print = now;
+		    float freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
+	        float duty = (float) 100 * cnt_high / cnt_full;
+
+			DBG("Tick %5lu count = %8lu freq = %10.2f Hz duty = %7.2f %%", now / 1000, cnt_full, freq, duty);
+
+			next_print = now + 1000;
 		}
 
-		if (now - last_change >= 2000) {
+		if (now >= next_change) {
+
+		    printf("Setting prescaler = %lu compare = %lu\n", pwm_vals[pwm_vals_idx][0], pwm_vals[pwm_vals_idx][1]);
 
 			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_idx][0]);
 			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_idx][1]);
@@ -207,7 +213,7 @@ int main(void)
 				pwm_vals_idx = 0;
 			}
 
-			last_change = now;
+			next_change = now + 2000;
 		}
 
     /* USER CODE END WHILE */
@@ -230,6 +236,7 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -245,6 +252,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -354,9 +362,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 99;
+  htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 999;
+  htim4.Init.Period = 99;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -434,6 +442,8 @@ static void MX_USART1_UART_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -451,6 +461,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -487,4 +499,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-

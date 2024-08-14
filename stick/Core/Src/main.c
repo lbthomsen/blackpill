@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ws2812b.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -84,8 +84,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
     uint32_t new_time = HAL_GetTick();
     uint32_t time_diff = new_time - btn_time;
-
-
 
     if (GPIO_Pin == BTN_Pin) {
         if (HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin) == GPIO_PIN_RESET) {
@@ -167,11 +165,10 @@ int main(void)
             DBG("Going to sleep\n");
             HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
             HAL_SuspendTick();
-            HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+            //HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+            HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
             last_sleep = HAL_GetTick();
         }
-
-
 
     /* USER CODE END WHILE */
 

@@ -65,6 +65,7 @@ void Error_Handler(void);
 #define PWM_IN_GPIO_Port GPIOA
 #define PWM_OUT_Pin GPIO_PIN_6
 #define PWM_OUT_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 #ifdef DEBUG
