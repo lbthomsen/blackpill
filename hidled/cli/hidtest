@@ -30,8 +30,8 @@ if ( deviceInfo ) {
   //device.sendFeatureReport( [0x01, 'c', 0, 0xff,0x33,0x00, 70,0, 0] );
   //device.sendFeatureReport([0x00, 0x01, 0x01, 0x05, 0xff, 0xff]);
 
-  //let report = await device.getFeatureReport(0, 64);
-  //console.log("Got report: ", report);
+  let report = await device.getFeatureReport(0, 64);
+  console.log("Got report: ", report);
 
 
 }

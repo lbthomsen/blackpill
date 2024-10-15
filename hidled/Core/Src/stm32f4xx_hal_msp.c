@@ -1,3 +1,4 @@
+
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
@@ -63,6 +64,7 @@
   */
 void HAL_MspInit(void)
 {
+
   /* USER CODE BEGIN MspInit 0 */
 
   /* USER CODE END MspInit 0 */
@@ -111,6 +113,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
   /* USER CODE BEGIN USART1_MspInit 1 */
 
   /* USER CODE END USART1_MspInit 1 */
+
   }
 
 }
@@ -180,6 +183,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* hpcd)
 	HAL_NVIC_SetPriority(OTG_FS_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
   /* USER CODE END USB_OTG_FS_MspInit 1 */
+
   }
 
 }
@@ -218,5 +222,3 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef* hpcd)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
