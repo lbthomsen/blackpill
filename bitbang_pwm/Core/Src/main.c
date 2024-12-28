@@ -136,29 +136,29 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-    uint32_t now = 0, last_tick = 0, last_chg = 0;
+    uint32_t now = 0, next_tick = 1000, next_chg = 10;
 
     while (1) {
 
-        now = HAL_GetTick();
+        now = uwTick;
 
-        if (now - last_chg >= 10) {
+        if (now >= next_chg) {
             led_pwm_val += led_pwm_chg;
 
             if (led_pwm_val == 0)
                 led_pwm_chg = 1;     // Go up
-            if (led_pwm_val == 100)
+            if (led_pwm_val == 150)
                 led_pwm_chg = -1;    // Go down
 
-            last_chg = now;
+            next_chg = now + 10;
         }
 
-        if (now - last_tick >= 1000) {
+        if (now >= next_tick) {
 
             DBG("Tick %lu (loop: %lu) val=%d\n", now / 1000, loop_cnt, led_pwm_val);
 
             loop_cnt = 0;
-            last_tick = now;
+            next_tick = now + 1000;
         }
 
         ++loop_cnt;
@@ -231,9 +231,9 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 9;
+  htim10.Init.Prescaler = 100 - 1;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 389;
+  htim10.Init.Period = 100 - 1;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
