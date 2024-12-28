@@ -1,6 +1,6 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3857:13:SPI_AbortRx_ISR	3
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3893:13:SPI_AbortTx_ISR	1
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3481:26:SPI_WaitFlagStateUntilTimeout	10
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3481:26:SPI_WaitFlagStateUntilTimeout	9
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3598:26:SPI_EndRxTxTransaction	5
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:3548:26:SPI_EndRxTransaction	9
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:483:13:HAL_SPI_MspInit	1
@@ -45,7 +45,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2673:13:SPI_DMATransmitCplt	5
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2730:13:SPI_DMAReceiveCplt	6
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2819:13:SPI_DMATransmitReceiveCplt	4
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2380:6:HAL_SPI_IRQHandler	17
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2380:6:HAL_SPI_IRQHandler	20
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2976:13:SPI_DMAAbortOnError	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2601:13:HAL_SPI_AbortCpltCallback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c:2139:19:HAL_SPI_Abort_IT	19

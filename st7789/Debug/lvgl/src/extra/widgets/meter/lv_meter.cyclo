@@ -1,3 +1,4 @@
+../lvgl/src/extra/widgets/meter/../../../../src/hal/../draw/../misc/lv_color.h:443:48:lv_color_mix	1
 ../lvgl/src/extra/widgets/meter/lv_meter.c:326:13:draw_arcs	4
 ../lvgl/src/extra/widgets/meter/lv_meter.c:373:13:draw_ticks_and_labels	16
 ../lvgl/src/extra/widgets/meter/lv_meter.c:562:13:draw_needles	8

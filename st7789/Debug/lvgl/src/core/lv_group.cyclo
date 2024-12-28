@@ -1,5 +1,5 @@
 ../lvgl/src/core/lv_group.c:446:21:get_indev	7
-../lvgl/src/core/lv_group.c:366:13:focus_next_core	21
+../lvgl/src/core/lv_group.c:366:13:focus_next_core	20
 ../lvgl/src/core/lv_group.c:45:6:_lv_group_init	1
 ../lvgl/src/core/lv_group.c:50:14:lv_group_create	2
 ../lvgl/src/core/lv_group.c:71:6:lv_group_del	6

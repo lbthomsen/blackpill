@@ -8,7 +8,7 @@
 ../lvgl/src/misc/lv_txt.c:734:17:lv_txt_utf8_get_length	2
 ../lvgl/src/misc/lv_txt.c:381:6:_lv_txt_is_cmd	7
 ../lvgl/src/misc/lv_txt.c:170:17:lv_txt_get_next_word	28
-../lvgl/src/misc/lv_txt.c:278:10:_lv_txt_get_next_line	22
+../lvgl/src/misc/lv_txt.c:278:10:_lv_txt_get_next_line	21
 ../lvgl/src/misc/lv_txt.c:412:6:_lv_txt_ins	6
 ../lvgl/src/misc/lv_txt.c:433:6:_lv_txt_cut	3
 ../lvgl/src/misc/lv_txt.c:449:8:_lv_txt_set_text_vfmt	2

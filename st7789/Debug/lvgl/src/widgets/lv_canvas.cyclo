@@ -1,3 +1,4 @@
+../lvgl/src/widgets/../core/../misc/lv_color.h:443:48:lv_color_mix	1
 ../lvgl/src/widgets/lv_canvas.c:822:13:lv_canvas_destructor	1
 ../lvgl/src/widgets/lv_canvas.c:803:13:lv_canvas_constructor	1
 ../lvgl/src/widgets/lv_canvas.c:861:13:deinit_fake_disp	1

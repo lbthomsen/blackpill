@@ -10,7 +10,7 @@
 ../lvgl/src/extra/widgets/span/lv_span.c:690:16:lv_span_get_style_text_decor	2
 ../lvgl/src/extra/widgets/span/lv_span.c:577:13:lv_txt_get_snippet	5
 ../lvgl/src/extra/widgets/span/lv_span.c:598:13:lv_snippet_push	2
-../lvgl/src/extra/widgets/span/lv_span.c:735:13:lv_draw_span	65
+../lvgl/src/extra/widgets/span/lv_span.c:735:13:lv_draw_span	63
 ../lvgl/src/extra/widgets/span/lv_span.c:566:13:draw_main	1
 ../lvgl/src/extra/widgets/span/lv_span.c:1020:13:refresh_self_size	1
 ../lvgl/src/extra/widgets/span/lv_span.c:493:13:lv_spangroup_destructor	4
@@ -31,7 +31,7 @@
 ../lvgl/src/extra/widgets/span/lv_span.c:285:16:lv_spangroup_get_mode	1
 ../lvgl/src/extra/widgets/span/lv_span.c:326:12:lv_spangroup_get_max_line_h	3
 ../lvgl/src/extra/widgets/span/lv_span.c:344:10:lv_spangroup_get_expand_width	9
-../lvgl/src/extra/widgets/span/lv_span.c:376:12:lv_spangroup_get_expand_height	30
+../lvgl/src/extra/widgets/span/lv_span.c:376:12:lv_spangroup_get_expand_height	28
 ../lvgl/src/extra/widgets/span/lv_span.c:509:13:lv_spangroup_event	15
 ../lvgl/src/extra/widgets/span/lv_span.c:292:6:lv_spangroup_refr_mode	9
 ../lvgl/src/extra/widgets/span/lv_span.c:204:6:lv_spangroup_set_mode	1

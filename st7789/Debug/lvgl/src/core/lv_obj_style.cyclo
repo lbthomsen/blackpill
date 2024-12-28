@@ -1,3 +1,4 @@
+../lvgl/src/core/../misc/lv_color.h:443:48:lv_color_mix	1
 ../lvgl/src/core/lv_obj_style.c:659:13:trans_del	12
 ../lvgl/src/core/lv_obj_style.c:636:13:refresh_children_style	2
 ../lvgl/src/core/lv_obj_style.c:475:21:get_local_style	7

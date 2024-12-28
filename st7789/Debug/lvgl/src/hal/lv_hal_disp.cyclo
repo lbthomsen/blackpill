@@ -1,10 +1,13 @@
+../lvgl/src/hal/../draw/../misc/lv_color.h:379:24:lv_color_to32	1
+../lvgl/src/hal/../draw/../misc/lv_color.h:443:48:lv_color_mix	1
+../lvgl/src/hal/../draw/../misc/lv_color.h:528:42:lv_color_mix_with_alpha	10
 ../lvgl/src/hal/lv_hal_disp.c:603:31:invalidate_layout_cb	1
 ../lvgl/src/hal/lv_hal_disp.c:666:13:set_px_alpha_generic	2
 ../lvgl/src/hal/lv_hal_disp.c:652:13:set_px_cb_alpha8	2
 ../lvgl/src/hal/lv_hal_disp.c:638:13:set_px_cb_alpha4	2
 ../lvgl/src/hal/lv_hal_disp.c:624:13:set_px_cb_alpha2	2
 ../lvgl/src/hal/lv_hal_disp.c:610:13:set_px_cb_alpha1	2
-../lvgl/src/hal/lv_hal_disp.c:680:13:set_px_true_color_alpha	11
+../lvgl/src/hal/lv_hal_disp.c:680:13:set_px_true_color_alpha	2
 ../lvgl/src/hal/lv_hal_disp.c:79:6:lv_disp_drv_init	1
 ../lvgl/src/hal/lv_hal_disp.c:134:6:lv_disp_draw_buf_init	1
 ../lvgl/src/hal/lv_hal_disp.c:150:13:lv_disp_drv_register	9

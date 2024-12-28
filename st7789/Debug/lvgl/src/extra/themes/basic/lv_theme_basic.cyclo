@@ -1,4 +1,5 @@
 ../lvgl/src/extra/themes/basic/lv_theme_basic.c:174:13:theme_apply	38
+../lvgl/src/extra/themes/basic/../../../../src/hal/../draw/../misc/lv_style.h:476:20:lv_style_set_pad_all	1
 ../lvgl/src/extra/themes/basic/lv_theme_basic.c:424:13:style_init_reset	2
 ../lvgl/src/extra/themes/basic/lv_theme_basic.c:68:13:style_init	1
 ../lvgl/src/extra/themes/basic/lv_theme_basic.c:139:6:lv_theme_basic_is_inited	1

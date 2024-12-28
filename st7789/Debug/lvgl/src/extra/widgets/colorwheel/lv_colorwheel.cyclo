@@ -1,3 +1,4 @@
+../lvgl/src/extra/widgets/colorwheel/../../../../src/hal/../draw/../misc/lv_color.h:379:24:lv_color_to32	1
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:617:13:fast_hsv2rgb	9
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:649:19:angle_to_mode_color_fast	6
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:690:17:get_angle	3
@@ -16,6 +17,6 @@
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:169:16:lv_colorwheel_get_hsv	1
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:182:12:lv_colorwheel_get_rgb	1
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:306:13:draw_knob	2
-../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:356:13:lv_colorwheel_event	45
+../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:356:13:lv_colorwheel_event	42
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:195:22:lv_colorwheel_get_color_mode	1
 ../lvgl/src/extra/widgets/colorwheel/lv_colorwheel.c:208:6:lv_colorwheel_get_color_mode_fixed	1

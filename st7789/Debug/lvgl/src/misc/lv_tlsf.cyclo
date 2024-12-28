@@ -60,4 +60,4 @@
 ../lvgl/src/misc/lv_tlsf.c:1098:8:lv_tlsf_malloc	1
 ../lvgl/src/misc/lv_tlsf.c:1106:8:lv_tlsf_memalign	7
 ../lvgl/src/misc/lv_tlsf.c:1160:6:lv_tlsf_free	3
-../lvgl/src/misc/lv_tlsf.c:1187:8:lv_tlsf_realloc	10
+../lvgl/src/misc/lv_tlsf.c:1187:8:lv_tlsf_realloc	9

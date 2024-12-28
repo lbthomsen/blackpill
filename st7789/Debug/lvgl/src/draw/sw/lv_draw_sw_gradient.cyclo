@@ -1,3 +1,4 @@
+../lvgl/src/draw/sw/../../misc/lv_color.h:379:24:lv_color_to32	1
 ../lvgl/src/draw/sw/lv_draw_sw_gradient.c:72:17:compute_key	1
 ../lvgl/src/draw/sw/lv_draw_sw_gradient.c:79:15:get_cache_item_size	1
 ../lvgl/src/draw/sw/lv_draw_sw_gradient.c:91:20:next_in_cache	4

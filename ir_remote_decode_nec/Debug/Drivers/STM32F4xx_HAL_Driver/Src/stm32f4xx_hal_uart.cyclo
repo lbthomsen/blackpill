@@ -43,7 +43,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:3486:13:UART_DMARxOnlyAbortCallback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:2713:13:HAL_UARTEx_RxEventCallback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:3577:26:UART_Receive_IT	11
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:2360:6:HAL_UART_IRQHandler	45
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:2360:6:HAL_UART_IRQHandler	44
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:3097:13:UART_DMARxHalfCplt	2
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:3040:13:UART_DMAReceiveCplt	8
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c:2753:19:HAL_LIN_SendBreak	3

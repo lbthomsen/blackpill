@@ -8,7 +8,7 @@
 ../lvgl/src/core/lv_obj_tree.c:423:31:walk_core	8
 ../lvgl/src/core/lv_obj_tree.c:325:10:lv_obj_get_index	4
 ../lvgl/src/core/lv_obj_tree.c:356:13:obj_del_core	14
-../lvgl/src/core/lv_obj_tree.c:45:6:lv_obj_del	7
+../lvgl/src/core/lv_obj_tree.c:45:6:lv_obj_del	6
 ../lvgl/src/core/lv_obj_tree.c:120:6:lv_obj_del_anim_ready_cb	1
 ../lvgl/src/core/lv_obj_tree.c:349:13:lv_obj_del_async_cb	1
 ../lvgl/src/core/lv_obj_tree.c:84:6:lv_obj_clean	3

@@ -22,7 +22,7 @@
 ../lvgl/src/widgets/lv_arc.c:284:10:lv_arc_get_bg_angle_start	1
 ../lvgl/src/widgets/lv_arc.c:290:10:lv_arc_get_bg_angle_end	1
 ../lvgl/src/widgets/lv_arc.c:296:9:lv_arc_get_value	1
-../lvgl/src/widgets/lv_arc.c:355:13:lv_arc_event	39
+../lvgl/src/widgets/lv_arc.c:355:13:lv_arc_event	37
 ../lvgl/src/widgets/lv_arc.c:302:9:lv_arc_get_min_value	1
 ../lvgl/src/widgets/lv_arc.c:308:9:lv_arc_get_max_value	1
 ../lvgl/src/widgets/lv_arc.c:314:15:lv_arc_get_mode	1

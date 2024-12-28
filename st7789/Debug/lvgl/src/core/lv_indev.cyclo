@@ -4,11 +4,11 @@
 ../lvgl/src/core/lv_indev.c:994:13:indev_click_focus	20
 ../lvgl/src/core/lv_indev.c:1063:6:indev_gesture	13
 ../lvgl/src/core/lv_indev.c:381:13:indev_keypad_proc	40
-../lvgl/src/core/lv_indev.c:525:13:indev_encoder_proc	64
+../lvgl/src/core/lv_indev.c:525:13:indev_encoder_proc	62
 ../lvgl/src/core/lv_indev.c:122:6:lv_indev_enable	2
 ../lvgl/src/core/lv_indev.c:129:14:lv_indev_get_act	1
 ../lvgl/src/core/lv_indev.c:134:17:lv_indev_get_type	2
-../lvgl/src/core/lv_indev.c:141:6:lv_indev_reset	18
+../lvgl/src/core/lv_indev.c:141:6:lv_indev_reset	15
 ../lvgl/src/core/lv_indev.c:179:6:lv_indev_reset_long_press	1
 ../lvgl/src/core/lv_indev.c:186:6:lv_indev_set_cursor	2
 ../lvgl/src/core/lv_indev.c:197:6:lv_indev_set_group	3

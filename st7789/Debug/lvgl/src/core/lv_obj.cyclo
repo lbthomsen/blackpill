@@ -1,9 +1,10 @@
+../lvgl/src/core/../misc/lv_style.h:395:24:lv_style_get_prop_inlined	9
 ../lvgl/src/core/lv_obj.c:937:13:obj_valid_child	5
 ../lvgl/src/core/lv_obj.c:656:17:scrollbar_init_draw_dsc	10
 ../lvgl/src/core/lv_obj.c:615:13:draw_scrollbar	6
-../lvgl/src/core/lv_obj.c:459:13:lv_obj_draw	19
-../lvgl/src/core/lv_obj.c:395:13:lv_obj_constructor	5
-../lvgl/src/core/lv_obj.c:864:13:lv_obj_set_state	27
+../lvgl/src/core/lv_obj.c:459:13:lv_obj_draw	18
+../lvgl/src/core/lv_obj.c:395:13:lv_obj_constructor	4
+../lvgl/src/core/lv_obj.c:864:13:lv_obj_set_state	19
 ../lvgl/src/core/lv_obj.c:87:6:lv_is_initialized	1
 ../lvgl/src/core/lv_obj.c:92:6:lv_init	2
 ../lvgl/src/core/lv_obj.c:184:6:lv_deinit	1
@@ -17,7 +18,7 @@
 ../lvgl/src/core/lv_obj.c:308:12:lv_obj_get_state	1
 ../lvgl/src/core/lv_obj.c:315:6:lv_obj_has_state	1
 ../lvgl/src/core/lv_obj.c:322:8:lv_obj_get_group	2
-../lvgl/src/core/lv_obj.c:708:13:lv_obj_event	55
+../lvgl/src/core/lv_obj.c:708:13:lv_obj_event	53
 ../lvgl/src/core/lv_obj.c:426:13:lv_obj_destructor	5
 ../lvgl/src/core/lv_obj.c:334:6:lv_obj_allocate_spec_attr	3
 ../lvgl/src/core/lv_obj.c:352:6:lv_obj_check_type	2

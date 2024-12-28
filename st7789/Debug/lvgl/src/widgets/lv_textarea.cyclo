@@ -7,7 +7,7 @@
 ../lvgl/src/widgets/lv_textarea.c:88:12:lv_textarea_create	1
 ../lvgl/src/widgets/lv_textarea.c:315:6:lv_textarea_set_placeholder_text	5
 ../lvgl/src/widgets/lv_textarea.c:396:6:lv_textarea_set_cursor_click_pos	1
-../lvgl/src/widgets/lv_textarea.c:438:6:lv_textarea_set_one_line	5
+../lvgl/src/widgets/lv_textarea.c:438:6:lv_textarea_set_one_line	4
 ../lvgl/src/widgets/lv_textarea.c:462:6:lv_textarea_set_accepted_chars	1
 ../lvgl/src/widgets/lv_textarea.c:471:6:lv_textarea_set_max_length	1
 ../lvgl/src/widgets/lv_textarea.c:480:6:lv_textarea_set_insert_replace	1

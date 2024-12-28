@@ -14,7 +14,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:684:13:HAL_HCD_PortDisabled_Callback	1
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:1648:13:HCD_Port_IRQHandler	9
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:709:13:HAL_HCD_HC_NotifyURBChange_Callback	1
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:1184:13:HCD_HC_IN_IRQHandler	28
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:1184:13:HCD_HC_IN_IRQHandler	27
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:1393:13:HCD_HC_OUT_IRQHandler	28
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:493:6:HAL_HCD_IRQHandler	16
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c:1025:19:HAL_HCD_Start	2

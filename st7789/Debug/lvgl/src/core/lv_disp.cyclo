@@ -3,6 +3,7 @@
 ../lvgl/src/core/lv_disp.c:438:13:set_y_anim	1
 ../lvgl/src/core/lv_disp.c:433:13:set_x_anim	1
 ../lvgl/src/core/lv_disp.c:49:12:lv_disp_get_scr_act	3
+../lvgl/src/core/lv_disp.h:162:26:lv_scr_act	1
 ../lvgl/src/core/lv_disp.c:418:13:scr_load_anim_start	1
 ../lvgl/src/core/lv_disp.c:66:12:lv_disp_get_scr_prev	3
 ../lvgl/src/core/lv_disp.c:81:6:lv_disp_load_scr	6

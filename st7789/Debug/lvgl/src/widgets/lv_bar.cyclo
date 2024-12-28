@@ -1,8 +1,8 @@
 ../lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h:123:26:lv_area_get_width	1
 ../lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h:133:26:lv_area_get_height	1
 ../lvgl/src/widgets/lv_bar.c:603:13:lv_bar_init_anim	1
-../lvgl/src/widgets/lv_bar.c:243:13:draw_indic	35
-../lvgl/src/widgets/lv_bar.c:508:13:lv_bar_event	7
+../lvgl/src/widgets/lv_bar.c:243:13:draw_indic	34
+../lvgl/src/widgets/lv_bar.c:508:13:lv_bar_event	6
 ../lvgl/src/widgets/lv_bar.c:234:13:lv_bar_destructor	1
 ../lvgl/src/widgets/lv_bar.c:556:13:lv_bar_anim_ready	3
 ../lvgl/src/widgets/lv_bar.c:549:13:lv_bar_anim	1

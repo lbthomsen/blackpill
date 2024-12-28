@@ -1,3 +1,5 @@
+../lvgl/src/misc/lv_color.h:379:24:lv_color_to32	1
+../lvgl/src/misc/lv_color.h:443:48:lv_color_mix	1
 ../lvgl/src/misc/lv_color.c:36:28:lv_color_fill	4
 ../lvgl/src/misc/lv_color.c:126:12:lv_color_lighten	1
 ../lvgl/src/misc/lv_color.c:131:12:lv_color_darken	1

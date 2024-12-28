@@ -6,7 +6,7 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2022 Lars Boegild Thomsen <lbthomsen@gmail.com>
+ * <h2><center>&copy; Copyright (c) 20220 Lars Boegild Thomsen <lbthomsen@gmail.com>
  * All rights reserved.</center></h2>
  *
  * This software component is licensed under MIT license,
@@ -80,6 +80,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
 	dfu_boot_flag = (uint32_t*) (&_estack - 100); // set in linker script
