@@ -6,7 +6,7 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * <h2><center>&copy; Copyright (c) 2025 Lars Boegild Thomsen <lbthomsen@gmail.com>
  * All rights reserved.</center></h2>
  *
  * This software component is licensed by ST under BSD 3-Clause license,
@@ -117,9 +117,11 @@ static inline void process_adc_buffer(uint16_t *buffer) {
 
     // Knowing vdda and the resolution of adc - the actual voltage can be calculated
     vref = (float) vdda / ADC_RESOLUTION * vref_avg;
-    //vref = __LL_ADC_CALC_VREFANALOG_VOLTAGE(vref_avg, ADC_RESOLUTION_12B);
+    //vref = __LL_ADC_CALC_VREFANALOG_VOLTAGE(vref_avg, ADC_RESOLUTION_12B) + 1000;
 
-    temp = (float) ((float) ((float) (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) / (float) (*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR)) * (temp_avg - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP);
+    temp = (float) ((float) ((float) (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP)
+                           / (float) (*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR))
+                           * (temp_avg - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP);
     //temp = __LL_ADC_CALC_TEMPERATURE(1000*vref, temp_avg, ADC_RESOLUTION_12B);
 }
 
