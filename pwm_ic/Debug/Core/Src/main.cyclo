@@ -1,5 +1,9 @@
-../Core/Src/main.c:110:5:_write	3
-../Core/Src/main.c:124:6:HAL_TIM_IC_CaptureCallback	2
-../Core/Src/main.c:230:6:SystemClock_Config	3
-../Core/Src/main.c:140:5:main	17
-../Core/Src/main.c:476:6:Error_Handler	1
+../Core/Src/main.c:437:13:MX_GPIO_Init	1
+../Core/Src/main.c:108:5:_write	3
+../Core/Src/main.c:122:6:HAL_TIM_IC_CaptureCallback	2
+../Core/Src/main.c:471:6:Error_Handler	1
+../Core/Src/main.c:345:13:MX_TIM4_Init	1
+../Core/Src/main.c:404:13:MX_USART1_UART_Init	1
+../Core/Src/main.c:271:13:MX_TIM2_Init	1
+../Core/Src/main.c:225:6:SystemClock_Config	1
+../Core/Src/main.c:135:5:main	5

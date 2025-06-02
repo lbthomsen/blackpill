@@ -49,39 +49,37 @@ UART_HandleTypeDef huart1;
 
 // Define some test pwm values - first column is prescaler value for pwm and second row is duty cycle (of 1000)
 uint32_t pwm_vals[][2] = {
-		{19999, 10},
-		{19999, 50},
-		{19999, 90},
-		{9999, 10},
-		{9999, 50},
-		{9999, 90},
-		{999, 10},
-		{999, 50},
-		{999, 90},
-		{99, 10},
-		{99, 50},
-		{99, 90},
-		{49, 10},
-		{49, 50},
-		{49, 90},
-		{24, 10},
-		{24, 50},
-		{24, 90},
-		{9, 10},
-		{9, 50},
-		{9, 90},
-		{4, 10},
-		{4, 50},
-		{4, 90},
-		{2, 10},
-		{2, 50},
-		{2, 90},
-		{1, 10},
-		{1, 50},
-		{1, 90},
-		{0, 10},
-		{0, 50},
-		{0, 90},
+        //{ 0, 50 },
+        { 19999, 10 },
+        { 19999, 50 },
+        { 19999, 90 },
+        { 9999, 10 },
+        { 9999, 50 },
+        { 9999, 90 },
+        { 999, 10 },
+        { 999, 50 },
+        { 999, 90 },
+        { 99, 10 },
+        { 99, 50 },
+        { 99, 90 },
+        { 49, 10 },
+        { 49, 50 },
+        { 49, 90 },
+        { 24, 10 },
+        { 24, 50 },
+        { 24, 90 },
+        { 9, 10 },
+        { 9, 50 },
+        { 9, 90 },
+        { 4, 10 },
+        { 4, 50 },
+        { 4, 90 },
+        { 2, 10 },
+        { 2, 50 },
+        { 2, 90 },
+        { 1, 10 },
+        { 1, 50 },
+        { 1, 90 }
 };
 // Used to cycle around the pwm values
 uint32_t pwm_vals_idx = 0;
@@ -108,27 +106,24 @@ static void MX_TIM2_Init(void);
 
 // Send printf to uart1
 int _write(int fd, char *ptr, int len) {
-	HAL_StatusTypeDef hstatus;
+    HAL_StatusTypeDef hstatus;
 
-	if (fd == 1 || fd == 2) {
-		hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len,
-				HAL_MAX_DELAY);
-		if (hstatus == HAL_OK)
-			return len;
-		else
-			return -1;
-	}
-	return -1;
+    if (fd == 1 || fd == 2) {
+        hstatus = HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len,
+        HAL_MAX_DELAY);
+        if (hstatus == HAL_OK)
+            return len;
+        else
+            return -1;
+    }
+    return -1;
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM2) {
-		cnt_full = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) + 2;
-		cnt_high = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2) + 2;
-
-//		freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
-//		duty = (float) 100 * cnt_high / cnt_full;
-	}
+    if (htim->Instance == TIM2) {
+        cnt_full = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) + 2;
+        cnt_high = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2) + 2;
+    }
 }
 
 /* USER CODE END 0 */
@@ -167,59 +162,59 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-	DBG("Firing up PWM");
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);   // Output PWM Generation
+    DBG("Firing up PWM");
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);   // Output PWM Generation
 
-	DBG("Firing up PWM Input Capture");
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge - rinse and repeat
-	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge - stop second counter
+    DBG("Firing up PWM Input Capture");
+    HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // Primary channel - rising edge - rinse and repeat
+    HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);    // Secondary channel - falling edge - stop second counter
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	uint32_t now = 0, next_blink = 500, next_print = 1000, next_change = 0;
+    uint32_t now = 0, next_blink = 500, next_print = 1000, next_change = 0;
 
-	while (1) {
+    while (1) {
 
-		now = HAL_GetTick();
+        now = HAL_GetTick();
 
-		if (now >= next_blink) {
-			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        if (now >= next_blink) {
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-			next_blink = now + 500;
-		}
+            next_blink = now + 500;
+        }
 
-		if (now >= next_print) {
+        if (now >= next_print) {
 
-		    float freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
-	        float duty = (float) 100 * cnt_high / cnt_full;
+            float freq = (float) TIMER_CLOCK_FREQ / (cnt_full);
+            float duty = (float) 100 * cnt_high / cnt_full;
 
-			DBG("Tick %5lu count = %8lu freq = %10.2f Hz duty = %7.2f %%", now / 1000, cnt_full, freq, duty);
+            DBG("Tick %5lu count = %8lu freq = %10.2f Hz duty = %7.2f %%", now / 1000, cnt_full, freq, duty);
 
-			next_print = now + 1000;
-		}
+            next_print = now + 1000;
+        }
 
-		if (now >= next_change) {
+        if (now >= next_change) {
 
-		    printf("Setting prescaler = %lu compare = %lu\n", pwm_vals[pwm_vals_idx][0], pwm_vals[pwm_vals_idx][1]);
+            printf("Setting prescaler = %lu compare = %lu\n", pwm_vals[pwm_vals_idx][0], pwm_vals[pwm_vals_idx][1]);
 
-			__HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_idx][0]);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm_vals[pwm_vals_idx][1]);
+            __HAL_TIM_SET_PRESCALER(&htim4, pwm_vals[pwm_vals_idx][0]);
+            __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, pwm_vals[pwm_vals_idx][1]);
 
-			++pwm_vals_idx;
-			if (pwm_vals_idx >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
-				pwm_vals_idx = 0;
-			}
+            ++pwm_vals_idx;
+            if (pwm_vals_idx >= sizeof(pwm_vals) / sizeof(pwm_vals[0])) {
+                pwm_vals_idx = 0;
+            }
 
-			next_change = now + 2000;
-		}
+            next_change = now + 10000;
+        }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	}
+    }
   /* USER CODE END 3 */
 }
 
@@ -387,10 +382,10 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 900;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -417,7 +412,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 921600;
+  huart1.Init.BaudRate = 2000000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -442,8 +437,8 @@ static void MX_USART1_UART_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -461,8 +456,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -476,10 +471,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
-	__disable_irq();
-	while (1) {
-	}
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1) {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 
